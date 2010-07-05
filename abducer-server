@@ -1,1 +1,17 @@
-run-abducer-server-mk2
+#!/bin/sh
+
+SERVER_BIN=abducer-server-bin
+CORE_BIN=abducer-server-core
+
+DIR="`pwd`/`dirname $0`"
+
+PATH_TO_BIN="$DIR/$SERVER_BIN"
+
+if [ ! -e "$PATH_TO_BIN" ]; then
+	echo "Unable to find the server binary \`$SERVER_BIN' in"
+	echo "$DIR"
+	echo "--> Is the server compiled?"
+	exit 1
+fi
+
+"$PATH_TO_BIN" "$DIR/$CORE_BIN"

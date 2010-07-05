@@ -1,5 +1,5 @@
 .PHONY: main
-main: server-mk2
+main: server
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -#
 
@@ -7,16 +7,11 @@ main: server-mk2
 lib:
 	make -C lib
 
-.PHONY: server-mk1
-server-mk1: lib
-	make -C server-mk1
-	[ -e abducer-server-mk1-bin ] || ln -s server-mk1/abducer-server-bin
-
-.PHONY: server-mk2
-server-mk2: lib
-	make -C server-mk2
-	[ -e abducer-server-mk2-bin ] || ln -s server-mk2/abducer-server-mk2 abducer-server-mk2-bin
-	[ -e abducer-server-mk2-core ] || ln -s server-mk2/abducer-lfd abducer-server-mk2-core
+.PHONY: server
+server: lib
+	make -C server
+	[ -e abducer-server-bin ] || ln -s server/abducer-server abducer-server-bin
+	[ -e abducer-server-core ] || ln -s server/abducer-lfd abducer-server-core
 
 .PHONY: cli
 cli: lib
@@ -31,9 +26,7 @@ tests: lib
 .PHONY: clean
 clean:
 	make -C lib clean
-	make -C server-mk1 clean
-	make -C server-mk2 clean
+	make -C server clean
 	make -C tests clean
-	rm -f abducer-server-mk1-bin
-	rm -f abducer-server-mk2-bin abducer-server-mk2-core
+	rm -f abducer-server-bin abducer-server-core
 	rm -f abducer-cli check-file

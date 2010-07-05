@@ -8,7 +8,7 @@ SLICE_PATH?=../slice
 
 # C++
 
-BIN=abducer-server-mk2
+BIN=abducer-server
 
 CXX_HEADERS=Tokens.h TermTokeniser.h Terms.h TtyUtils.h ForwardedAbducerServer.h SliceToString.h StringToSlice.h
 CXX_HEADERS+=Abducer.h
