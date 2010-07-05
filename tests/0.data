@@ -1,0 +1,229 @@
+%------------------------------------------------------------------------------#
+% SYNTAX OF THIS FILE:
+%
+% White characters at the beginning and end of each line are first discarded.
+% Empty lines and those that begin with a `#' are ignored.
+%
+% Every other line must then consist of either a FACT or a RULE (on one
+% line!).
+%
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -#
+%
+% PROPOSITIONS.
+%
+% The syntax of propositions is similar to that of facts in Prolog: every
+% proposition is of the form
+%
+%   p(a1, a2, a3...)
+%
+% Where p is a predicate symbol and a1, a2, a3 etc are either variables
+% (strings that begin with a capital letter), or terms. Term has the following
+% form:
+%
+%   f(t1, t2, t3...)
+%
+% where f is a function symbol and t1... are either variables or terms.
+%
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -#
+%
+% MODALIZED PROPOSITIONS.
+%
+% Modalized propositions have the following syntax:
+% 
+%   c1 : c2 : c3... : p(...)
+%
+% Where p(...) is a proposition and c1... are "context references".
+% (See the definition of string_as_ctx_ref/2 in context.m).
+% A proposition is also a modalized proposition (with no context references
+% attached to it).
+%
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -#
+%
+% FACTS.
+%
+% Facts have the form
+%
+%   MP.
+%
+% where MP is a modalized proposition. (Currently, facts may contain variables
+% although we might want to change that in the future.)
+%
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -#
+%
+% RULES.
+%
+% Rules have this syntax:
+%
+%   Antecedents -> Head.
+%   c1... : (Antecedents -> Head).
+%   [] : (Antecedents -> Head).
+%   [] : c1... : (Antecedents -> Head).
+%
+% [] means that the rule is an axiom.
+% c1... are modalities as in modalized propositions.
+% Head is a modalized proposition.
+% Antecedents are a list of modalized propositions with cost function
+%   annotation (see below), delimited by ','.
+%
+% A modalized proposition with cost function has the form
+%
+%   MP / #.#
+% or
+%   MP / function_name
+%
+% where MP is a modalized proposition,
+% #.# stands for a float -- this means that the assumption cost for
+% the given proposition is constant and equal to the given number.
+% `function_name' is a name of function that takes the D-context,
+% given proposition and returns a float. (For the moment, these are defined
+% in context.m).
+%
+%------------------------------------------------------------------------------#
+
+	% Assumables.
+
+func = [
+	i : ascription(u) = 0.6
+%	i0 : ascription(v) = 0.7,
+%	i0 : ascription(z) = 1.4
+].
+
+in_focus = [
+	a(com) : it(v1) = 0.5,
+	a(com) : it(v2) = 0.8
+].
+
+% ascription(Subject, Quality)
+
+%------------------------------------------------------------------------------%
+
+	% Facts.
+
+%k(now, mutual(h, r)):k_mutual(u).
+%k(now, private(r)):k_private(u).
+%k(now, attrib(r, h)):k_attrib(u).
+
+k(now, attrib(r, h)) : fact(F) <-
+	e(now) : utter(r, F) / 1.0,
+	i : fact(F) / prove,
+	k(now, private(r)) : fact(F) / 1.0.
+
+k(now, mutual(r, h)) : fact(F) <-
+	e(now) : utter(h, F) / 1.0,
+	i : fact(F) / prove,
+	k(now, attrib(r, h)) : fact(F) / 3.0.
+
+i:fact(f).
+i:fact(e).
+
+i : Answer << thing.
+i : @(v1::thing, box ^ r(colour, blue) ^ r(shape, boxy)).
+
+i : @(Id::thing, box ^ r(colour, CId::colour ^ Colour) ^ r(shape, Shape)) <-
+	a(com) : that(Id) / in_focus,
+	? k(now,attrib(r,h)) : @(Id::thing, object),
+	? k(now,attrib(r,h)) : @(Id::thing, r(colour, CId::colour ^ brown)).
+	
+
+a(com):something(u).
+
+e(now):did(U, X) <-
+	a(com):something(U) / prove,
+	? e(now):clarif(U).
+
+e(now):do(E) <-
+	a(com):it(Subj) / in_focus,
+	e(now):utter(E, Utt) / prove,
+	i:subject(Utt, Subj) / prove,
+	i:ascription(Utt, Quality) / prove.
+
+e(now):utter(e, u).
+e(now):utter(f, v).
+
+i:subject(u, v1).
+i:ascription(u, colour(red)).
+
+i:subject(v, v2).
+i:ascription(v, colour(blue)).
+
+%e0:did(U, X) <- e0:did(U, X) / prove.
+
+e(now):said(u).
+i:ascription(u).
+i:subject(u, box).
+i:cop_restr(u, box).
+%i:quality(u, colour(X)).
+not_ground(u).
+
+[]:colour(red).
+[]:colour(blue).
+
+quality(u, colour).
+subject(u, colour).
+
+?(jojo(Y) -> answer(X)) <- kuku(X) / 0.2.
+
+kuku(x).
+
+%------------------------------------------------------------------------------%
+
+	% Rules.
+
+[]:(i:quality(U, colour(Col)) <-
+	i:colour(Col) / 0.5,
+	i:ascription(U) / 2.0
+).
+
+[]:(i:quality(U, colour(Col)) <-
+	i:colour(Col) / 0.5,
+	i:ascription(U) / func
+).
+
+say(what_question(Ref, Q)) <-
+	e(now):said(U) / 1.5,
+	[]:clarify(U, Q) / 0.5,
+	i:subject(U, Ref) / 1.1.
+
+downdate(U) <-
+	e(now):said(U) / 1.5,
+	not_ground(U) / 1.1.
+
+clarify(U, C) <-
+	downdate(U) / 0.8.
+
+?(question(X) -> answer(Y)) <-
+	quality(X, Quality) / 1.0,
+	subject(Y, Quality) / 1.0.
+
+a(x) <-
+	(b(x) -> c(x)) / 0.1.
+
+a(x) <-
+	b(x) / 0.0.
+
+something(X) <-
+%	(a(X) -> ?b(x)) / 0.1,  % XXX this is a valid test query!
+	?(a(X) -> b(x)),
+	?tested(X).
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -#
+
+%e/now : utter(r, 'that is a brown object', E, )
+%e/now : do(E)
+
+%k(now, r->h) : @(v1.thing, box ^ <Color>(vb1.color ^ red))
+%k(now, r & h) : @(v2.thing, object ^ <Color>(vb1.color ^ red))
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -#
+
+%e0/now : do(E) :-
+%	a0/fcom : that(v1) / by_focus,
+%	e0/now : utter(r, 'that is a thing') / f2.
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -#
+
+%e0_now : do(E) :-
+%	a0fc : ...
+%	k_now_r_and_h : ...
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -#

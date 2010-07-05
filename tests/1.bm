@@ -1,0 +1,5 @@
+k(now, private(r)) : @(v1::thing, r(colour, c::colour ^ p(black))) : y(com).
+k(now, mutual(r, h)) : @(v1::thing, p(object)) : y(com).
+k(now, private(h)) : @(v2::thing, r(colour, d::colour)) : y(com).
+
+k(now, private(r)) : @(d::colour, p(red)) : n.

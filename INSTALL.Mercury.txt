@@ -1,0 +1,53 @@
+From: Miroslav Janicek <mira.janicek@gmail.com>
+---
+
+HOW TO INSTALL MERCURY
+
+This file describes the process of installing the Mercury compiler
+in your system.
+
+1) Download the Mercury compiler, it's the package "Compiler" at the
+   bottom this page:
+
+	 http://www.mercury.csse.unimelb.edu.au/download/rotd.html
+
+   The reason why I'm using the development branch is that it features some
+   neat debugging constructions that might come handy when the Mercury
+   component is connected to the rest of the system later on. It certainly
+   isn't needed now (and shouldn't really be in the "logic" part, but should
+   there be any problems with the Ice binding, I won't hesitate to use
+   them ;)
+
+2) Unpack it somewhere and enter that directory.
+
+3) Run the following command (but only after you've read the short note
+   under it):
+
+     $ ./configure --enable-libgrades=hlc.gc
+
+   I also recommend using the --prefix=INSTALLPATH option to `configure'
+   so that you have the installation under control. The INSTALLPATH
+   could look something like
+
+     "$HOME/Devel/mercury-rotd-2009-07-05"
+
+4) Run
+
+     $ make
+
+5) Run
+
+     $ make install
+   (For this you might need root access rights.)
+
+6) Export environment variable MERCURY_HOME to INSTALLPATH in your shell.
+   You will need this to compile the abduction server.
+
+7) Make sure that MERCURY_HOME/bin is in your $PATH environment variable.
+
+
+Voila! Your Mercury is compiled. For the instructions on how to build
+and use the abducer, see the file `README.Abducer.txt' in this directory.
+
+If you encounter any problems, ask me! My email is on the first line of
+this file.

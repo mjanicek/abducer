@@ -1,0 +1,16 @@
+#!/bin/sh
+
+SERVER_BIN=abducer-server-bin
+DIR="`pwd`/`dirname $0`"
+
+PATH_TO_BIN="$DIR/$SERVER_BIN"
+
+if [ ! -e "$PATH_TO_BIN" ]; then
+	echo "Unable to find the server binary \`$SERVER_BIN' in"
+	echo "$DIR"
+	echo "--> Is the server compiled?"
+	exit 1
+fi
+
+export GC_DONT_GC=
+"$PATH_TO_BIN"

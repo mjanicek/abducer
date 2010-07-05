@@ -1,0 +1,2 @@
+- throw FileReadErrorException and SyntaxErrorException in loadFile()
+- throw ServerException in the general server loop

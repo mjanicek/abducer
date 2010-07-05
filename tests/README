@@ -1,0 +1,5 @@
+To enable colour output in `abduct', install grc -- Generic Colouriser.
+
+Under Mac OS using MacPorts, this can be done by issuing the command
+
+  $ sudo port install grc
