@@ -14,35 +14,29 @@ termToString(const TermPtr & t)
 {
 	string s("");
 
-	switch (t->type) {
-		case Function: {
-				FunctionTermPtr ft = FunctionTermPtr::dynamicCast(t);
-				s = quoteGuard(ft->functor);
-				if (!ft->args.empty()) {
-					s += "(";
-					vector<TermPtr>::iterator it = ft->args.begin();
-					while (it != ft->args.end()) {
-						s += termToString(*it);
-						it++;
-						if (it != ft->args.end()) {
-							s += ", ";
-						}
-					}
-					s += ")";
+	if (FunctionTermPtr ft = FunctionTermPtr::dynamicCast(t)) {
+		s = quoteGuard(ft->functor);
+		if (!ft->args.empty()) {
+			s += "(";
+			vector<TermPtr>::iterator it = ft->args.begin();
+			while (it != ft->args.end()) {
+				s += termToString(*it);
+				it++;
+				if (it != ft->args.end()) {
+					s += ", ";
 				}
-				return s;
 			}
-			break;
-
-		case Variable: {
-				VariableTermPtr vt = VariableTermPtr::dynamicCast(t);
-				s = vt->name;
-				return s;
-			}
-			break;
+			s += ")";
+		}
+		return s;
 	}
-
-	return string("");
+	else if (VariableTermPtr vt = VariableTermPtr::dynamicCast(t)) {
+		s = vt->name;
+		return s;
+	}
+	else {
+		return string("");
+	}
 }
 
 string
@@ -82,43 +76,45 @@ agentToString(Agent a)
 string
 modalityToString(const ModalityPtr & m)
 {
-	switch (m->type) {
-		case Understanding:
-			return "understand";
-		case Generation:
-			return "generate";
-		case Event:
-			return "event";
-		case Intention:
-			return "intention";
-		case Info:
-			return "i";
-		case AttState:
-			return "att";
-		case K: {
-				KModalityPtr km = KModalityPtr::dynamicCast(m);
-				string s("k(now, ");
+	if (UnderstandingModalityPtr um = UnderstandingModalityPtr::dynamicCast(m)) {
+		return "understand";
+	}
+	else if (GenerationModalityPtr gm = GenerationModalityPtr::dynamicCast(m)) {
+		return "generate";
+	}
+	else if (EventModalityPtr em = EventModalityPtr::dynamicCast(m)) {
+		return "event";
+	}
+	else if (IntentionModalityPtr tm = IntentionModalityPtr::dynamicCast(m)) {
+		return "intention";
+	}
+	else if (InfoModalityPtr im = InfoModalityPtr::dynamicCast(m)) {
+		return "i";
+	}
+	else if (AttStateModalityPtr am = AttStateModalityPtr::dynamicCast(m)) {
+		return "att";
+	}
+	else if (KModalityPtr km = KModalityPtr::dynamicCast(m)) {
+		string s("k(now, ");
 
-				switch (km->share) {
-					case Private:
-						s += "private(" + agentToString(km->ag) + ")";
-						break;
+		switch (km->share) {
+			case Private:
+				s += "private(" + agentToString(km->ag) + ")";
+				break;
 
-					case Attribute:
-						s += "attrib(" + agentToString(km->ag) + "," + agentToString(km->ag2) + ")";
-						break;
+			case Attribute:
+				s += "attrib(" + agentToString(km->ag) + "," + agentToString(km->ag2) + ")";
+				break;
 
-					case Mutual:
-						s += "mutual(h,r)";
-						break;
-				}
-				s += ")";
-				return s;
-			}
-			break;
-
-		default:
-			return "?";
+			case Mutual:
+				s += "mutual(h,r)";
+				break;
+		}
+		s += ")";
+		return s;
+	}
+	else {
+		return "?";
 	}
 }
 

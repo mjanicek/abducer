@@ -51,7 +51,6 @@ parseTerm(vector<Token *>::iterator & it)
 	if ((*it)->type() == VariableName) {
 		VariableNameToken * varTok = (VariableNameToken *) *it;
 		VariableTermPtr vt = new VariableTerm();
-		vt->type = Variable;
 		vt->name = varTok->name();
 		it++;
 		return vt;
@@ -60,7 +59,6 @@ parseTerm(vector<Token *>::iterator & it)
 	if ((*it)->type() == Atom) {
 		AtomToken * atomTok = (AtomToken *) *it;
 		FunctionTerm * ft = new FunctionTerm();
-		ft->type = Function;
 		ft->functor = atomTok->value();
 		it++;
 		if ((*it)->type() == OpenParenthesis) {
@@ -208,43 +206,36 @@ parseModality(std::vector<Token *>::iterator & it)
 		if (atomTok->value() == string("i")) {
 			it++;
 			InfoModalityPtr im = new InfoModality();
-			im->type = Info;
 			return im;
 		}
 		else if (atomTok->value() == string("event")) {
 			it++;
 			EventModalityPtr em = new EventModality();
-			em->type = Event;
 			return em;
 		}
 		else if (atomTok->value() == string("intention")) {
 			it++;
 			IntentionModalityPtr im = new IntentionModality();
-			im->type = Intention;
 			return im;
 		}
 		else if (atomTok->value() == string("att")) {
 			it++;
 			AttStateModalityPtr am = new AttStateModality();
-			am->type = AttState;
 			return am;
 		}
 		else if (atomTok->value() == string("generate")) {
 			it++;
 			GenerationModalityPtr gm = new GenerationModality();
-			gm->type = Generation;
 			return gm;
 		}
 		else if (atomTok->value() == string("understand")) {
 			it++;
 			UnderstandingModalityPtr um = new UnderstandingModality();
-			um->type = Understanding;
 			return um;
 		}
 		else if (atomTok->value() == string("k")) {
 			it++;
 			KModalityPtr km = new KModality();
-			km->type = K;
 			if ((*it)->type() == OpenParenthesis) {
 				it++;
 				it++;  // skip the "now" atom

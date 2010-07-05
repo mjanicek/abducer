@@ -10,15 +10,8 @@ module wabd {
 
 	// TERMS & PREDICATES
 
-	enum TermType {
-		Function,
-		Variable
-	};
-
 	// Base class for both types of terms.
-	class Term {
-		TermType type;
-	};
+	class Term { };
 
 	sequence<Term> TermSeq;
 
@@ -43,6 +36,7 @@ module wabd {
 
 	// MODALITIES
 
+	// FIXME: this is not very elegant (used only by AbducerServer::clearFactsByModality)
 	enum ModalityType {
 		Understanding,
 		Generation,
@@ -65,9 +59,7 @@ module wabd {
 	};
 
 	// Base modality class.
-	class Modality {
-		ModalityType type;
-	};
+	class Modality { };
 	
 	sequence<Modality> ModalitySeq;
 
