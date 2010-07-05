@@ -1,4 +1,4 @@
-From: Miroslav Janicek <mira.janicek@gmail.com>
+From: Miroslav Janicek <miroslav.janicek@dfki.de>
 ---
 
 HOW TO INSTALL AND RUN THE ABDUCER SERVER
