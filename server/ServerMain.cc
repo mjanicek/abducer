@@ -4,7 +4,7 @@
 
 #include <Ice/Ice.h>
 #include <IceUtil/CtrlCHandler.h>
-#include <Abducer.h>
+#include "wabd.h"
 
 #include <iostream>
 

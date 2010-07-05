@@ -4,8 +4,10 @@
 #include <vector>
 #include <iterator>
 
-#include "Abducer.h"
+#include "wabd.h"
 #include "Tokens.h"
+
+namespace Abducer = ::de::dfki::lt::tr::infer::wabd;
 
 Abducer::TermPtr
 parseTerm(std::vector<Token *>::iterator & it);

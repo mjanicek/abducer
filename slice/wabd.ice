@@ -1,7 +1,12 @@
-#ifndef ABDUCER_ICE
-#define ABDUCER_ICE
+#ifndef WABD_ICE
+#define WABD_ICE
  
-module Abducer {
+module de {
+module dfki {
+module lt {
+module tr {
+module infer {
+module wabd {
 
 	// TERMS & PREDICATES
 
@@ -196,6 +201,11 @@ module Abducer {
 				throws NoProofException;
 	};
 
+};
+};
+};
+};
+};
 };
 
 #endif

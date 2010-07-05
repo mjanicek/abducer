@@ -1,10 +1,12 @@
 #ifndef SLICETOSTRING_H__
 #define SLICETOSTRING_H__  1
 
-#include "Abducer.h"
+#include "wabd.h"
 
 #include <vector>
 #include <string>
+
+namespace Abducer = ::de::dfki::lt::tr::infer::wabd;
 
 std::string
 predicateToString(const Abducer::PredicatePtr & p);
