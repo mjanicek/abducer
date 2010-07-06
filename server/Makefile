@@ -1,5 +1,9 @@
 #------------------------------------------------------------------------------#
 
+#ARCHFLAG=-arch i386
+
+#------------------------------------------------------------------------------#
+
 # ICE
 
 SLICE_PATH?=../slice
@@ -20,8 +24,9 @@ CXXFLAGS=-Wall
 CXXFLAGS+=-I. -I$(ICE_HOME)/include
 CXXFLAGS+=-DABDUCER_ICE_VERSION=\"$(ABDUCER_ICE_VERSION)\"
 CXXFLAGS+=-g
+CXXFLAGS+=$(ARCHFLAG)
 
-LDFLAGS=-L$(ICE_HOME)/lib -lIce -lIceUtil
+LDFLAGS=-L$(ICE_HOME)/lib -lIce -lIceUtil $(ARCHFLAG)
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -#
 
@@ -81,7 +86,7 @@ compile: $(BIN) $(MBIN)
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -#
 
 wabd.h wabd.cc: $(SLICE_PATH)/wabd.ice
-	slice2cpp -I$(SLICE_PATH) --source-ext cc $(SLICE_PATH)/wabd.ice
+	$(ICE_HOME)/bin/slice2cpp -I$(SLICE_PATH) --source-ext cc $(SLICE_PATH)/wabd.ice
 
 %.o: %.cc $(CXX_HEADERS)
 	$(CXX) $(CXXFLAGS) -c $*.cc
