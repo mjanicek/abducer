@@ -250,31 +250,34 @@ parseModality(std::vector<Token *>::iterator & it)
 
 					if (shareTok->value() == "private") {
 //						cerr << "private" << endl;
-						km->share = Private;
-						km->ag = tokenToAgent(*it);
-						km->ag2 = km->ag;
+						PrivateEpistemicStatusPtr pe = new PrivateEpistemicStatus();
+						pe->ag = tokenToAgent(*it);
 						it++;
 						it++;  // skip ')'
+						km->epst = pe;
 					}
 					else if (shareTok->value() == "attrib") {
 //						cerr << "attrib" << endl;
-						km->share = Attribute;
-						km->ag = tokenToAgent(*it);
+						AttributedEpistemicStatusPtr ae = new AttributedEpistemicStatus();
+						ae->ag = tokenToAgent(*it);
 						it++;
 						it++;  // skip ','
-						km->ag2 = tokenToAgent(*it);
+						ae->ag2 = tokenToAgent(*it);
 						it++;
 						it++;  // skip ')'
+						km->epst = ae;
 					}
 					else if (shareTok->value() == "mutual") {
 //						cerr << "mutual" << endl;
-						km->share = Mutual;
-						km->ag = tokenToAgent(*it);
+						SharedEpistemicStatusPtr se = new SharedEpistemicStatus();
+						se->ags = vector<Agent>();
+						se->ags.push_back(tokenToAgent(*it));
 						it++;
 						it++;  // skip ','
-						km->ag2 = tokenToAgent(*it);
+						se->ags.push_back(tokenToAgent(*it));
 						it++;
 						it++;  // skip ')'
+						km->epst = se;
 					}
 
 					if ((*it)->type() == CloseParenthesis) {

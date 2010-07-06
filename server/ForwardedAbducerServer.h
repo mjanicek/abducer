@@ -4,7 +4,7 @@
 #include "wabd.h"
 #include <vector>
 
-namespace Abducer = ::de::dfki::lt::tr::infer::wabd;
+namespace Abducer = ::de::dfki::lt::tr::infer::wabd::slice;
 
 class ForwardedAbducerServer : public Abducer::AbducerServer {
 

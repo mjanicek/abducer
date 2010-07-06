@@ -6,7 +6,7 @@
 #include <vector>
 #include <string>
 
-namespace Abducer = ::de::dfki::lt::tr::infer::wabd;
+namespace Abducer = ::de::dfki::lt::tr::infer::wabd::slice;
 
 std::string
 predicateToString(const Abducer::PredicatePtr & p);

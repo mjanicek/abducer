@@ -97,19 +97,18 @@ modalityToString(const ModalityPtr & m)
 	else if (KModalityPtr km = KModalityPtr::dynamicCast(m)) {
 		string s("k(now, ");
 
-		switch (km->share) {
-			case Private:
-				s += "private(" + agentToString(km->ag) + ")";
-				break;
+		EpistemicStatusPtr e = km->epst;
 
-			case Attribute:
-				s += "attrib(" + agentToString(km->ag) + "," + agentToString(km->ag2) + ")";
-				break;
-
-			case Mutual:
-				s += "mutual(h,r)";
-				break;
+		if (PrivateEpistemicStatusPtr pe = PrivateEpistemicStatusPtr::dynamicCast(e)) {
+			s += "private(" + agentToString(pe->ag) + ")";
 		}
+		else if (AttributedEpistemicStatusPtr ae = AttributedEpistemicStatusPtr::dynamicCast(e)) {
+			s += "attrib(" + agentToString(ae->ag) + "," + agentToString(ae->ag2) + ")";
+		}
+		else if (SharedEpistemicStatusPtr se = SharedEpistemicStatusPtr::dynamicCast(e)) {
+			s += "mutual(h,r)";
+		}
+
 		s += ")";
 		return s;
 	}

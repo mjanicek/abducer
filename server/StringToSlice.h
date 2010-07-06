@@ -7,7 +7,7 @@
 #include "wabd.h"
 #include "Tokens.h"
 
-namespace Abducer = ::de::dfki::lt::tr::infer::wabd;
+namespace Abducer = ::de::dfki::lt::tr::infer::wabd::slice;
 
 Abducer::TermPtr
 parseTerm(std::vector<Token *>::iterator & it);
