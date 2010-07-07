@@ -158,7 +158,7 @@ ForwardedAbducerServer::prove(const vector<MarkedQueryPtr> & goals, const Ice::C
 
 	vector<MarkedQueryPtr>::const_iterator it = goals.begin();
 	while (it != goals.end()) {
-		s += "\"" + modalisedFormulaToString((*it)->body) + ".\"";
+		s += "\"" + modalisedFormulaToString((*it)->formula) + ".\"";
 		it++;
 		if (it != goals.end()) {
 			s += ", ";
@@ -233,40 +233,34 @@ markModalisedFormula(Marking mark, ModalisedFormulaPtr mf)
 	switch (mark) {
 		case Proved: {
 				ProvedQueryPtr q = new ProvedQuery();
-				q->mark = Proved;
-				q->body = mf;
+				q->formula = mf;
 				return q;
 			}
 			break;
 
 		case Unsolved: {
 				UnsolvedQueryPtr q = new UnsolvedQuery();
-				q->mark = Unsolved;
-				q->body = mf;
-				q->isConst = true;
-				q->constCost = 1.0;
-				q->costFunction = "";
+				q->formula = mf;
+				ConstAssumabilityFunctionPtr af = new ConstAssumabilityFunction();
+				af->cost = 1.0;
+				q->f = af;
 				return q;
 			}
 			break;
 
 		case Assumed: {
 				AssumedQueryPtr q = new AssumedQuery();
-				q->mark = Assumed;
-				q->body = mf;
-				q->isConst = true;
-				q->constCost = 1.0;
-				q->costFunction = "";
+				q->formula = mf;
+				ConstAssumabilityFunctionPtr af = new ConstAssumabilityFunction();
+				af->cost = 1.0;
+				q->f = af;
 				return q;
 			}
 			break;
 
 		case Asserted: {
 				AssertedQueryPtr q = new AssertedQuery();
-				q->mark = Asserted;
-				q->body = mf;
-				vector<ModalisedFormulaPtr> v;
-				q->antecedents = v;
+				q->formula = mf;
 				return q;
 			}
 			break;
