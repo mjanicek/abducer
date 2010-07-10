@@ -61,59 +61,25 @@ predicateToString(const PredicatePtr & p)
 }
 
 string
-agentToString(Agent a)
+modalityToString(const Modality m)
 {
-	switch (a) {
-		case human:
-			return "h";
-		case robot:
-			return "r";
-		default:
-			return "?";
-	}
-}
-
-string
-modalityToString(const ModalityPtr & m)
-{
-	if (UnderstandingModalityPtr um = UnderstandingModalityPtr::dynamicCast(m)) {
+	switch (m) {
+	case Understanding:
 		return "understand";
-	}
-	else if (GenerationModalityPtr gm = GenerationModalityPtr::dynamicCast(m)) {
+	case Generation:
 		return "generate";
-	}
-	else if (EventModalityPtr em = EventModalityPtr::dynamicCast(m)) {
-		return "event";
-	}
-	else if (IntentionModalityPtr tm = IntentionModalityPtr::dynamicCast(m)) {
-		return "intention";
-	}
-	else if (InfoModalityPtr im = InfoModalityPtr::dynamicCast(m)) {
+	case Truth:
 		return "i";
-	}
-	else if (AttStateModalityPtr am = AttStateModalityPtr::dynamicCast(m)) {
+	case Event:
+		return "event";
+	case Intention:
+		return "int";
+	case Attention:
 		return "att";
-	}
-	else if (KModalityPtr km = KModalityPtr::dynamicCast(m)) {
-		string s("k(now, ");
-
-		EpistemicStatusPtr e = km->epst;
-
-		if (PrivateEpistemicStatusPtr pe = PrivateEpistemicStatusPtr::dynamicCast(e)) {
-			s += "private(" + agentToString(pe->ag) + ")";
-		}
-		else if (AttributedEpistemicStatusPtr ae = AttributedEpistemicStatusPtr::dynamicCast(e)) {
-			s += "attrib(" + agentToString(ae->ag) + "," + agentToString(ae->ag2) + ")";
-		}
-		else if (SharedEpistemicStatusPtr se = SharedEpistemicStatusPtr::dynamicCast(e)) {
-			s += "mutual(h,r)";
-		}
-
-		s += ")";
-		return s;
-	}
-	else {
-		return "?";
+	case Belief:
+		return "bel";
+	default:
+		return "unknown";
 	}
 }
 
@@ -122,7 +88,7 @@ modalisedFormulaToString(const ModalisedFormulaPtr & mf)
 {
 	string s("");
 	if (!mf->m.empty()) {
-		vector<ModalityPtr>::iterator it = mf->m.begin();
+		vector<Modality>::iterator it = mf->m.begin();
 		for ( ; it != mf->m.end() ; it++) {
 			s += modalityToString(*it) + ": ";
 		}

@@ -104,13 +104,13 @@ process_request(clear_facts, !SCtx, !IO) :-
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-process_request(clear_facts_by_modality(k), !SCtx, !IO) :-
-	trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "[REQUEST] clear_facts_by_modality(k)\n", !IO) ),
+process_request(clear_facts_by_modality(RmMod), !SCtx, !IO) :-
+	trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "[REQUEST] clear_facts_by_modality\n", !IO) ),
 	set_facts(set.filter((pred(vs(m(Mod, _), _)::in) is semidet :-
-		Mod \= [k(_, _)|_]
+		Mod \= [RmMod|_]
 			), !.SCtx^cx^facts), !.SCtx^cx, NewCtx),
 	!:SCtx = !.SCtx^cx := NewCtx,
-	trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "[done] clear_facts_by_modality(k)\n", !IO) ).
+	trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "[done] clear_facts_by_modality\n", !IO) ).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 

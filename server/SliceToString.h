@@ -15,7 +15,7 @@ std::string
 termToString(const Abducer::TermPtr & t);
 
 std::string
-modalityToString(const Abducer::ModalityPtr & m);
+modalityToString(const Abducer::Modality m);
 
 std::string
 modalisedFormulaToString(const Abducer::ModalisedFormulaPtr & f);

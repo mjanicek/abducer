@@ -71,34 +71,10 @@ ForwardedAbducerServer::clearFacts(const Ice::Current&)
 }
 
 void
-ForwardedAbducerServer::clearFactsByModality(ModalityType type, const Ice::Current&)
+ForwardedAbducerServer::clearFactsByModality(Modality mod, const Ice::Current&)
 {
-	switch (type) {
-		case Event:
-			cerr << tty::green << "* clearing Event facts" << tty::dcol << endl;
-			cerr << tty::red << "  [unimplemented]" << tty::dcol << endl;
-			break;
-
-		case Info:
-			cerr << tty::green << "* clearing Info facts" << tty::dcol << endl;
-			cerr << tty::red << "  [unimplemented]" << tty::dcol << endl;
-			break;
-
-		case AttState:
-			cerr << tty::green << "* clearing AttState facts" << tty::dcol << endl;
-			cerr << tty::red << "  [unimplemented]" << tty::dcol << endl;
-			break;
-
-		case K:
-			cerr << tty::green << "* clearing K facts" << tty::dcol << endl;
-//			cerr << tty::red << "  [unimplemented]" << tty::dcol << endl;
-			cout << "clear_facts_by_modality(k)." << endl;
-			break;
-
-		default:
-			cerr << tty::red << "* asked to clear facts with unknown modality!" << tty::dcol << endl;
-			break;
-	}
+	cerr << tty::green << "* clearing " << modalityToString(mod) << " facts" << tty::dcol << endl;
+	cout << "clear_facts_by_modality(" << modalityToString(mod) << "). << endl";
 }
 
 void

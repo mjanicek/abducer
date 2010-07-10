@@ -15,7 +15,7 @@ public:
 
 	virtual void clearRules(const Ice::Current&);
 	virtual void clearFacts(const Ice::Current&);
-	virtual void clearFactsByModality(Abducer::ModalityType type, const Ice::Current&);
+	virtual void clearFactsByModality(Abducer::Modality mod, const Ice::Current&);
 	virtual void clearAssumables(const Ice::Current&);
 	virtual void clearAssumableFunction(const std::string & function, const Ice::Current&);
 

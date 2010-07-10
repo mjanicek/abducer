@@ -11,8 +11,6 @@
 :- import_module ctx_loadable_io.
 :- import_module ctx_modality.
 :- import_module ctx_ontology.
-:- import_module ctx_specific.
-:- import_module ctx_specific_io.
 :- import_module enumerable.
 :- import_module formula.
 :- import_module formula_io.

@@ -18,7 +18,7 @@ parsePredicate(std::vector<Token *>::iterator & it);
 Abducer::ModalisedFormulaPtr
 parseModalisedFormula(std::vector<Token *>::iterator & it);
 
-Abducer::ModalityPtr
+Abducer::Modality
 parseModality(std::vector<Token *>::iterator & it);
 
 #endif

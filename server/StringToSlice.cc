@@ -24,11 +24,11 @@ parseAndAddTermSeq(vector<Token *>::iterator & it, vector<TermPtr> & args)
 }
 
 void
-parseAndAddModalitySeq(vector<Token *>::iterator & it, vector<ModalityPtr> & args)
+parseAndAddModalitySeq(vector<Token *>::iterator & it, vector<Modality> & args)
 {
 	vector<Token *>::iterator orig = it;
 
-	ModalityPtr arg = parseModality(it);
+	Modality arg = parseModality(it);
 	if (arg) {
 		args.push_back(arg);
 
@@ -145,7 +145,7 @@ parseModalisedFormula(vector<Token *>::iterator & it)
 	vector<Token *>::iterator orig = it;
 
 	ModalisedFormulaPtr mf = new ModalisedFormula();
-	vector<ModalityPtr> mod;
+	vector<Modality> mod;
 
 	if ((*it)->type() == OpenCurlyBracket) {
 		it++;
@@ -175,28 +175,7 @@ parseModalisedFormula(vector<Token *>::iterator & it)
 	}
 }
 
-Abducer::Agent
-tokenToAgent(const Token * tok)
-{
-//	cerr << "tokenToAgent: \"" << tok->toMercuryString() << "\"" << endl;
-	if (tok->type() == Atom) {
-		AtomToken * atok = (AtomToken *) tok;
-		if (atok->value() == "h") {
-//			cerr << "  human" << endl;
-			return human;
-		}
-		else {
-//			cerr << "  robot" << endl;
-			return robot;
-		}
-	}
-	else {
-//		cerr << "not an atom!! type" << tok->type() << endl;
-		return human;
-	}
-}
-
-Abducer::ModalityPtr
+Abducer::Modality
 parseModality(std::vector<Token *>::iterator & it)
 {
 	vector<Token *>::iterator orig = it;
@@ -205,107 +184,39 @@ parseModality(std::vector<Token *>::iterator & it)
 		AtomToken * atomTok = (AtomToken *) *it;
 		if (atomTok->value() == string("i")) {
 			it++;
-			InfoModalityPtr im = new InfoModality();
-			return im;
+			return Truth;
 		}
 		else if (atomTok->value() == string("event")) {
 			it++;
-			EventModalityPtr em = new EventModality();
-			return em;
+			return Event;
 		}
-		else if (atomTok->value() == string("intention")) {
+		else if (atomTok->value() == string("int")) {
 			it++;
-			IntentionModalityPtr im = new IntentionModality();
-			return im;
+			return Intention;
 		}
 		else if (atomTok->value() == string("att")) {
 			it++;
-			AttStateModalityPtr am = new AttStateModality();
-			return am;
+			return Attention;
 		}
 		else if (atomTok->value() == string("generate")) {
 			it++;
-			GenerationModalityPtr gm = new GenerationModality();
-			return gm;
+			return Generation;
 		}
 		else if (atomTok->value() == string("understand")) {
 			it++;
-			UnderstandingModalityPtr um = new UnderstandingModality();
-			return um;
+			return Understanding;
 		}
-		else if (atomTok->value() == string("k")) {
+		else if (atomTok->value() == string("bel")) {
 			it++;
-			KModalityPtr km = new KModality();
-			if ((*it)->type() == OpenParenthesis) {
-				it++;
-				it++;  // skip the "now" atom
-				it++;  // skip the comma
-				if ((*it)->type() == Atom) {
-					AtomToken * shareTok = (AtomToken *) *it;
-//					cerr << (*it)->toMercuryString() << endl;
-					it++;
-//					cerr << (*it)->toMercuryString() << endl;
-					it++;  // skip '('
-//					cerr << (*it)->toMercuryString() << endl;
-
-					if (shareTok->value() == "private") {
-//						cerr << "private" << endl;
-						PrivateEpistemicStatusPtr pe = new PrivateEpistemicStatus();
-						pe->ag = tokenToAgent(*it);
-						it++;
-						it++;  // skip ')'
-						km->epst = pe;
-					}
-					else if (shareTok->value() == "attrib") {
-//						cerr << "attrib" << endl;
-						AttributedEpistemicStatusPtr ae = new AttributedEpistemicStatus();
-						ae->ag = tokenToAgent(*it);
-						it++;
-						it++;  // skip ','
-						ae->ag2 = tokenToAgent(*it);
-						it++;
-						it++;  // skip ')'
-						km->epst = ae;
-					}
-					else if (shareTok->value() == "mutual") {
-//						cerr << "mutual" << endl;
-						SharedEpistemicStatusPtr se = new SharedEpistemicStatus();
-						se->ags = vector<Agent>();
-						se->ags.push_back(tokenToAgent(*it));
-						it++;
-						it++;  // skip ','
-						se->ags.push_back(tokenToAgent(*it));
-						it++;
-						it++;  // skip ')'
-						km->epst = se;
-					}
-
-					if ((*it)->type() == CloseParenthesis) {
-						it++;
-						return km;
-					}
-					else {
-						it = orig;
-						return NULL;
-					}
-				}
-				else {
-					it = orig;
-					return NULL;
-				}
-			}
-			else {
-				it = orig;
-				return NULL;
-			}
+			return Belief;
 		}
 		else {
 			it = orig;
-			return NULL;
+			return Truth;  // FIXME: failure flag
 		}
 	}
 	else {
 		it = orig;
-		return NULL;
+		return Truth;  // FIXME
 	}
 }
