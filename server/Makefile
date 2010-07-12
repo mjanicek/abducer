@@ -6,7 +6,7 @@
 
 # ICE
 
-SLICE_PATH?=../../../api-inference.v01/src/slice
+SLICE_PATH?=../slice
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -#
 
