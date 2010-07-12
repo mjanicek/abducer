@@ -1,5 +1,7 @@
 #include "SliceToString.h"
 
+#include "Constants.h"
+
 using namespace std;
 using namespace Abducer;
 
@@ -65,19 +67,19 @@ modalityToString(const Modality m)
 {
 	switch (m) {
 	case Understanding:
-		return "understand";
+		return UNDERSTANDING_STR;
 	case Generation:
-		return "generate";
+		return GENERATION_STR;
 	case Truth:
-		return "i";
+		return TRUTH_STR;
 	case Event:
-		return "event";
+		return EVENT_STR;
 	case Intention:
-		return "int";
+		return INTENTION_STR;
 	case Attention:
-		return "att";
+		return ATTENTION_STR;
 	case Belief:
-		return "bel";
+		return BELIEF_STR;
 	default:
 		return "unknown";
 	}

@@ -1,5 +1,7 @@
 #include "StringToSlice.h"
 
+#include "Constants.h"
+
 using namespace std;
 using namespace Abducer;
 
@@ -28,8 +30,8 @@ parseAndAddModalitySeq(vector<Token *>::iterator & it, vector<Modality> & args)
 {
 	vector<Token *>::iterator orig = it;
 
-	Modality arg = parseModality(it);
-	if (arg) {
+	Modality arg;
+	if (parseModality(it, arg)) {
 		args.push_back(arg);
 
 		if ((*it)->type() == Comma) {
@@ -163,6 +165,7 @@ parseModalisedFormula(vector<Token *>::iterator & it)
 		}
 	}
 
+
 	PredicatePtr p = parsePredicate(it);
 
 	if (p) {
@@ -175,48 +178,55 @@ parseModalisedFormula(vector<Token *>::iterator & it)
 	}
 }
 
-Abducer::Modality
-parseModality(std::vector<Token *>::iterator & it)
+bool
+parseModality(std::vector<Token *>::iterator & it, Abducer::Modality & mod)
 {
 	vector<Token *>::iterator orig = it;
 
 	if ((*it)->type() == Atom) {
 		AtomToken * atomTok = (AtomToken *) *it;
-		if (atomTok->value() == string("i")) {
+		if (atomTok->value() == string(TRUTH_STR)) {
 			it++;
-			return Truth;
+			mod = Truth;
+			return true;
 		}
-		else if (atomTok->value() == string("event")) {
+		else if (atomTok->value() == string(EVENT_STR)) {
 			it++;
-			return Event;
+			mod = Event;
+			return true;
 		}
-		else if (atomTok->value() == string("int")) {
+		else if (atomTok->value() == string(INTENTION_STR)) {
 			it++;
-			return Intention;
+			mod = Intention;
+			return true;
 		}
-		else if (atomTok->value() == string("att")) {
+		else if (atomTok->value() == string(ATTENTION_STR)) {
 			it++;
-			return Attention;
+			mod = Attention;
+			return true;
 		}
-		else if (atomTok->value() == string("generate")) {
+		else if (atomTok->value() == string(GENERATION_STR)) {
 			it++;
-			return Generation;
+			mod = Generation;
+			return true;
 		}
-		else if (atomTok->value() == string("understand")) {
+		else if (atomTok->value() == string(UNDERSTANDING_STR)) {
 			it++;
-			return Understanding;
+			mod = Understanding;
+			return true;
 		}
-		else if (atomTok->value() == string("bel")) {
+		else if (atomTok->value() == string(BELIEF_STR)) {
 			it++;
-			return Belief;
+			mod = Belief;
+			return true;
 		}
 		else {
 			it = orig;
-			return Truth;  // FIXME: failure flag
+			return false;
 		}
 	}
 	else {
 		it = orig;
-		return Truth;  // FIXME
+		return false;
 	}
 }

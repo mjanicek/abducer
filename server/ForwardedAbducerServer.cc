@@ -297,7 +297,7 @@ ForwardedAbducerServer::getBestProof(const Ice::Current&)
 			}
 		}
 		else {
-			cerr << tty::red << "  NULL in parsing modalised formula" << tty::dcol << endl;
+			cerr << tty::red << "  NULL in parsing modalised formula (in \"" << mfStr << "\")" << tty::dcol << endl;
 		}
 
 		num--;
