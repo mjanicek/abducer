@@ -1,10 +1,10 @@
 #ifndef FORWARDEDABDUCERSERVER_H__
 #define FORWARDEDABDUCERSERVER_H__  1
 
-#include "wabd.h"
+#include "weigabd.h"
 #include <vector>
 
-namespace Abducer = ::de::dfki::lt::tr::infer::wabd::slice;
+namespace Abducer = ::de::dfki::lt::tr::infer::weigabd::slice;
 
 class ForwardedAbducerServer : public Abducer::AbducerServer {
 
