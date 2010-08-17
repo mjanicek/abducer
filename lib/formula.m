@@ -154,6 +154,11 @@
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
+:- pred ground_mprop(mprop(M), mgprop(M)).
+:- mode ground_mprop(in, out) is semidet.
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
 :- pred unify_formulas(atomic_formula::in, atomic_formula::in, subst::out) is semidet.
 :- pred unify_terms(formula.term::in, formula.term::in, subst::out) is semidet.
 
@@ -266,6 +271,10 @@ rename_vars_in_rule_head(Renaming, std(MProp)) = std(rename_vars_in_mprop(Renami
 
 rename_vars_in_mrule(Renaming, m(M, Ante-Succ)) =
 		m(M, list.map(rename_vars_in_rule_antecedent(Renaming), Ante)-rename_vars_in_rule_head(Renaming, Succ)).
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
+ground_mprop(m(M, F), m(M, formula_to_ground_formula(F))).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 

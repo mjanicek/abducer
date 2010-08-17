@@ -166,7 +166,7 @@ process_request(prove(L), !SCtx, !IO) :-
 	%varset.merge_renaming(VS0, VSA, VS, Renaming),
 	%PA = rename_vars_in_formula(Renaming, PA0),
 
-	P0 = vs(Qs, varset.init),
+	P0 = proof(vs(Qs, varset.init), set.init),
 	is_ctx_proof(P0),
 
 	print(stderr_stream, "facts:\n", !IO),
@@ -199,7 +199,7 @@ process_request(prove(L), !SCtx, !IO) :-
 
 	format(stderr_stream, "\n  %d proof(s) found.\n", [i(list.length(Proofs))], !IO),
 
-	list.foldl((pred((Cost-Gz)::in, !.IO::di, !:IO::uo) is det :-
+	list.foldl((pred((Cost-proof(Gz, _BL))::in, !.IO::di, !:IO::uo) is det :-
 		print(stderr_stream, "---------------------------------------------------------------------\n", !IO),
 		format(stderr_stream, "proof cost = %f\n\n", [f(Cost)], !IO),
 		print(stderr_stream, "proven goal:\n  " ++ goal_to_string(Gz) ++ "\n", !IO),
@@ -246,7 +246,7 @@ process_request(prove(L), !SCtx, !IO) :-
 process_request(get_best_proof, !SCtx, !IO) :-
 	trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "[REQUEST] get_best_proof\n", !IO) ),
 	(
-		!.SCtx^best_proof = yes(vs(Qs, VS)),
+		!.SCtx^best_proof = yes(proof(vs(Qs, VS), _BL)),
 		format("%d\n", [i(list.length(Qs))], !IO),
 		flush_output(!IO),
 		list.foldl((pred(Q::in, !.IO::di, !:IO::uo) is det :-

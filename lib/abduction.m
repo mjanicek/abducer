@@ -22,7 +22,7 @@
 
 :- interface.
 
-:- import_module list, bag.
+:- import_module list, set, bag.
 :- import_module varset.
 
 :- import_module modality.
@@ -46,7 +46,14 @@
 	;	factor(subst, varset)
 	.
 
-:- type proof(M) == vscope(list(query(M))).
+:- type goal(M) == vscope(list(query(M))).
+:- type blacklist(M) == set(mgprop(M)).
+
+:- type proof(M)
+	--->	proof(
+		goal :: goal(M),
+		blacklist :: blacklist(M)
+	).
 
 :- type costs
 	--->	costs(
@@ -64,8 +71,8 @@
 
 %:- func last_goal(proof(M)) = vscope(list(query(M))) <= modality(M).
 
-:- func goal_assumptions(proof(M)) = bag(with_cost_function(mgprop(M))) <= modality(M).
-:- func goal_assertions(proof(M)) = bag(vscope(mtest(M))) <= modality(M).
+:- func goal_assumptions(goal(M)) = bag(with_cost_function(mgprop(M))) <= modality(M).
+:- func goal_assertions(goal(M)) = bag(vscope(mtest(M))) <= modality(M).
 
 :- func query_cost(C, varset, query(M), costs) = float <= (context(C, M), modality(M)).
 :- func cost(C, proof(M), costs) = float <= (context(C, M), modality(M)).
@@ -80,7 +87,7 @@
 :- import_module string, float.
 :- import_module modality.
 
-new_proof(Goal, Varset) = vs(Goal, Varset).
+new_proof(Goal, Varset) = proof(vs(Goal, Varset), set.init).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
@@ -102,7 +109,7 @@ query_cost(Ctx, VS, assumed(MProp, CostFunction), _Costs) = context.cost(Ctx, Co
 query_cost(_Ctx, _VS, proved(_), Costs) = Costs^fact_cost.
 query_cost(_Ctx, _VS, asserted(_), Costs) = Costs^assertion_cost.
 
-cost(Ctx, vs(Qs, VS), Costs) = Cost :-
+cost(Ctx, proof(vs(Qs, VS), _), Costs) = Cost :-
 	list.foldl((pred(Q::in, C0::in, C::out) is det :-
 		C = C0 + query_cost(Ctx, VS, Q, Costs)
 			), Qs, 0.0, Cost).
@@ -130,7 +137,7 @@ goal_solved(L) :-
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
 prove(CurCost, CostBound, P0, P, Costs, Ctx) :-
-	P0 = vs(L0, VS0),
+	P0 = proof(vs(L0, VS0), BL0),
 	(if
 		goal_solved(L0)
 	then
@@ -146,8 +153,8 @@ prove(CurCost, CostBound, P0, P, Costs, Ctx) :-
 				), LAss),
 		P = P0
 	else
-		transform(L0, VS0, L, VS, Ctx),
-		P1 = vs(L, VS),
+		transform(L0, VS0, BL0, L, VS, BL, Ctx),
+		P1 = proof(vs(L, VS), BL),
 
 %		StepCost = step_cost(Ctx, Step, Costs),
 		% XXX TODO: costs here!
@@ -175,15 +182,15 @@ segment_proof_state(Qs, {QsL, cf(QUnsolved, F), QsR} ) :-
 %------------------------------------------------------------------------------%
 
 :- pred transform(
-		list(query(M))::in, varset::in,
-		list(query(M))::out, varset::out,
+		list(query(M))::in, varset::in, blacklist(M)::in,
+		list(query(M))::out, varset::out, blacklist(M)::out,
 		C::in) is nondet <= (modality(M), context(C, M)).
 
-transform(L0, VS0, L, VS, Ctx) :-
+transform(L0, VS0, BL0, L, VS, BL, Ctx) :-
 	segment_proof_state(L0, SegL0),
 	(if
 	 	% try to factor
-		do_factoring(SegL0, VS0, L1, VS1, Ctx)
+		do_factoring(SegL0, VS0, BL0, L1, VS1, BL1, Ctx)
 	then
 		% if it succeeds
 		(if
@@ -191,15 +198,16 @@ transform(L0, VS0, L, VS, Ctx) :-
 		then
 			% we're done! the factoring was the last step
 			L = L1,
-			VS = VS1
+			VS = VS1,
+			BL = BL1
 		else
 			% make the step on the factored proof
 			segment_proof_state(L1, SegL1),
-			step(_Step, SegL1, VS1, L, VS, Ctx)
+			step(_Step, SegL1, VS1, BL1, L, VS, BL, Ctx)
 		)
 	else
 		% if not, continue as before
-		step(_Step, SegL0, VS0, L, VS, Ctx)
+		step(_Step, SegL0, VS0, BL0, L, VS, BL, Ctx)
 	).
 		
 
@@ -220,23 +228,25 @@ transform(L0, VS0, L, VS, Ctx) :-
 			list(query(M))  % following propositions
 		}::in,
 		varset::in,  % variables used in the proof
+		blacklist(M)::in,  % blacklisted ground formulas
 
 			% output
 		list(query(M))::out,  % resulting goal after performing the step
 		varset::out,  % variables used in the goal
+		blacklist(M)::out,  % blacklisted ground formulas
 
 		C::in  % knowledge base
 	) is nondet <= (modality(M), context(C, M)).
 
 
 step(assume(vs(m(MQ, PQ), VS), map.init, const(Cost)),
-		{QsL, cf(m(MQ, PQ), const(Cost)), QsR}, VS,
-		QsL ++ [assumed(m(MQ, PQ), const(Cost))] ++ QsR, VS,
+		{QsL, cf(m(MQ, PQ), const(Cost)), QsR}, VS, BL,
+		QsL ++ [assumed(m(MQ, PQ), const(Cost))] ++ QsR, VS, BL,
 		_Ctx).
 
 step(assume(vs(m(MQ, PQ), VS), Uni, f(Func)),
-		{QsL0, cf(m(MQ, PQ0), f(Func)), QsR0}, VS,
-		QsL ++ [assumed(m(MQ, PQ), f(Func))] ++ QsR, VS,
+		{QsL0, cf(m(MQ, PQ0), f(Func)), QsR0}, VS, BL0,
+		QsL ++ [assumed(m(MQ, PQ), f(Func))] ++ QsR, VS, BL,
 		Ctx) :-
 
 	assumable_func(Ctx, Func, m(MQ, GroundProp), _Cost),
@@ -244,8 +254,10 @@ step(assume(vs(m(MQ, PQ), VS), Uni, f(Func)),
 	unify_formulas(PQ0, Prop, Uni),
 
 	PQ = apply_subst_to_formula(Uni, PQ0),
-	QsL = list.map(apply_subst_to_query(Uni), QsL0),
-	QsR = list.map(apply_subst_to_query(Uni), QsR0).
+%	QsL = list.map(apply_subst_to_query(Uni), QsL0),
+%	QsR = list.map(apply_subst_to_query(Uni), QsR0).
+	list.map_foldl(apply_subst_to_query_blacklist(Uni), QsL0, QsL, BL0, BL1),
+	list.map_foldl(apply_subst_to_query_blacklist(Uni), QsR0, QsR, BL1, BL).
 
 /*
 	% assumption
@@ -282,8 +294,8 @@ step(assume(vs(m(MQ, PQ), VS), Uni, F),
 
 	% resolution with a fact
 step(use_fact(vs(m(MF, PF), VS), Uni),
-		{QsL0, cf(m(MQ, PQ0), not_assumable), QsR0}, VS0,
-		QsL ++ [proved(m(MQ, PQ))] ++ QsR, VS,
+		{QsL0, cf(m(MQ, PQ0), not_assumable), QsR0}, VS0, BL0,
+		QsL ++ [proved(m(MQ, PQ))] ++ QsR, VS, BL,
 		Ctx) :-
 
 	PQ0 = p(PredSym, _),
@@ -300,25 +312,29 @@ step(use_fact(vs(m(MF, PF), VS), Uni),
 	trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "\\" ++ PredSym ++ "/", !IO) ),
 
 	PQ = apply_subst_to_formula(Uni, PQ0),
-	QsL = list.map(apply_subst_to_query(Uni), QsL0),
-	QsR = list.map(apply_subst_to_query(Uni), QsR0),
+%	QsL = list.map(apply_subst_to_query(Uni), QsL0),
+%	QsR = list.map(apply_subst_to_query(Uni), QsR0),
+	list.map_foldl(apply_subst_to_query_blacklist(Uni), QsL0, QsL, BL0, BL1),
+	list.map_foldl(apply_subst_to_query_blacklist(Uni), QsR0, QsR, BL1, BL),
 	trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "}", !IO) ).
 
 step(use_fact(vs(m(MQ, PQ), VS), map.init),
-		{QsL0, cf(m(MQ, PQ0), _F), QsR0}, VS,
-		QsL ++ [proved(m(MQ, PQ))] ++ QsR, VS,
+		{QsL0, cf(m(MQ, PQ0), _F), QsR0}, VS, BL0,
+		QsL ++ [proved(m(MQ, PQ))] ++ QsR, VS, BL,
 		_Ctx) :-
 
 	PQ0 = p("=", [T1, T2]),
 	unify_terms(T1, T2, Uni),
 	PQ = apply_subst_to_formula(Uni, PQ0),
-	QsL = list.map(apply_subst_to_query(Uni), QsL0),
-	QsR = list.map(apply_subst_to_query(Uni), QsR0).
+%	QsL = list.map(apply_subst_to_query(Uni), QsL0),
+%	QsR = list.map(apply_subst_to_query(Uni), QsR0).
+	list.map_foldl(apply_subst_to_query_blacklist(Uni), QsL0, QsL, BL0, BL1),
+	list.map_foldl(apply_subst_to_query_blacklist(Uni), QsR0, QsR, BL1, BL).
 
 	% built-in (isn't it actually a rule?)
 step(use_fact(vs(m(MQ, PQ), VS), map.init),
-		{QsL, cf(m(MQ, PQ), _F), QsR}, VS,
-		QsL ++ [proved(m(MQ, PQ))] ++ QsR, VS,
+		{QsL, cf(m(MQ, PQ), _F), QsR}, VS, BL,
+		QsL ++ [proved(m(MQ, PQ))] ++ QsR, VS, BL,
 		_Ctx) :-
 
 	PQ = p("\\=", [T1, T2]),
@@ -329,8 +345,8 @@ step(use_fact(vs(m(MQ, PQ), VS), map.init),
 
 	% resolution with a rule
 step(resolve_rule(vs(m(MR, Ante-RHead), VS), Uni),
-		{QsL0, cf(m(MQ, PQ), not_assumable), QsR0}, VS0,
-		QsL ++ QsInsert ++ QsR, VS,
+		{QsL0, cf(m(MQ, PQ), not_assumable), QsR0}, VS0, BL0,
+		QsL ++ QsInsert ++ QsR, VS, BL,
 		Ctx) :-
 
 	PQ = p(PredSym, _),
@@ -374,8 +390,10 @@ step(resolve_rule(vs(m(MR, Ante-RHead), VS), Uni),
 %	QsInsert = list.map((func(cf(P, F)) = apply_subst_to_mprop(Uni, P)-unsolved(F)), Ante)
 %			++ [m(MQ, apply_subst_to_formula(Uni, PQ))-resolved],
 
-	QsL = list.map(apply_subst_to_query(Uni), QsL0),
-	QsR = list.map(apply_subst_to_query(Uni), QsR0),
+%	QsL = list.map(apply_subst_to_query(Uni), QsL0),
+%	QsR = list.map(apply_subst_to_query(Uni), QsR0),
+	list.map_foldl(apply_subst_to_query_blacklist(Uni), QsL0, QsL, BL0, BL1),
+	list.map_foldl(apply_subst_to_query_blacklist(Uni), QsR0, QsR, BL1, BL),
 	trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "}", !IO) ).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
@@ -410,18 +428,20 @@ leftmost_unifiable(m(Mod, Pred), [m(ModH, PredH) | T], Subst) :-
 			list(query(M))  % following propositions
 		}::in,
 		varset::in,  % variables used in the proof
+		blacklist(M)::in,  % blacklisted formulas
 
 			% output
 		list(query(M))::out,  % resulting goal after performing the step
 		varset::out,  % variables used in the goal
+		blacklist(M)::out,  % blacklisted formulas
 
 		C::in  % knowledge base
 	) is semidet <= (modality(M), context(C, M)).
 
 	% factoring
 do_factoring(
-		{QsL0, cf(m(MQ, PQ), _F), QsR0}, VS,
-		QsL ++ QsR, VS,
+		{QsL0, cf(m(MQ, PQ), _F), QsR0}, VS, BL0,
+		QsL ++ QsR, VS, BL,
 		_Ctx) :-
 
 	% find leftmost modalised formula that might be unified with Q
@@ -444,8 +464,10 @@ do_factoring(
 	unify_formulas(PP, PQ, Uni),
 */
 
-	QsL = list.map(apply_subst_to_query(Uni), QsL0),
-	QsR = list.map(apply_subst_to_query(Uni), QsR0),
+%	QsL = list.map(apply_subst_to_query(Uni), QsL0),
+%	QsR = list.map(apply_subst_to_query(Uni), QsR0),
+	list.map_foldl(apply_subst_to_query_blacklist(Uni), QsL0, QsL, BL0, BL1),
+	list.map_foldl(apply_subst_to_query_blacklist(Uni), QsR0, QsR, BL1, BL),
 	trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "}", !IO) ).
 
 %------------------------------------------------------------------------------%
@@ -463,3 +485,25 @@ apply_subst_to_query(Subst, unsolved(MProp, F)) = unsolved(apply_subst_to_mprop(
 apply_subst_to_query(Subst, proved(MProp)) = proved(apply_subst_to_mprop(Subst, MProp)).
 apply_subst_to_query(Subst, assumed(MProp, F)) = assumed(apply_subst_to_mprop(Subst, MProp), F).
 apply_subst_to_query(Subst, asserted(MTest)) = asserted(apply_subst_to_mtest(Subst, MTest)).
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
+:- pred apply_subst_to_query_blacklist(subst::in, query(M)::in, query(M)::out, blacklist(M)::in, blacklist(M)::out) is semidet
+		<= modality(M).
+
+apply_subst_to_query_blacklist(Subst, QIn, QOut, BLIn, BLOut) :-
+	QOut = apply_subst_to_query(Subst, QIn),
+
+	% check if the operation resulted in a new ground formula
+	(if
+		not ground_mprop(head_mprop(QIn), _),
+		ground_mprop(head_mprop(QOut), G)
+	then
+		not set.member(G, BLIn),
+		% TODO: check disjunct declarations
+		% TODO: expand used disjunct declarations
+		BLOut = BLIn
+	else
+		% ok
+		BLOut = BLIn
+	).
