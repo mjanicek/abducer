@@ -82,7 +82,7 @@
 
 :- implementation.
 
-:- import_module require.
+:- import_module require, solutions.
 :- import_module map, set, assoc_list, pair.
 :- import_module string, float.
 :- import_module modality.
@@ -256,8 +256,8 @@ step(assume(vs(m(MQ, PQ), VS), Uni, f(Func)),
 	PQ = apply_subst_to_formula(Uni, PQ0),
 %	QsL = list.map(apply_subst_to_query(Uni), QsL0),
 %	QsR = list.map(apply_subst_to_query(Uni), QsR0).
-	list.map_foldl(apply_subst_to_query_blacklist(Uni), QsL0, QsL, BL0, BL1),
-	list.map_foldl(apply_subst_to_query_blacklist(Uni), QsR0, QsR, BL1, BL).
+	list.map_foldl(apply_subst_to_query_blacklist(Uni, Ctx), QsL0, QsL, BL0, BL1),
+	list.map_foldl(apply_subst_to_query_blacklist(Uni, Ctx), QsR0, QsR, BL1, BL).
 
 /*
 	% assumption
@@ -314,22 +314,22 @@ step(use_fact(vs(m(MF, PF), VS), Uni),
 	PQ = apply_subst_to_formula(Uni, PQ0),
 %	QsL = list.map(apply_subst_to_query(Uni), QsL0),
 %	QsR = list.map(apply_subst_to_query(Uni), QsR0),
-	list.map_foldl(apply_subst_to_query_blacklist(Uni), QsL0, QsL, BL0, BL1),
-	list.map_foldl(apply_subst_to_query_blacklist(Uni), QsR0, QsR, BL1, BL),
+	list.map_foldl(apply_subst_to_query_blacklist(Uni, Ctx), QsL0, QsL, BL0, BL1),
+	list.map_foldl(apply_subst_to_query_blacklist(Uni, Ctx), QsR0, QsR, BL1, BL),
 	trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "}", !IO) ).
 
 step(use_fact(vs(m(MQ, PQ), VS), map.init),
 		{QsL0, cf(m(MQ, PQ0), _F), QsR0}, VS, BL0,
 		QsL ++ [proved(m(MQ, PQ))] ++ QsR, VS, BL,
-		_Ctx) :-
+		Ctx) :-
 
 	PQ0 = p("=", [T1, T2]),
 	unify_terms(T1, T2, Uni),
 	PQ = apply_subst_to_formula(Uni, PQ0),
 %	QsL = list.map(apply_subst_to_query(Uni), QsL0),
 %	QsR = list.map(apply_subst_to_query(Uni), QsR0).
-	list.map_foldl(apply_subst_to_query_blacklist(Uni), QsL0, QsL, BL0, BL1),
-	list.map_foldl(apply_subst_to_query_blacklist(Uni), QsR0, QsR, BL1, BL).
+	list.map_foldl(apply_subst_to_query_blacklist(Uni, Ctx), QsL0, QsL, BL0, BL1),
+	list.map_foldl(apply_subst_to_query_blacklist(Uni, Ctx), QsR0, QsR, BL1, BL).
 
 	% built-in (isn't it actually a rule?)
 step(use_fact(vs(m(MQ, PQ), VS), map.init),
@@ -392,8 +392,8 @@ step(resolve_rule(vs(m(MR, Ante-RHead), VS), Uni),
 
 %	QsL = list.map(apply_subst_to_query(Uni), QsL0),
 %	QsR = list.map(apply_subst_to_query(Uni), QsR0),
-	list.map_foldl(apply_subst_to_query_blacklist(Uni), QsL0, QsL, BL0, BL1),
-	list.map_foldl(apply_subst_to_query_blacklist(Uni), QsR0, QsR, BL1, BL),
+	list.map_foldl(apply_subst_to_query_blacklist(Uni, Ctx), QsL0, QsL, BL0, BL1),
+	list.map_foldl(apply_subst_to_query_blacklist(Uni, Ctx), QsR0, QsR, BL1, BL),
 	trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "}", !IO) ).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
@@ -442,7 +442,7 @@ leftmost_unifiable(m(Mod, Pred), [m(ModH, PredH) | T], Subst) :-
 do_factoring(
 		{QsL0, cf(m(MQ, PQ), _F), QsR0}, VS, BL0,
 		QsL ++ QsR, VS, BL,
-		_Ctx) :-
+		Ctx) :-
 
 	% find leftmost modalised formula that might be unified with Q
 	leftmost_unifiable(m(MQ, PQ), list.map(head_mprop, QsL0), Uni),
@@ -466,8 +466,8 @@ do_factoring(
 
 %	QsL = list.map(apply_subst_to_query(Uni), QsL0),
 %	QsR = list.map(apply_subst_to_query(Uni), QsR0),
-	list.map_foldl(apply_subst_to_query_blacklist(Uni), QsL0, QsL, BL0, BL1),
-	list.map_foldl(apply_subst_to_query_blacklist(Uni), QsR0, QsR, BL1, BL),
+	list.map_foldl(apply_subst_to_query_blacklist(Uni, Ctx), QsL0, QsL, BL0, BL1),
+	list.map_foldl(apply_subst_to_query_blacklist(Uni, Ctx), QsR0, QsR, BL1, BL),
 	trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "}", !IO) ).
 
 %------------------------------------------------------------------------------%
@@ -488,10 +488,10 @@ apply_subst_to_query(Subst, asserted(MTest)) = asserted(apply_subst_to_mtest(Sub
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-:- pred apply_subst_to_query_blacklist(subst::in, query(M)::in, query(M)::out, blacklist(M)::in, blacklist(M)::out) is semidet
-		<= modality(M).
+:- pred apply_subst_to_query_blacklist(subst::in, C::in, query(M)::in, query(M)::out, blacklist(M)::in, blacklist(M)::out) is semidet
+		<= (modality(M), context(C, M)).
 
-apply_subst_to_query_blacklist(Subst, QIn, QOut, BLIn, BLOut) :-
+apply_subst_to_query_blacklist(Subst, Ctx, QIn, QOut, BLIn, BLOut) :-
 	QOut = apply_subst_to_query(Subst, QIn),
 
 	% check if the operation resulted in a new ground formula
@@ -500,9 +500,14 @@ apply_subst_to_query_blacklist(Subst, QIn, QOut, BLIn, BLOut) :-
 		ground_mprop(head_mprop(QOut), G)
 	then
 		not set.member(G, BLIn),
-		% TODO: check disjunct declarations
-		% TODO: expand used disjunct declarations
-		BLOut = BLIn
+
+		% FIXME: check disjunct declarations and expand *used* ones
+
+		list.foldl((pred(DD::in, BL0::in, BL::out) is det :-
+				(if set.member(G, DD)
+				then BL = set.union(BL0, set.delete(DD, G))
+				else BL = BL0
+					)), solutions(disjoint_decl(Ctx)), BLIn, BLOut)
 	else
 		% ok
 		BLOut = BLIn

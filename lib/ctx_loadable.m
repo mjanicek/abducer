@@ -48,6 +48,7 @@
 :- func facts(ctx) = set(vscope(mprop(ctx_modality))).
 :- func rules(ctx) = set(vscope(mrule(ctx_modality))).
 :- func assumables(ctx) = map(cost_function_name, map(mgprop(ctx_modality), float)).
+:- func disjoints(ctx) = set(set(mgprop(ctx_modality))).
 
 %------------------------------------------------------------------------------%
 
@@ -58,25 +59,27 @@
 :- import_module costs.
 :- import_module varset.
 
+:- import_module io.  % for debugging
+
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
 :- type ctx
 	--->	ctx(
 		ctx_facts :: multi_map(pair(list(ctx_modality), string), vscope(mprop(ctx_modality))),
 		ctx_rules :: multi_map(pair(list(ctx_modality), string), vscope(mrule(ctx_modality))),
-		ctx_assumables :: map(cost_function_name, map(mgprop(ctx_modality), float))
+		ctx_assumables :: map(cost_function_name, map(mgprop(ctx_modality), float)),
+		ctx_disjoints :: set(set(mgprop(ctx_modality)))
 	).
 
 :- instance context(ctx, ctx_modality) where [
 	pred(find_fact/4) is find_ctx_fact,
 	pred(find_rule/4) is find_ctx_rule,
-	pred(fact_found/3) is ctx_fact,
-	pred(rule_found/3) is ctx_rule,
 	pred(assumable_func/4) is ctx_assumable_func,
-	func(min_assumption_cost/2) is ctx_min_assumption_cost
+	func(min_assumption_cost/2) is ctx_min_assumption_cost,
+	pred(disjoint_decl/2) is ctx_disjoint_decl
 ].
 
-new_ctx = ctx(multi_map.init, multi_map.init, map.init).
+new_ctx = ctx(multi_map.init, multi_map.init, map.init, set.init).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
@@ -124,6 +127,8 @@ rules(Ctx) = solutions_set(pred(Rule::out) is nondet :-
 
 assumables(Ctx) = Ctx^ctx_assumables.
 
+disjoints(Ctx) = Ctx^ctx_disjoints.
+
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
 :- pred find_ctx_fact(ctx::in, list(ctx_modality)::in, string::in, vscope(mprop(ctx_modality))::out) is nondet.
@@ -145,58 +150,21 @@ find_ctx_rule(Ctx, Ms, PredSym, Rule) :-
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-:- import_module io.
-
-:- pred ctx_fact(ctx::in, vscope(mprop(ctx_modality))::in, vscope(mprop(ctx_modality))::out) is nondet.
-
-ctx_fact(Ctx, vs(m(_, p(PredSym, _)), _), vs(m(Mod, p(PredSym, Args)), VS)) :-
-	fail.
-%	trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "F", !IO) ),
-%	set.member(vs(m(Mod, p(PredSym, Args)), VS), Ctx^ctx_facts).
-
-ctx_fact(_Ctx, vs(m(Mod, p("=", [T01, T02])), VS), vs(m(Mod, p("=", [T1, T2])), VS)) :-
-	fail.
-%	trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "=", !IO) ),
-%	unify_terms(T01, T02, Subst),
-%	T1 = apply_subst_to_term(Subst, T01),
-%	T2 = apply_subst_to_term(Subst, T02).
-
-/*
-ctx_fact(_Ctx, vs(m(Mod, p("\\=", [T1, T2])), VS),
-		vs(m(Mod, p("=", [T1, T2])), VS)) :-
-	trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "!", !IO) ),
-	(if
-		unify_terms(T1, T2, _Subst)
-	then
-		% unifiable -> possibly equal
-		fail
-	else
-		% not unifiable -> certainly not equal
-		true
-	).
-*/
-
-:- pred ctx_rule(ctx::in, vscope(mprop(ctx_modality))::in, vscope(mrule(ctx_modality))::out) is nondet.
-
-ctx_rule(Ctx, vs(m(_, p(PredSym, _)), _), vs(m(ModR, Ante-Head), VS)) :-
-	fail.
-%	trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "R", !IO) ),
-%	set.member(vs(m(ModR, Ante-Head), VS), Ctx^ctx_rules),
-%	(
-%		Head = std(m(_, p(PredSym, _)))
-%	;
-%		Head = test(MTest),
-%		( MTest = prop(m(_, p(PredSym, _)))
-%		; MTest = impl(_, m(_, p(PredSym, _)))
-%		)
-%	).
-
 :- pred ctx_assumable_func(ctx::in, cost_function_name::in, mgprop(ctx_modality)::out, float::out) is nondet.
 
 ctx_assumable_func(Ctx, FuncName, GProp, Cost) :-
 	map.search(Ctx^ctx_assumables, FuncName, MapCosts),
 	trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "A", !IO) ),
 	map.member(MapCosts, GProp, Cost).
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
+:- pred ctx_disjoint_decl(ctx::in, set(mgprop(ctx_modality))::out) is nondet.
+
+ctx_disjoint_decl(Ctx, DD) :-
+	set.member(DD, Ctx^ctx_disjoints).
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
 :- func ctx_min_assumption_cost(ctx, ctx_modality) = float.
 
