@@ -31,7 +31,6 @@
 
 :- implementation.
 :- import_module list, string, set, term, require.
-:- import_module stf.
 
 :- instance stringable(ctx_modality) where [
 	func(to_string/1) is ctx_modality_to_string

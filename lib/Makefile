@@ -1,12 +1,10 @@
-# $Id: Makefile 4590 2009-11-13 15:21:40Z janicek $
-
 # Binary files to be built.
 #
 MLIB=libabducer
 
 # Mercury source files.
 #
-MFILES=abduction.m context.m formula.m costs.m modality.m stringable.m ctx_modality.m formula_io.m lf.m ctx_specific.m ctx_io.m formula_ops.m ctx_modality.m rcc.m ctx_loadable.m belief_model.m model.m lf_io.m stf.m ontology.m model_io.m ling.m enumerable.m ctx_ontology.m utils.m ctx_specific_io.m ctx_loadable_io.m abducer.m loading.m
+MFILES=abduction.m context.m formula.m costs.m modality.m stringable.m ctx_modality.m formula_io.m ctx_io.m formula_ops.m ctx_modality.m ctx_loadable.m enumerable.m utils.m ctx_loadable_io.m loading.m abducer.m
 
 # Mercury compiler flags
 #

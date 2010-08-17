@@ -1,8 +1,0 @@
-*	dc,ec,po,tpp,ntpp	dc,ec,po,tpp,ntpp	dc,ec,po,tpp,ntpp	dc,ec,po,tpp,ntpp	dc	dc	dc
-dc,ec,po,tppi,ntppi	dc,ec,po,tpp,tppi,eq	dc,ec,po,tpp,ntpp	ec,po,tpp,ntpp	po,tpp,ntpp	dc,ec	dc	ec
-dc,ec,po,tppi,ntppi	dc,ec,po,tppi,ntppi	*	po,tpp,ntpp	po,tpp,ntpp	dc,ec,po,tppi,ntppi	dc,ec,po,tppi,ntppi	po
-dc	dc,ec	dc,ec,po,tpp,ntpp	tpp,ntpp	ntpp	dc,ec,po,tpp,tppi,eq	dc,ec,po,tppi,ntppi	tpp
-dc	dc	dc,ec,po,tpp,ntpp	ntpp	ntpp	dc,ec,po,tpp,ntpp	*	ntpp
-dc,ec,po,tppi,ntppi	ec,po,tppi,ntppi	po,tppi,ntppi	po,tpp,tppi,eq	po,tpp,ntpp	tppi,ntppi	ntppi	tppi
-dc,ec,po,tppi,ntppi	po,tppi,ntppi	po,tppi,ntppi	po,tppi,ntppi	po,tpp,ntpp,tppi,ntppi,eq	ntppi	ntppi	ntppi
-dc	ec	po	tpp	ntpp	tppi	ntppi	eq
