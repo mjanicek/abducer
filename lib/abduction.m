@@ -87,6 +87,10 @@
 :- import_module string, float.
 :- import_module modality.
 
+:- import_module anytime.
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
 new_proof(Ctx, Goal, Varset) = proof(vs(Goal, Varset), blacklist.init(Ctx)).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
@@ -136,32 +140,40 @@ goal_solved(L) :-
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
+:- pragma promise_pure(prove/6).
+
 prove(CurCost, CostBound, P0, P, Costs, Ctx) :-
-	P0 = proof(vs(L0, VS0), BL0),
 	(if
-		goal_solved(L0)
+		semipure anytime.signalled
 	then
-		% check that all assumptions, assertions are ground
-		% (because we may have constant weight functions)
-		% XXX: check assertions?
-		% XXX: check resolved stuff too?
-		LAss = list.filter_map((func(Q) = MPr is semidet :-
-			Q = assumed(MPr, _)
-				), L0),
-		all_true((pred(MProp::in) is semidet :-
-			ground_formula(MProp^p, _)
-				), LAss),
-		P = P0
+		fail
 	else
-		transform(L0, VS0, BL0, L, VS, BL, Ctx),
-		P1 = proof(vs(L, VS), BL),
+		P0 = proof(vs(L0, VS0), BL0),
+		(if
+			goal_solved(L0)
+		then
+			% check that all assumptions, assertions are ground
+			% (because we may have constant weight functions)
+			% XXX: check assertions?
+			% XXX: check resolved stuff too?
+			LAss = list.filter_map((func(Q) = MPr is semidet :-
+				Q = assumed(MPr, _)
+					), L0),
+			all_true((pred(MProp::in) is semidet :-
+				ground_formula(MProp^p, _)
+					), LAss),
+			P = P0
+		else
+			transform(L0, VS0, BL0, L, VS, BL, Ctx),
+			P1 = proof(vs(L, VS), BL),
 
-%		StepCost = step_cost(Ctx, Step, Costs),
-		% XXX TODO: costs here!
-		StepCost = 1.0,
-		CurCost + StepCost =< CostBound,
+	%		StepCost = step_cost(Ctx, Step, Costs),
+			% XXX TODO: costs here!
+			StepCost = 1.0,
+			CurCost + StepCost =< CostBound,
 
-		prove(CurCost + StepCost, CostBound, P1, P, Costs, Ctx)
+			semipure prove(CurCost + StepCost, CostBound, P1, P, Costs, Ctx)
+		)
 	).
 
 %------------------------------------------------------------------------------%

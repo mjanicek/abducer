@@ -23,6 +23,8 @@
 :- interface.
 
 :- import_module abduction.
+:- import_module anytime.
+:- import_module blacklist.
 :- import_module context.
 :- import_module costs.
 :- import_module ctx_io.
