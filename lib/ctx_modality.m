@@ -71,5 +71,5 @@ is_ctx_modality(_).
 
 %ctx_modality_compose(bel(private(A)), bel(private(B))) = bel(attrib(A, set(B))) :- A \= B.
 
-ctx_modality_compose(A, B) = C :-
+ctx_modality_compose(_A, _B) = _C :-
 	fail.

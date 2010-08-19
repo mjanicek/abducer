@@ -38,11 +38,13 @@
 :- pred add_fact(vscope(mprop(ctx_modality))::in, ctx::in, ctx::out) is det.
 :- pred add_rule(vscope(mrule(ctx_modality))::in, ctx::in, ctx::out) is det.
 :- pred add_assumable(assumable_function_def(ctx_modality)::in, ctx::in, ctx::out) is det.
+:- pred add_disjoints(set(mgprop(ctx_modality))::in, ctx::in, ctx::out) is det.
 
 :- pred set_facts(set(vscope(mprop(ctx_modality)))::in, ctx::in, ctx::out) is det.
 :- pred set_rules(set(vscope(mrule(ctx_modality)))::in, ctx::in, ctx::out) is det.
 :- pred set_assumables(map(cost_function_name, map(mgprop(ctx_modality), float))::in, ctx::in, ctx::out)
 		is det.
+:- pred set_disjoints(set(set(mgprop(ctx_modality)))::in, ctx::in, ctx::out) is det.
 
 	% for debugging purposes only!
 :- func facts(ctx) = set(vscope(mprop(ctx_modality))).
@@ -98,6 +100,9 @@ add_assumable(FuncName-Costs, Ctx0, Ctx) :-
 	AssumFuncs = Ctx0^ctx_assumables,
 	Ctx = Ctx0^ctx_assumables := map.set(AssumFuncs, FuncName, Costs).
 
+add_disjoints(DD, Ctx0, Ctx) :-
+	Ctx = Ctx0^ctx_disjoints := set.insert(Ctx0^ctx_disjoints, DD).
+
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
 	% XXX these!
@@ -114,6 +119,9 @@ set_rules(_Rules, Ctx0, Ctx) :-
 
 set_assumables(Assumables, Ctx0, Ctx) :-
 	Ctx = Ctx0^ctx_assumables := Assumables.
+
+set_disjoints(DDs, Ctx0, Ctx) :-
+	Ctx = Ctx0^ctx_disjoints := DDs.
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 

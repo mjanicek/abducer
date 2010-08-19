@@ -23,7 +23,7 @@
 :- interface.
 
 :- import_module io, list, varset, bag.
-:- import_module abduction, ctx_modality, costs, formula, stringable, modality.
+:- import_module abduction, ctx_modality, formula, stringable, modality.
 :- import_module ctx_loadable.
 
 :- pred print_facts(ctx::in, string::in, io::di, io::uo) is det.
@@ -129,7 +129,7 @@ print_ctx(Ctx, !IO) :-
 print_proof_trace(Ctx, Proof, !IO) :-
 	print_proof_trace(stdout_stream, Ctx, Proof, !IO).
 
-print_proof_trace(Stream, _Ctx, Proof, !IO) :-
+print_proof_trace(_Stream, _Ctx, _Proof, !IO) :-
 	true.
 /*
 	print(Stream, "proof trace:\n", !IO),

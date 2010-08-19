@@ -166,7 +166,8 @@ process_request(prove(L), !SCtx, !IO) :-
 	%varset.merge_renaming(VS0, VSA, VS, Renaming),
 	%PA = rename_vars_in_formula(Renaming, PA0),
 
-	P0 = proof(vs(Qs, varset.init), set.init),
+%	P0 = proof(vs(Qs, varset.init), set.init),
+	P0 = new_proof(!.SCtx^cx, Qs, varset.init),
 	is_ctx_proof(P0),
 
 	print(stderr_stream, "facts:\n", !IO),

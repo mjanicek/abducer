@@ -4,7 +4,7 @@ MLIB=libabducer
 
 # Mercury source files.
 #
-MFILES=abduction.m context.m formula.m costs.m modality.m stringable.m ctx_modality.m formula_io.m ctx_io.m formula_ops.m ctx_modality.m ctx_loadable.m enumerable.m utils.m ctx_loadable_io.m loading.m abducer.m
+MFILES=abduction.m context.m formula.m costs.m modality.m stringable.m ctx_modality.m formula_io.m ctx_io.m formula_ops.m ctx_modality.m ctx_loadable.m enumerable.m utils.m ctx_loadable_io.m loading.m blacklist.m abducer.m
 
 # Mercury compiler flags
 #

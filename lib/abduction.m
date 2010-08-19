@@ -22,11 +22,12 @@
 
 :- interface.
 
-:- import_module list, set, bag.
+:- import_module list, bag.
 :- import_module varset.
 
 :- import_module modality.
 :- import_module formula, costs, context.
+:- import_module blacklist.
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
@@ -47,7 +48,6 @@
 	.
 
 :- type goal(M) == vscope(list(query(M))).
-:- type blacklist(M) == set(mgprop(M)).
 
 :- type proof(M)
 	--->	proof(
@@ -65,7 +65,7 @@
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-:- func new_proof(list(query(M)), varset) = proof(M) <= modality(M).
+:- func new_proof(C, list(query(M)), varset) = proof(M) <= (context(C, M), modality(M)).
 
 :- pred prove(float::in, float::in, proof(M)::in, proof(M)::out, costs::in, C::in) is nondet <= (modality(M), context(C, M)).
 
@@ -87,7 +87,7 @@
 :- import_module string, float.
 :- import_module modality.
 
-new_proof(Goal, Varset) = proof(vs(Goal, Varset), set.init).
+new_proof(Ctx, Goal, Varset) = proof(vs(Goal, Varset), blacklist.init(Ctx)).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
@@ -499,16 +499,8 @@ apply_subst_to_query_blacklist(Subst, Ctx, QIn, QOut, BLIn, BLOut) :-
 		not ground_mprop(head_mprop(QIn), _),
 		ground_mprop(head_mprop(QOut), G)
 	then
-		not set.member(G, BLIn),
-
-		% FIXME: check disjunct declarations and expand *used* ones
-
-		list.foldl((pred(DD::in, BL0::in, BL::out) is det :-
-				(if set.member(G, DD)
-				then BL = set.union(BL0, set.delete(DD, G))
-				else BL = BL0
-					)), solutions(disjoint_decl(Ctx)), BLIn, BLOut)
+		check_mgprop(G, BLIn, BLOut)
 	else
-		% ok
+		% not a ground formula, continue
 		BLOut = BLIn
 	).
