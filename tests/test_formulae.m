@@ -42,6 +42,8 @@ main(!IO) :-
 	test_term_parse("A = B.", !IO),
 	test_term_parse("a \\= B.", !IO),
 	test_term_parse("A \\= B.", !IO),
+	test_term_parse("disjunct([p(x), p(y), q(z)]).", !IO),
+	test_term_parse("(p(x) ; p(y)).", !IO),
 
 	nl(!IO),
 

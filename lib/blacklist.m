@@ -44,7 +44,7 @@
 
 :- type blacklist(M)
 	--->	bl(
-		bl_map :: map(mgprop(M), set(mgprop(M))),
+		bl_map :: map(mgprop(M), disjoint(M)),
 		used :: set(mgprop(M)),
 		forbidden :: set(mgprop(M))
 	).

@@ -18,24 +18,36 @@
 % 02111-1307, USA.
 %------------------------------------------------------------------------------%
 
-:- module abducer.
+:- module tty.
 
 :- interface.
 
-:- import_module formula.
-:- import_module formula_io.
-:- import_module formula_ops.
-:- import_module anytime.
-:- import_module blacklist.
-:- import_module context.
-:- import_module modality.
-:- import_module stringable.
-:- import_module enumerable.
-:- import_module costs.
-:- import_module utils.
-:- import_module abduction.
-:- import_module ctx_io.
-:- import_module ctx_loadable.
-:- import_module ctx_loadable_io.
-:- import_module ctx_modality.
-:- import_module loading.
+:- type ansi_sequence
+	--->	reset
+	;	bold
+	;	black
+	;	red
+	;	green
+	;	yellow
+	;	blue
+	;	magenta
+	;	cyan
+	;	white
+	.
+
+:- func totty(ansi_sequence) = string.
+
+%------------------------------------------------------------------------------%
+
+:- implementation.
+
+totty(reset) = "\033[0m".
+totty(bold) = "\033[1m".
+totty(black) = "\033[30m".
+totty(red) = "\033[31m".
+totty(green) = "\033[32m".
+totty(yellow) = "\033[33m".
+totty(blue) = "\033[34m".
+totty(magenta) = "\033[35m".
+totty(cyan) = "\033[36m".
+totty(white) = "\033[37m".

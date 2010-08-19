@@ -85,9 +85,18 @@ process_request(init_ctx, _, srv_ctx(new_ctx, no), !IO) :-
 
 process_request(load_file(Filename), !SCtx, !IO) :-
 	trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "[REQUEST] load_file\n", !IO) ),
-	loading.load_file(Filename, _Result, !.SCtx^cx, NewCtx, !IO),
+	loading.load_file(Filename, Result, !.SCtx^cx, NewCtx, !IO),
 	!:SCtx = !.SCtx^cx := NewCtx,
-	print("ok.\n", !IO),
+	(
+		Result = ok,
+		print("ok.\n", !IO)
+	;
+		Result = file_read_error,
+		print("file_read_error.\n", !IO)
+	;
+		Result = syntax_error(Message, Line),
+		print("syntax_error.\n", !IO)
+	),
 	flush_output(!IO),
 	trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "[done] load_file\n", !IO) ).
 
@@ -183,6 +192,10 @@ process_request(prove(L), !SCtx, !IO) :-
 	print_assumables(stderr_stream, !.SCtx^cx, "  ", !IO),
 	nl(stderr_stream, !IO),
 
+	print(stderr_stream, "disjoint declarations:\n", !IO),
+	print_disjoints(stderr_stream, !.SCtx^cx, "  ", !IO),
+	nl(stderr_stream, !IO),
+
 	Proofs0 = set.to_sorted_list(solutions_set((pred((Cost-P)::out) is nondet :-
 		prove(0.0, 100.0, P0, P, default_costs, !.SCtx^cx),
 		Cost = cost(!.SCtx^cx, P, default_costs)
@@ -206,11 +219,11 @@ process_request(prove(L), !SCtx, !IO) :-
 
 	format(stderr_stream, "\n  %d proof(s) found.\n", [i(list.length(Proofs))], !IO),
 
-	list.foldl((pred((Cost-proof(Gz, _BL))::in, !.IO::di, !:IO::uo) is det :-
+	list.foldl2((pred((Cost-proof(Gz, _BL))::in, Idx0::in, Idx::out, !.IO::di, !:IO::uo) is det :-
 		print(stderr_stream, "---------------------------------------------------------------------\n", !IO),
-		format(stderr_stream, "proof cost = %f\n\n", [f(Cost)], !IO),
-		print(stderr_stream, "proven goal:\n  " ++ goal_to_string(Gz) ++ "\n", !IO),
-		nl(stderr_stream, !IO)
+		format(stderr_stream, "#%d, cost = %f\n\n", [i(Idx0), f(Cost)], !IO),
+		print(stderr_stream, "  " ++ goal_to_string(Gz) ++ "\n", !IO),
+		Idx = Idx0 + 1
 
 %		print(stderr_stream, "assumptions:\n", !IO),
 %		print(stderr_stream, "  " ++ assumptions_to_string(!.Ctx, goal_assumptions(Gz)) ++ "\n", !IO),
@@ -232,7 +245,8 @@ process_request(prove(L), !SCtx, !IO) :-
 					), Ds, !IO)
 		)
 */
-			), Proofs, !IO),
+			), Proofs, 1, _, !IO),
+	print(stderr_stream, "---------------------------------------------------------------------\n", !IO),
 
 	(if
 		Proofs = [(_Cost-G)|_]
@@ -282,7 +296,7 @@ dissect_query(asserted(impl(_, MProp))) = "R"-MProp.
 
 :- func default_costs = costs.
 
-default_costs = costs(1.0, 1.0).
+default_costs = costs(0.0, 0.0).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 

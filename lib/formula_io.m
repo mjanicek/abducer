@@ -60,6 +60,11 @@
 :- pred term_to_mprop(term.term::in, mprop(M)::out) is semidet <= (modality(M), term_parsable(M)).
 :- pred term_to_mrule(term.term::in, mrule(M)::out) is semidet <= (modality(M), term_parsable(M)).
 
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
+:- pred term_to_disjoint(term.term::in, disjoint(M)::out) is semidet <= (modality(M), term_parsable(M)).
+:- func disjoint_to_string(disjoint(M)) = string <= (modality(M), stringable(M)).
+
 %------------------------------------------------------------------------------%
 
 :- func subst_to_string(varset, subst) = string.
@@ -69,7 +74,7 @@
 :- implementation.
 
 :- import_module require.
-:- import_module list, pair, string, map.
+:- import_module list, pair, string, map, set.
 :- import_module costs.
 :- import_module formula_ops.
 :- import_module parser, term_io.
@@ -293,6 +298,26 @@ term_to_rule_antecedent(MainT, Antecedent) :-
 
 term_to_cost_function(functor(atom(FName), [], _), f(FName)).
 term_to_cost_function(functor(float(FValue), [], _), const(FValue)).
+
+%------------------------------------------------------------------------------%
+
+term_to_disjoint(functor(atom("disjoint"), [Arg], _), DD) :-
+	parse_list(Arg, Ts),
+	list.map((pred(T::in, MGF::out) is semidet :- term_to_mprop(T, MF), ground_mprop(MF, MGF)), Ts, MGFs),
+	DD = set.from_list(MGFs).
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
+:- pred parse_list(term.term::in, list(term.term)::out) is semidet.
+
+parse_list(functor(atom("[]"), [], _), []).
+parse_list(functor(atom("[|]"), [TermH, TermT], _), [TermH|T]) :-
+	parse_list(TermT, T).
+
+%------------------------------------------------------------------------------%
+
+disjoint_to_string(DD) = "disjoint([" ++ S ++ "])" :-
+	S = string.join_list(", ", list.map((func(MGF) = S0 :- ground_mprop(MF, MGF), S0 = mprop_to_string(varset.init, MF)), set.to_sorted_list(DD))).
 
 %------------------------------------------------------------------------------%
 

@@ -22,7 +22,7 @@
 
 :- interface.
 
-:- import_module term, varset, pair, list, map, string.
+:- import_module term, varset, pair, list, map, set, string.
 :- import_module costs.
 :- import_module modality.
 
@@ -135,6 +135,10 @@
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
+:- type disjoint(M) == set(mgprop(M)).
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
 :- type subst == map(var, formula.term).
 
 :- func apply_subst_to_term(subst, formula.term) = formula.term.
@@ -156,6 +160,7 @@
 
 :- pred ground_mprop(mprop(M), mgprop(M)).
 :- mode ground_mprop(in, out) is semidet.
+:- mode ground_mprop(out, in) is det.
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
@@ -274,7 +279,8 @@ rename_vars_in_mrule(Renaming, m(M, Ante-Succ)) =
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-ground_mprop(m(M, F), m(M, formula_to_ground_formula(F))).
+ground_mprop(m(M, F), m(M, GF)) :-
+	ground_formula(F, GF).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 

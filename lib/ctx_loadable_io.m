@@ -32,6 +32,8 @@
 :- pred print_assumables(ctx::in, string::in, io::di, io::uo) is det.
 :- pred print_assumables(io.output_stream::in, ctx::in, string::in, io::di, io::uo) is det.
 
+:- pred print_disjoints(io.output_stream::in, ctx::in, string::in, io::di, io::uo) is det.
+
 :- pred print_rules(ctx::in, string::in, io::di, io::uo) is det.
 :- pred print_rules(io.output_stream::in, ctx::in, string::in, io::di, io::uo) is det.
 
@@ -61,6 +63,8 @@
 :- import_module modality, stringable.
 
 :- import_module parser, term_io, term, varset, formula_io, formula_ops, costs.
+
+:- import_module tty.
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
@@ -107,6 +111,15 @@ print_assumables(Ctx, Indent, !IO) :-
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
+print_disjoints(Stream, Ctx, Indent, !IO) :-
+	set.fold((pred(DD::in, !.IO::di, !:IO::uo) is det :-
+		print(Stream, Indent, !IO),
+		print(Stream, disjoint_to_string(DD), !IO),
+		nl(Stream, !IO)
+			), disjoints(Ctx), !IO).
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
 print_ctx(Stream, Ctx, !IO) :-
 	print(Stream, "facts:\n", !IO),
 	print_facts(Stream, Ctx, "  ", !IO),
@@ -149,6 +162,57 @@ print_proof_trace(_Stream, _Ctx, _Proof, !IO) :-
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
+:- func protect(string) = string.
+
+protect(S0) = S :-
+	(if string.capitalize_first(S0, S0)
+	then S = "'" ++ S0 ++ "'"
+	else S = S0
+	).
+
+:- func tty_atomic_formula_to_string(varset, atomic_formula) = string.
+:- func tty_formula_term_to_string(varset, formula.term) = string.
+
+tty_atomic_formula_to_string(_Varset, p(PredSym, [])) = totty(bold) ++ protect(PredSym) ++ totty(reset).
+tty_atomic_formula_to_string(Varset, p(PredSym, [H|T])) = totty(bold) ++ protect(PredSym) ++ totty(reset) ++ "(" ++ ArgStr ++ ")" :-
+	ArgStr = string.join_list(", ", list.map(tty_formula_term_to_string(Varset), [H|T])).
+
+tty_formula_term_to_string(Varset, Arg) = S :-
+	(
+		Arg = t(Functor, []),
+		S = protect(Functor)
+	;
+		Arg = t(Functor, [H|T]),
+		S = protect(Functor) ++ "(" ++ string.join_list(", ", list.map(tty_formula_term_to_string(Varset), [H|T])) ++ ")"
+	;
+		Arg = v(Var),
+		S = totty(cyan) ++ varset.lookup_name(Varset, Var) ++ totty(reset)
+	).
+
+:- func tty_vsmprop_to_string(vscope(mprop(M))) = string <= (modality(M), stringable(M)).
+
+tty_vsmprop_to_string(vs(m(K, P), Varset)) = Str :-
+	Str = tty_modality_to_string(K) ++ tty_atomic_formula_to_string(Varset, P).
+
+:- func tty_mprop_to_string(varset, mprop(M)) = string <= (modality(M), stringable(M)).
+
+tty_mprop_to_string(Varset, MP) = tty_vsmprop_to_string(vs(MP, Varset)).
+
+:- func tty_mtest_to_string(varset, mtest(M)) = string <= (modality(M), stringable(M)).
+
+tty_mtest_to_string(Varset, prop(MProp)) = mprop_to_string(Varset, MProp).
+tty_mtest_to_string(Varset, impl(MPs, HMP)) = string.join_list(", ", list.map(mprop_to_string(Varset), MPs))
+		++ " -> " ++ mprop_to_string(Varset, HMP).
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
+:- func tty_modality_to_string(list(M)) = string <= (modality(M), stringable(M)).
+
+tty_modality_to_string([]) = "".
+tty_modality_to_string([H|T]) = totty(green) ++ string.join_list(" : ", list.map(to_string, [H|T])) ++ " : " ++ totty(reset).
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
 step_to_string(assume(vs(MProp, Varset), Subst, F)) = "assume("
 		++ vsmprop_to_string(vs(MProp, Varset)) ++ "), "
 		++ subst_to_string(Varset, Subst) ++ ", cost=" ++ cost_function_to_string(F).
@@ -161,12 +225,12 @@ step_to_string(factor(Subst, Varset)) = "factor, " ++ subst_to_string(Varset, Su
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-query_to_string(VS, unsolved(MProp, F)) = mprop_to_string(VS, MProp)
+query_to_string(VS, unsolved(MProp, F)) = tty_mprop_to_string(VS, MProp)
 		++ "[unsolved / " ++ cost_function_to_string(F) ++ "]".
-query_to_string(VS, proved(MProp)) = mprop_to_string(VS, MProp) ++ "[proved]".
-query_to_string(VS, assumed(MProp, F)) = mprop_to_string(VS, MProp)
-		++ "[assumed / " ++ cost_function_to_string(F) ++ "]".
-query_to_string(VS, asserted(MTest)) = mtest_to_string(VS, MTest) ++ "[asserted]".
+query_to_string(VS, proved(MProp)) = tty_mprop_to_string(VS, MProp) ++ totty(yellow) ++ "[proved]" ++ totty(reset).
+query_to_string(VS, assumed(MProp, F)) = tty_mprop_to_string(VS, MProp)
+		++ totty(red) ++ "[assumed / " ++ cost_function_to_string(F) ++ "]" ++ totty(reset).
+query_to_string(VS, asserted(MTest)) = tty_mtest_to_string(VS, MTest) ++ totty(magenta) ++ "[asserted]" ++ totty(reset).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
