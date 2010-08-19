@@ -22,19 +22,23 @@
 
 :- interface.
 
+:- import_module bool.
+
 :- impure pred reset_signaller is det.
-:- semipure pred signalled is semidet.
+:- impure pred signalled(bool::out) is det.
+:- pred pure_signalled(bool::out) is det.
 
 %------------------------------------------------------------------------------%
 
 :- implementation.
 
+:- pragma foreign_decl("C", "#include <stdio.h>").
 :- pragma foreign_decl("C", "#include <signal.h>").
 
-:- import_module io.
-:- import_module bool.
+:- pragma foreign_decl("C", "extern MR_Bool anytime_sig;").
+:- pragma foreign_code("C", "MR_Bool anytime_sig;").
 
-:- mutable(signalled, bool, no, ground, [untrailed, foreign_name("C", "anytime_sig")]).
+:- import_module io.
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
@@ -47,21 +51,41 @@
 void set_signalled(int sig_num)
 {
 	anytime_sig = MR_YES;
+	fprintf(stderr, \"[signalled]\"\n);
 }
 ").
 
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
 :- impure pred register_handler is det.
-:- pragma foreign_proc("C", register_handler, [will_not_call_mercury],
-"
+:- pragma foreign_proc("C", register_handler, [will_not_call_mercury], "
 	signal(SIGUSR1, set_signalled);
+	anytime_sig = MR_NO;
 ").
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-reset_signaller :-
-	impure set_signalled(no).
+:- pragma foreign_proc("C", reset_signaller, [will_not_call_mercury], "
+	anytime_sig = MR_NO;
+	fprintf(stderr, \"[reset]\"\n);
+").
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-signalled :-
-	semipure get_signalled(yes).
+:- pragma foreign_proc("C", signalled(Flag::out), [will_not_call_mercury], "
+	Flag = anytime_sig;
+	if (anytime_sig == MR_YES) {
+		fprintf(stderr, \"Y\");
+	}
+	else {
+		fprintf(stderr, \"N\");
+	}
+").
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
+:- pragma promise_pure(pure_signalled/1).
+
+pure_signalled(Flag) :-
+	impure signalled(Flag),
+	trace[compile_time(flag("debug")), io(!IO)] ( (if Flag = yes then print(stderr_stream, "X", !IO) else true) ).

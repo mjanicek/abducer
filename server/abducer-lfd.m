@@ -15,6 +15,7 @@
 :- import_module utils.
 :- import_module abduction, formula, context, costs.
 :- import_module loading.
+:- import_module anytime.
 
 :- import_module context, ctx_modality, ctx_loadable, ctx_io, ctx_loadable_io.
 :- import_module modality, stringable.
@@ -70,6 +71,10 @@ inner_loop(!Ctx, !IO) :-
 		trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "end of file in read_line\n", !IO) ),
 		true
 	).
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
+:- pragma promise_pure(process_request/5).
 
 :- pred process_request(protocol.request::in, srv_ctx::in, srv_ctx::out, io::di, io::uo) is det.
 
@@ -156,6 +161,7 @@ process_request(add_assumable(Function, MPropStr, Cost), !SCtx, !IO) :-
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
 process_request(prove(L), !SCtx, !IO) :-
+	impure reset_signaller,
 	trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "[REQUEST] prove\n", !IO) ),
 	list.map((pred(S::in, Q::out) is det :-
 		vs(MProp, _VS) = det_string_to_vsmprop(S),

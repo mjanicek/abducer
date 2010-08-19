@@ -84,7 +84,7 @@
 
 :- import_module require, solutions.
 :- import_module map, set, assoc_list, pair.
-:- import_module string, float.
+:- import_module string, float, bool.
 :- import_module modality.
 
 :- import_module anytime.
@@ -143,37 +143,33 @@ goal_solved(L) :-
 :- pragma promise_pure(prove/6).
 
 prove(CurCost, CostBound, P0, P, Costs, Ctx) :-
+	impure anytime.signalled(no),
+
+	P0 = proof(vs(L0, VS0), BL0),
 	(if
-		semipure anytime.signalled
+		goal_solved(L0)
 	then
-		fail
+		% check that all assumptions, assertions are ground
+		% (because we may have constant weight functions)
+		% XXX: check assertions?
+		% XXX: check resolved stuff too?
+		LAss = list.filter_map((func(Q) = MPr is semidet :-
+			Q = assumed(MPr, _)
+				), L0),
+		all_true((pred(MProp::in) is semidet :-
+			ground_formula(MProp^p, _)
+				), LAss),
+		P = P0
 	else
-		P0 = proof(vs(L0, VS0), BL0),
-		(if
-			goal_solved(L0)
-		then
-			% check that all assumptions, assertions are ground
-			% (because we may have constant weight functions)
-			% XXX: check assertions?
-			% XXX: check resolved stuff too?
-			LAss = list.filter_map((func(Q) = MPr is semidet :-
-				Q = assumed(MPr, _)
-					), L0),
-			all_true((pred(MProp::in) is semidet :-
-				ground_formula(MProp^p, _)
-					), LAss),
-			P = P0
-		else
-			transform(L0, VS0, BL0, L, VS, BL, Ctx),
-			P1 = proof(vs(L, VS), BL),
+		transform(L0, VS0, BL0, L, VS, BL, Ctx),
+		P1 = proof(vs(L, VS), BL),
 
-	%		StepCost = step_cost(Ctx, Step, Costs),
-			% XXX TODO: costs here!
-			StepCost = 1.0,
-			CurCost + StepCost =< CostBound,
+%		StepCost = step_cost(Ctx, Step, Costs),
+		% XXX TODO: costs here!
+		StepCost = 1.0,
+%			CurCost + StepCost =< CostBound,
 
-			semipure prove(CurCost + StepCost, CostBound, P1, P, Costs, Ctx)
-		)
+		prove(CurCost + StepCost, CostBound, P1, P, Costs, Ctx)
 	).
 
 %------------------------------------------------------------------------------%
@@ -193,12 +189,15 @@ segment_proof_state(Qs, {QsL, cf(QUnsolved, F), QsR} ) :-
 
 %------------------------------------------------------------------------------%
 
+:- pragma promise_pure(transform/7).
+
 :- pred transform(
 		list(query(M))::in, varset::in, blacklist(M)::in,
 		list(query(M))::out, varset::out, blacklist(M)::out,
 		C::in) is nondet <= (modality(M), context(C, M)).
 
 transform(L0, VS0, BL0, L, VS, BL, Ctx) :-
+	impure anytime.signalled(no),
 	segment_proof_state(L0, SegL0),
 	(if
 	 	% try to factor
@@ -230,6 +229,8 @@ transform(L0, VS0, BL0, L, VS, BL, Ctx) :-
 
 %------------------------------------------------------------------------------%
 
+:- pragma promise_pure(step/8).
+
 :- pred step(
 		step(M)::out, 
 
@@ -254,12 +255,15 @@ transform(L0, VS0, BL0, L, VS, BL, Ctx) :-
 step(assume(vs(m(MQ, PQ), VS), map.init, const(Cost)),
 		{QsL, cf(m(MQ, PQ), const(Cost)), QsR}, VS, BL,
 		QsL ++ [assumed(m(MQ, PQ), const(Cost))] ++ QsR, VS, BL,
-		_Ctx).
+		_Ctx) :-
+	anytime.pure_signalled(no).
 
 step(assume(vs(m(MQ, PQ), VS), Uni, f(Func)),
 		{QsL0, cf(m(MQ, PQ0), f(Func)), QsR0}, VS, BL0,
 		QsL ++ [assumed(m(MQ, PQ), f(Func))] ++ QsR, VS, BL,
 		Ctx) :-
+
+	anytime.pure_signalled(no),
 
 	assumable_func(Ctx, Func, m(MQ, GroundProp), _Cost),
 	ground_formula(Prop, GroundProp),
@@ -310,6 +314,8 @@ step(use_fact(vs(m(MF, PF), VS), Uni),
 		QsL ++ [proved(m(MQ, PQ))] ++ QsR, VS, BL,
 		Ctx) :-
 
+	anytime.pure_signalled(no),
+
 	PQ0 = p(PredSym, _),
 	find_fact(Ctx, MQ, PredSym, vs(m(MF, PF0), VSF)),
 %	fact_found(Ctx, vs(m(MQ, PQ0), VS0), vs(m(MF, PF0), VSF)),
@@ -335,6 +341,8 @@ step(use_fact(vs(m(MQ, PQ), VS), map.init),
 		QsL ++ [proved(m(MQ, PQ))] ++ QsR, VS, BL,
 		Ctx) :-
 
+	anytime.pure_signalled(no),
+
 	PQ0 = p("=", [T1, T2]),
 	unify_terms(T1, T2, Uni),
 	PQ = apply_subst_to_formula(Uni, PQ0),
@@ -349,6 +357,8 @@ step(use_fact(vs(m(MQ, PQ), VS), map.init),
 		QsL ++ [proved(m(MQ, PQ))] ++ QsR, VS, BL,
 		_Ctx) :-
 
+	anytime.pure_signalled(no),
+
 	PQ = p("\\=", [T1, T2]),
 	not unify_terms(T1, T2, _Subst),
 	trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "!", !IO) ).
@@ -360,6 +370,8 @@ step(resolve_rule(vs(m(MR, Ante-RHead), VS), Uni),
 		{QsL0, cf(m(MQ, PQ), not_assumable), QsR0}, VS0, BL0,
 		QsL ++ QsInsert ++ QsR, VS, BL,
 		Ctx) :-
+
+	anytime.pure_signalled(no),
 
 	PQ = p(PredSym, _),
 	find_rule(Ctx, MQ, PredSym, Rule),
@@ -456,8 +468,10 @@ do_factoring(
 		QsL ++ QsR, VS, BL,
 		Ctx) :-
 
+	anytime.pure_signalled(no),
+
 	% find leftmost modalised formula that might be unified with Q
-	leftmost_unifiable(m(MQ, PQ), list.map(head_mprop, QsL0), Uni),
+	leftmost_unifiable(m(MQ, PQ), list.map(head_mprop, QsR0), Uni),
 
 	trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "t{", !IO) ),
 

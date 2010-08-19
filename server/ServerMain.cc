@@ -27,7 +27,7 @@ static int pipe_from_child[2];
 static const char * abducer_path = "/usr/bin/false";
 
 int
-runServer();
+runServer(pid_t abducer_pid);
 
 void
 shutdownServer(int);
@@ -60,7 +60,7 @@ main(int argc, char ** argv)
 	}
 	else {
 		preparePlumbing(false);
-		runServer();
+		runServer(pchild);
 
 		wait(0);
 	}
@@ -69,7 +69,7 @@ main(int argc, char ** argv)
 }
 
 int
-runServer()
+runServer(pid_t abducer_pid)
 {
 	printUsage();
 	IceUtil::CtrlCHandler ctrlCHandler(shutdownServer);
@@ -83,7 +83,7 @@ runServer()
 		Ice::ObjectAdapterPtr adapter
 				= ic->createObjectAdapterWithEndpoints("AbducerAdapter", SERVER_ENDPOINTS);
 
-		Ice::ObjectPtr object = new ForwardedAbducerServer();
+		Ice::ObjectPtr object = new ForwardedAbducerServer(abducer_pid);
 		adapter->add(object, ic->stringToIdentity(SERVER_NAME));
 		adapter->activate();
 

@@ -3,13 +3,14 @@
 
 #include "weigabd.h"
 #include <vector>
+#include <unistd.h>
 
 namespace Abducer = ::de::dfki::lt::tr::infer::weigabd::slice;
 
 class ForwardedAbducerServer : public Abducer::AbducerServer {
 
 public:
-	ForwardedAbducerServer();
+	ForwardedAbducerServer(pid_t abducer_pid);
 
 	virtual void loadFile(const std::string& filename, const Ice::Current&);
 
@@ -22,8 +23,14 @@ public:
 	virtual void addFact(const Abducer::ModalisedFormulaPtr & f, const Ice::Current&);
 	virtual void addAssumable(const std::string& function, const Abducer::ModalisedFormulaPtr & f, float cost, const Ice::Current&);
 
-	virtual Abducer::ProveResult prove(const std::vector<Abducer::MarkedQueryPtr> & g, const Ice::Current&);
-	virtual std::vector<Abducer::MarkedQueryPtr> getBestProof(const Ice::Current&);
+//	virtual Abducer::ProveResult prove(const std::vector<Abducer::MarkedQueryPtr> & g, const Ice::Current&);
+
+	virtual void startProving(const std::vector<Abducer::MarkedQueryPtr> & g, const Ice::Current&);
+	virtual std::vector<Abducer::MarkedQueryPtr> getBestProof(int timeout, const Ice::Current&);
+	virtual std::vector<Abducer::MarkedQueryPtr> getBestProof();
+
+protected:
+	pid_t abducer_pid;
 };
 
 #endif

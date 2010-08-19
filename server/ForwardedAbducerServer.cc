@@ -1,3 +1,9 @@
+//#include <poll.h>  // doesn't work on Darwin
+#include <sys/time.h>
+#include <sys/types.h>
+#include <sys/select.h>
+#include <signal.h>
+
 #include "common.h"
 #include "ForwardedAbducerServer.h"
 
@@ -13,11 +19,12 @@ using namespace Abducer;
 
 #include <vector>
 
-static const size_t bufsize = 8192;
+static const size_t bufsize = 16384;
 
 static char buf[bufsize];
 
-ForwardedAbducerServer::ForwardedAbducerServer()
+ForwardedAbducerServer::ForwardedAbducerServer(pid_t abducer_pid_)
+: abducer_pid(abducer_pid_)
 {
 	cerr << tty::green << "* initialising abducer context" << tty::dcol << endl;
 	cout << "init_ctx." << endl;
@@ -125,6 +132,111 @@ ForwardedAbducerServer::addAssumable(const string & function, const ModalisedFor
 	cout << ss.str();
 }
 
+void
+ForwardedAbducerServer::startProving(const vector<MarkedQueryPtr> & goals, const Ice::Current&)
+{
+	cerr << tty::green << "* proving started" << tty::dcol << endl;
+	string s("prove([");
+
+	vector<MarkedQueryPtr>::const_iterator it = goals.begin();
+	while (it != goals.end()) {
+		s += "\"" + modalisedFormulaToString((*it)->formula) + ".\"";
+		it++;
+		if (it != goals.end()) {
+			s += ", ";
+		}
+	}
+	s += "]).";
+	cout << s << endl;
+}
+
+vector<MarkedQueryPtr>
+ForwardedAbducerServer::getBestProof(int timeout, const Ice::Current&)
+{
+/*
+	// XXX: poll() doesn't work with stdin on Darwin!
+
+	struct pollfd pfd[1];
+	pfd[0].fd = STDIN_FILENO;
+	pfd[0].events = POLLIN;
+
+	int rc = poll(pfd, 1, timeout);
+	if (rc > 1) {
+		// something is on stdin -> finished
+		cerr << tty::green << "  [poll] results ready" << tty::dcol << endl;
+	}
+	else if (rc == 0) {
+		// timeout -- send SIGUSR1 to the abducer and assume that it's enough
+		cerr << tty::green << "  [poll] timeout" << tty::dcol << endl;
+		kill(abducer_pid, SIGUSR1);
+	}
+	else {
+		// an error occurred
+		cerr << tty::red << "  [poll] error" << tty::dcol << endl;
+		return vector<MarkedQueryPtr>();
+	}
+*/
+	cerr << tty::green << "* will wait for the results, timeout=" << timeout << tty::dcol << endl;
+
+	fd_set readfds;
+	struct timeval tv;
+	struct timeval * ptv;
+
+	if (timeout < 0) {
+		ptv = NULL;
+	}
+	else {
+		tv.tv_sec = timeout / 1000;
+		tv.tv_usec = (timeout % 1000) * 1000;
+		ptv = &tv;
+	}
+
+	FD_ZERO(&readfds);
+	FD_SET(STDIN_FILENO, &readfds);
+
+	int rc = select(1, &readfds, NULL, NULL, &tv);
+
+	if (rc < 0) {
+		cerr << tty::red << "  [select] error" << tty::dcol << endl;
+		return vector<MarkedQueryPtr>();
+	}
+
+	if (FD_ISSET(STDIN_FILENO, &readfds)) {
+		// something is on stdin -> finished
+		cerr << tty::green << "  [select] results ready" << tty::dcol << endl;
+	}
+	else {
+		// timeout -- send SIGUSR1 to the abducer and assume that it's enough
+		cerr << tty::green << "  [select] timeout" << tty::dcol << endl;
+		kill(abducer_pid, SIGUSR1);
+	}
+
+	bool gotResults = false;
+
+	if (cin) {
+		cin.getline(buf, bufsize);
+		debug(cerr << "RESPONSE: " << buf << endl);
+
+		if (*buf == 's') {
+			cerr << tty::green << "  a proof was found" << tty::dcol << endl;
+			gotResults = true;
+		}
+		else {
+			cerr << tty::green << "  no proof found" << tty::dcol << endl;
+			gotResults = false;
+		}
+	}
+
+	// retrieve the proof
+	if (gotResults) {
+		return getBestProof();
+	}
+	else {
+		return vector<MarkedQueryPtr>();
+	}
+}
+
+/*
 ProveResult
 ForwardedAbducerServer::prove(const vector<MarkedQueryPtr> & goals, const Ice::Current&)
 {
@@ -160,6 +272,7 @@ ForwardedAbducerServer::prove(const vector<MarkedQueryPtr> & goals, const Ice::C
 
 	cerr << tty::red << "  abduction error" << tty::dcol << endl;
 	return Error;
+*/
 /*
 	MR_Word vs;
 	new_varset(&vs);
@@ -201,7 +314,7 @@ ForwardedAbducerServer::prove(const vector<MarkedQueryPtr> & goals, const Ice::C
 		return (NoProofFound);
 	}
 */
-}
+//}
 
 MarkedQueryPtr
 markModalisedFormula(Marking mark, ModalisedFormulaPtr mf)
@@ -246,10 +359,9 @@ markModalisedFormula(Marking mark, ModalisedFormulaPtr mf)
 }
 
 vector<MarkedQueryPtr>
-ForwardedAbducerServer::getBestProof(const Ice::Current&)
+ForwardedAbducerServer::getBestProof()
 {
 	cerr << tty::green << "* retrieving the last proof" << tty::dcol << endl;
-//	cerr << tty::red << "  [unimplemented]" << tty::dcol << endl;
 	cout << "get_best_proof." << endl;
 
 	int num = 0;
