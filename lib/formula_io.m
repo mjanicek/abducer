@@ -57,13 +57,14 @@
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-:- pred term_to_mprop(term.term::in, mprop(M)::out) is semidet <= (modality(M), term_parsable(M)).
-:- pred term_to_mrule(term.term::in, mrule(M)::out) is semidet <= (modality(M), term_parsable(M)).
+:- func string_to_disjoint(string) = disjoint(M) is semidet <= (modality(M), term_parsable(M)).
+:- func disjoint_to_string(disjoint(M)) = string <= (modality(M), stringable(M)).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
+:- pred term_to_mprop(term.term::in, mprop(M)::out) is semidet <= (modality(M), term_parsable(M)).
+:- pred term_to_mrule(term.term::in, mrule(M)::out) is semidet <= (modality(M), term_parsable(M)).
 :- pred term_to_disjoint(term.term::in, disjoint(M)::out) is semidet <= (modality(M), term_parsable(M)).
-:- func disjoint_to_string(disjoint(M)) = string <= (modality(M), stringable(M)).
 
 %------------------------------------------------------------------------------%
 
@@ -315,6 +316,11 @@ parse_list(functor(atom("[|]"), [TermH, TermT], _), [TermH|T]) :-
 	parse_list(TermT, T).
 
 %------------------------------------------------------------------------------%
+
+string_to_disjoint(Str) = DD :-
+	read_term_from_string_with_op_table(init_wabd_op_table, "", Str, _, term(Varset, T)),
+	generic_term(T),
+	term_to_disjoint(T, DD).
 
 disjoint_to_string(DD) = "disjoint([" ++ S ++ "])" :-
 	S = string.join_list(", ", list.map((func(MGF) = S0 :- ground_mprop(MF, MGF), S0 = mprop_to_string(varset.init, MF)), set.to_sorted_list(DD))).
