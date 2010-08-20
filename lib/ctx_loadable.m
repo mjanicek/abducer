@@ -33,8 +33,6 @@
 
 :- func new_ctx = ctx.
 
-:- type assumable_function_def(M) == pair(cost_function_name, map(mgprop(M), float)).
-
 :- pred add_fact(vscope(mprop(ctx_modality))::in, ctx::in, ctx::out) is det.
 :- pred add_rule(vscope(mrule(ctx_modality))::in, ctx::in, ctx::out) is det.
 :- pred add_assumable(assumable_function_def(ctx_modality)::in, ctx::in, ctx::out) is det.

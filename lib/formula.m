@@ -136,6 +136,7 @@
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
 :- type disjoint(M) == set(mgprop(M)).
+:- type assumable_function_def(M) == pair(cost_function_name, map(mgprop(M), float)).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
@@ -158,9 +159,12 @@
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-:- pred ground_mprop(mprop(M), mgprop(M)).
+:- pred ground_mprop(mprop(M), mgprop(M)) <= modality(M).
 :- mode ground_mprop(in, out) is semidet.
 :- mode ground_mprop(out, in) is det.
+
+:- func ground_mprop_to_mprop(mgprop(M)) = mprop(M) <= modality(M).
+:- func mprop_to_ground_mprop(mprop(M)) = mgprop(M) is semidet <= modality(M).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
@@ -281,6 +285,12 @@ rename_vars_in_mrule(Renaming, m(M, Ante-Succ)) =
 
 ground_mprop(m(M, F), m(M, GF)) :-
 	ground_formula(F, GF).
+
+ground_mprop_to_mprop(GM) = M :-
+	ground_mprop(M, GM).
+
+mprop_to_ground_mprop(M) = GM :-
+	ground_mprop(M, GM).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 

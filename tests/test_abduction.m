@@ -67,8 +67,7 @@ main(!IO) :-
 
 			vs(InitMProp, InitVarset) = det_string_to_vsmprop(Goal),
 
-			P0 = proof(vs([[unsolved(InitMProp, const(InitAssumeCost))]], InitVarset), []),
-
+			P0 = new_proof(!.Ctx, [unsolved(InitMProp, const(InitAssumeCost))], varset.init),
 			format("goal:\n  %s\n\n", [s(vsmprop_to_string(vs(InitMProp, InitVarset)))], !IO),
 
 			print_ctx(!.Ctx, !IO),
@@ -78,7 +77,7 @@ main(!IO) :-
 %			DC0 = new_d_ctx,
 
 			Proofs0 = set.to_sorted_list(solutions_set((pred((Cost-G)-P::out) is nondet :-
-				Costs = costs(1.0, 0.1, 0.1),
+				Costs = costs(0.0, 0.0),
 				prove(0.0, 11.0, P0, P, Costs, !.Ctx),
 				G = last_goal(P),
 				Cost = cost(!.Ctx, P, Costs)

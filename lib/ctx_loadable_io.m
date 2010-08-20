@@ -71,7 +71,7 @@
 print_facts(Stream, Ctx, Indent, !IO) :-
 	set.fold((pred(Fact::in, !.IO::di, !:IO::uo) is det :-
 		print(Stream, Indent, !IO),
-		print(Stream, vsmprop_to_string(Fact), !IO),
+		print(Stream, tty_vsmprop_to_string(Fact), !IO),
 		nl(Stream, !IO)
 			), facts(Ctx), !IO).
 
@@ -132,7 +132,12 @@ print_ctx(Stream, Ctx, !IO) :-
 	nl(Stream, !IO),
 
 	print(Stream, "rules:\n", !IO),
-	print_rules(Stream, Ctx, "  ", !IO).
+	print_rules(Stream, Ctx, "  ", !IO),
+
+	nl(Stream, !IO),
+
+	print(Stream, "disjoint declarations:\n", !IO),
+	print_disjoints(Stream, Ctx, "  ", !IO).
 
 print_ctx(Ctx, !IO) :-
 	print_ctx(stdout_stream, Ctx, !IO).

@@ -65,6 +65,8 @@
 :- pred term_to_mprop(term.term::in, mprop(M)::out) is semidet <= (modality(M), term_parsable(M)).
 :- pred term_to_mrule(term.term::in, mrule(M)::out) is semidet <= (modality(M), term_parsable(M)).
 :- pred term_to_disjoint(term.term::in, disjoint(M)::out) is semidet <= (modality(M), term_parsable(M)).
+:- pred term_to_assumable_function_def(term.term::in, assumable_function_def(M)::out) is semidet
+		<= (modality(M), term_parsable(M)).
 
 %------------------------------------------------------------------------------%
 
@@ -332,3 +334,18 @@ subst_to_string(Varset, Subst) = "{" ++ Str ++ "}" :-
 	L0 = list.map((func(Var-Value) = S :-
 		S = varset.lookup_name(Varset, Var) ++ "=" ++ formula_term_to_string(Varset, Value)), L),
 	Str = string.join_list(", ", L0).
+
+%------------------------------------------------------------------------------%
+
+term_to_assumable_function_def(functor(atom("="), [FuncNameTerm, DefTerms], _), FuncDef) :-
+	FuncNameTerm = functor(atom(FuncName), [], _),
+	parse_list(DefTerms, ListCostTerms),
+	list.map((pred(AssignTerm::in, MGProp-Cost::out) is semidet :-
+		AssignTerm = functor(atom("="), [MPropTerm, CostTerm], _),
+		term_to_mprop(MPropTerm, m(Mod, Prop)),
+		ground_formula(Prop, GProp),
+		MGProp = m(Mod, GProp),
+		CostTerm = functor(float(Cost), [], _)
+			), ListCostTerms, Costs),
+	FuncDef = FuncName-map.from_assoc_list(Costs).
+

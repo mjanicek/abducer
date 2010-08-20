@@ -46,8 +46,7 @@
 main(!IO) :-
 	io.command_line_arguments(CmdArgs, !IO),
 	(if
-		CmdArgs = [Goal, GoalAssumeCost],
-		string.to_float(GoalAssumeCost, InitAssumeCost)
+		CmdArgs = [Goal]
 	then
 		some [!Ctx] (
 			!:Ctx = new_ctx,
@@ -57,10 +56,11 @@ main(!IO) :-
 
 			vs(InitMProp, InitVarset) = det_string_to_vsmprop(Goal),
 
-			P0 = new_proof(!.Ctx, [unsolved(InitMProp, const(InitAssumeCost))], varset.init),
+			P0 = new_proof(!.Ctx, [unsolved(InitMProp, not_assumable)], InitVarset),
 %			P0 = vs([unsolved(InitMProp, const(InitAssumeCost))], InitVarset),
 
-			format("goal:\n  %s\n\n", [s(vsmprop_to_string(vs(InitMProp, InitVarset)))], !IO),
+			P0 = proof(XG, _XBL),
+			format("goal:\n  %s\n\n", [s(goal_to_string(XG))], !IO),
 
 			print_ctx(!.Ctx, !IO),
 
@@ -68,7 +68,7 @@ main(!IO) :-
 
 %			DC0 = new_d_ctx,
 
-			Proofs0 = set.to_sorted_list(solutions_set((pred(Cost-P::out) is nondet :-
+			Proofs0 = set.to_sorted_list(solutions_set((pred((Cost-P)::out) is nondet :-
 %				Costs = costs(1.0, 1.0),
 %				prove(0.0, InitAssumeCost, P0, P, Costs, !.Ctx),
 %				G = last_goal(P),
@@ -141,7 +141,7 @@ main(!IO) :-
 		)
 	else
 		io.progname("?", ProgName, !IO),
-		format(stderr_stream, "Usage: %s GOAL GOAL_ASSUMPTION_COST < FILE\n", [s(ProgName)], !IO)
+		format(stderr_stream, "Usage: %s GOAL < FILE\n", [s(ProgName)], !IO)
 	).
 
 %------------------------------------------------------------------------------%
@@ -159,29 +159,6 @@ plural_s(N) = S :-
 	then S = "s"
 	else S = ""
 	).
-
-%------------------------------------------------------------------------------%
-
-:- pred term_to_assumable_function_def(term.term::in, assumable_function_def(M)::out) is semidet
-		<= (modality(M), term_parsable(M)).
-
-term_to_assumable_function_def(functor(atom("="), [FuncNameTerm, DefTerms], _), FuncDef) :-
-	FuncNameTerm = functor(atom(FuncName), [], _),
-	term_list(DefTerms, ListCostTerms),
-	list.map((pred(AssignTerm::in, MGProp-Cost::out) is semidet :-
-		AssignTerm = functor(atom("="), [MPropTerm, CostTerm], _),
-		term_to_mprop(MPropTerm, m(Mod, Prop)),
-		ground_formula(Prop, GProp),
-		MGProp = m(Mod, GProp),
-		CostTerm = functor(float(Cost), [], _)
-			), ListCostTerms, Costs),
-	FuncDef = FuncName-map.from_assoc_list(Costs).
-
-:- pred term_list(term.term::in, list(term.term)::out) is semidet.
-
-term_list(functor(atom("[]"), [], _), []).
-term_list(functor(atom("[|]"), [HeadTerm, TailTerms], _), [HeadTerm | Tail]) :-
-	term_list(TailTerms, Tail).
 
 %------------------------------------------------------------------------------%
 

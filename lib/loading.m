@@ -50,27 +50,34 @@ load_stdin(Result, !Ctx, !IO) :-
 		(
 			ReadResult = term(VS, Term),
 			generic_term(Term),
-			(if term_to_mrule(Term, MRule)
+			(if term_to_assumable_function_def(Term, AssumFuncDef)
 			then
-				add_rule(vs(MRule, VS), !Ctx),
+				add_assumable(AssumFuncDef, !Ctx),
 				LoopResult = ok,
 				Continue = yes
 			else
-				(if term_to_disjoint(Term, DD)
+				(if term_to_mrule(Term, MRule)
 				then
-					add_disjoint(DD, !Ctx),
+					add_rule(vs(MRule, VS), !Ctx),
 					LoopResult = ok,
 					Continue = yes
 				else
-					(if term_to_mprop(Term, MProp)
+					(if term_to_disjoint(Term, DD)
 					then
-						add_fact(vs(MProp, VS), !Ctx),
+						add_disjoint(DD, !Ctx),
 						LoopResult = ok,
 						Continue = yes
 					else
-						context(_, Line) = get_term_context(Term),
-						LoopResult = syntax_error("Unable to convert term to rule or fact", Line),
-						Continue = no
+						(if term_to_mprop(Term, MProp)
+						then
+							add_fact(vs(MProp, VS), !Ctx),
+							LoopResult = ok,
+							Continue = yes
+						else
+							context(_, Line) = get_term_context(Term),
+							LoopResult = syntax_error("Unable to convert term to rule or fact", Line),
+							Continue = no
+						)
 					)
 				)
 			)

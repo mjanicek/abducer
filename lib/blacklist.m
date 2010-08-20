@@ -33,7 +33,8 @@
 
 :- func init(C) = blacklist(M) <= (context(C, M), modality(M)).
 
-:- pred check_mgprop(mgprop(M)::in, blacklist(M)::in, blacklist(M)::out) is semidet.
+:- pred check_mgprop(mgprop(M)::in, blacklist(M)::in, blacklist(M)::out) is semidet
+		<= modality(M).
 
 %------------------------------------------------------------------------------%
 

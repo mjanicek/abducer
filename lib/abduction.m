@@ -519,14 +519,7 @@ apply_subst_to_query(Subst, asserted(MTest)) = asserted(apply_subst_to_mtest(Sub
 
 apply_subst_to_query_blacklist(Subst, Ctx, QIn, QOut, BLIn, BLOut) :-
 	QOut = apply_subst_to_query(Subst, QIn),
-
-	% check if the operation resulted in a new ground formula
-	(if
-		not ground_mprop(head_mprop(QIn), _),
-		ground_mprop(head_mprop(QOut), G)
-	then
-		check_mgprop(G, BLIn, BLOut)
-	else
-		% not a ground formula, continue
-		BLOut = BLIn
+	(if ground_mprop(head_mprop(QOut), G)
+	then check_mgprop(G, BLIn, BLOut)
+	else BLOut = BLIn
 	).
