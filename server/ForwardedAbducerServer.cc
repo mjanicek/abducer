@@ -14,6 +14,8 @@
 
 #include "TtyUtils.h"
 
+#include "Logging.h"
+
 using namespace std;
 using namespace Abducer;
 
@@ -26,19 +28,19 @@ static char buf[bufsize];
 ForwardedAbducerServer::ForwardedAbducerServer(pid_t abducer_pid_)
 : abducer_pid(abducer_pid_)
 {
-	cerr << tty::green << "* initialising abducer context" << tty::dcol << endl;
+	cerr << SERVER_MSG("initialising abducer context") << endl;
 	cout << "init_ctx." << endl;
 }
 
 void
 ForwardedAbducerServer::loadFile(const string& filename, const Ice::Current&)
 {
-	cerr << tty::green << "* loading file `" << filename << "'" << tty::dcol << endl;
+	cerr << REQUEST_MSG("loading file [" << filename << "]") << endl;
 	cout << "load_file(\"" << filename << "\")." << endl;
 
 	if (cin) {
 		cin.getline(buf, bufsize);
-		cerr << tty::red << "  [unimplemented: check success]" << tty::dcol << endl;
+		cerr << WARNING_MSG("unimplemented: check success") << endl;
 		debug(cerr << "  load file reply: " << buf << endl);
 	}
 
@@ -66,43 +68,42 @@ ForwardedAbducerServer::loadFile(const string& filename, const Ice::Current&)
 void
 ForwardedAbducerServer::clearRules(const Ice::Current&)
 {
-	cerr << tty::green << "* clearing rules" << tty::dcol << endl;
+	cerr << REQUEST_MSG("clearing rules") << endl;
 	cout << "clear_rules." << endl;
 }
 
 void
 ForwardedAbducerServer::clearFacts(const Ice::Current&)
 {
-	cerr << tty::green << "* clearing all facts" << tty::dcol << endl;
+	cerr << REQUEST_MSG("clearing all facts") << endl;
 	cout << "clear_facts." << endl;
 }
 
 void
 ForwardedAbducerServer::clearFactsByModality(Modality mod, const Ice::Current&)
 {
-	cerr << tty::green << "* clearing " << modalityToString(mod) << " facts" << tty::dcol << endl;
+	cerr << REQUEST_MSG("clearing [" << modalityToString(mod) << "] facts") << endl;
 	cout << "clear_facts_by_modality(" << modalityToString(mod) << "). << endl";
 }
 
 void
 ForwardedAbducerServer::clearAssumables(const Ice::Current&)
 {
-	cerr << tty::green << "* clearing assumables" << tty::dcol << endl;
+	cerr << REQUEST_MSG("clearing assumables") << endl;
 	cout << "clear_assumables." << endl;
 }
 
 void
 ForwardedAbducerServer::clearAssumableFunction(const string & function, const Ice::Current&)
 {
-	cerr << tty::green << "* clearing assumable function: " << function << tty::dcol << endl;
+	cerr << REQUEST_MSG("clearing assumable function [" << function << "]") << endl;
 	cout << "clear_assumable_function(\"" << function << "\")." << endl;
 }
 
 void
 ForwardedAbducerServer::addFact(const ModalisedFormulaPtr & fact, const Ice::Current&)
 {
-	cerr << tty::green << "* adding fact: " << fact->p->predSym << "(...)" << tty::dcol << endl;
-//	cerr << tty::red << "  [unimplemented]" << tty::dcol << endl;
+	cerr << REQUEST_MSG("adding fact [" << modalisedFormulaToString(fact) << "]") << endl;
 	cout << "add_fact(\"" << modalisedFormulaToString(fact) << ".\")." << endl;
 }
 
@@ -122,7 +123,7 @@ ensureFloatPortrayal(double n)
 void
 ForwardedAbducerServer::addAssumable(const string & function, const ModalisedFormulaPtr & f, float cost, const Ice::Current&)
 {
-	cerr << tty::green << "* adding assumable: " << f->p->predSym << "(...) / " << function << tty::dcol << endl;
+	cerr << REQUEST_MSG("adding assumable [" << modalisedFormulaToString(f) << " / " << function << "]") << endl;
 	stringstream ss;
 	ss << "add_assumable(\"" << function << "\", \"" << modalisedFormulaToString(f) << ".\", " << ensureFloatPortrayal(cost) << ")." << endl;
 
@@ -135,7 +136,7 @@ ForwardedAbducerServer::addAssumable(const string & function, const ModalisedFor
 void
 ForwardedAbducerServer::startProving(const vector<MarkedQueryPtr> & goals, const Ice::Current&)
 {
-	cerr << tty::green << "* proving started" << tty::dcol << endl;
+	cerr << REQUEST_MSG("proving started") << endl;
 	string s("prove([");
 
 	vector<MarkedQueryPtr>::const_iterator it = goals.begin();
@@ -176,7 +177,7 @@ ForwardedAbducerServer::getBestProof(int timeout, const Ice::Current&)
 		return vector<MarkedQueryPtr>();
 	}
 */
-	cerr << tty::green << "* will wait for the results, timeout=" << timeout << tty::dcol << endl;
+	cerr << REQUEST_MSG("waiting for results, timeout=" << timeout) << endl;
 
 	fd_set readfds;
 	struct timeval tv;
@@ -197,17 +198,17 @@ ForwardedAbducerServer::getBestProof(int timeout, const Ice::Current&)
 	int rc = select(1, &readfds, NULL, NULL, &tv);
 
 	if (rc < 0) {
-		cerr << tty::red << "  [select] error" << tty::dcol << endl;
+		cerr << ERROR_MSG("error in select()") << endl;
 		return vector<MarkedQueryPtr>();
 	}
 
 	if (FD_ISSET(STDIN_FILENO, &readfds)) {
 		// something is on stdin -> finished
-		cerr << tty::green << "  [select] results ready" << tty::dcol << endl;
+		cerr << NOTIFY_MSG("results ready before timeout") << endl;
 	}
 	else {
 		// timeout -- send SIGUSR1 to the abducer and assume that it's enough
-		cerr << tty::green << "  [select] timeout" << tty::dcol << endl;
+		cerr << NOTIFY_MSG("timeout") << endl;
 		kill(abducer_pid, SIGUSR1);
 	}
 
@@ -218,11 +219,11 @@ ForwardedAbducerServer::getBestProof(int timeout, const Ice::Current&)
 		debug(cerr << "RESPONSE: " << buf << endl);
 
 		if (*buf == 's') {
-			cerr << tty::green << "  a proof was found" << tty::dcol << endl;
+			cerr << NOTIFY_MSG("found a proof") << endl;
 			gotResults = true;
 		}
 		else {
-			cerr << tty::green << "  no proof found" << tty::dcol << endl;
+			cerr << NOTIFY_MSG("no proof found") << endl;
 			gotResults = false;
 		}
 	}
@@ -361,7 +362,7 @@ markModalisedFormula(Marking mark, ModalisedFormulaPtr mf)
 vector<MarkedQueryPtr>
 ForwardedAbducerServer::getBestProof()
 {
-	cerr << tty::green << "* retrieving the last proof" << tty::dcol << endl;
+	cerr << NOTIFY_MSG("retrieving the last proof") << endl;
 	cout << "get_best_proof." << endl;
 
 	int num = 0;

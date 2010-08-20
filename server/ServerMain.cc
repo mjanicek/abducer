@@ -11,6 +11,8 @@
 #include "ForwardedAbducerServer.h"
 #include "TtyUtils.h"
 
+#include "Logging.h"
+
 using namespace std;
 
 #define PIPE_READ   0
@@ -77,8 +79,8 @@ runServer(pid_t abducer_pid)
 	try {
 		ic = Ice::initialize();
 
-		cerr << tty::yellow << "* server name = \"" << SERVER_NAME << "\"" << tty::dcol << endl;
-		cerr << tty::yellow << "* server endpoints = \"" << SERVER_ENDPOINTS << "\"" << tty::dcol << endl;
+		cerr << SERVER_MSG("server name = \"" << SERVER_NAME << "\"") << endl;
+		cerr << SERVER_MSG("server endpoints = \"" << SERVER_ENDPOINTS << "\"") << endl;
 
 		Ice::ObjectAdapterPtr adapter
 				= ic->createObjectAdapterWithEndpoints("AbducerAdapter", SERVER_ENDPOINTS);
@@ -98,7 +100,7 @@ runServer(pid_t abducer_pid)
 		status = 1;
 	}
 
-	cerr << tty::yellow << "* server shut down" << tty::dcol << endl;
+	cerr << SERVER_MSG("server shut down") << endl;
 
 	if (ic) {
 		try {
@@ -116,7 +118,7 @@ void
 shutdownServer(int signum)
 {
 	cerr << endl;
-	cerr << tty::yellow << "* received signal " << signum << tty::dcol << endl;
+	cerr << SERVER_MSG("received signal " << signum) << endl;
 	try {
 		ic->shutdown();
 	}
@@ -133,9 +135,9 @@ printUsage()
 	char * cwd = new char[512];
 	getcwd(cwd, cwd_length);
 
-	cerr << "* using server interface revision " << tty::white << ABDUCER_ICE_VERSION << tty::dcol << endl;
-	cerr << tty::yellow << "* path to the abducer: " << abducer_path << tty::dcol << endl;
-	cerr << tty::yellow << "* abducer working directory: " << cwd << tty::dcol << endl;
+	cerr << SERVER_MSG("using server interface revision " << tty::white << ABDUCER_ICE_VERSION << tty::dcol) << endl;
+	cerr << SERVER_MSG("path to the abducer [" << abducer_path << "]") << endl;
+	cerr << SERVER_MSG("abducer working directory [" << cwd << "]") << endl;
 
 	delete cwd;
 }

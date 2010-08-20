@@ -185,6 +185,7 @@ process_request(prove(L), !SCtx, !IO) :-
 	P0 = new_proof(!.SCtx^cx, Qs, varset.init),
 	is_ctx_proof(P0),
 
+/*
 	print(stderr_stream, "facts:\n", !IO),
 	print_facts(stderr_stream, !.SCtx^cx, "  ", !IO),
 	nl(stderr_stream, !IO),
@@ -195,6 +196,7 @@ process_request(prove(L), !SCtx, !IO) :-
 	print(stderr_stream, "disjoint declarations:\n", !IO),
 	print_disjoints(stderr_stream, !.SCtx^cx, "  ", !IO),
 	nl(stderr_stream, !IO),
+*/
 
 	Proofs0 = set.to_sorted_list(solutions_set((pred((Cost-P)::out) is nondet :-
 		prove(0.0, 100.0, P0, P, default_costs, !.SCtx^cx),
