@@ -17,4 +17,4 @@ if [ ! -e "$PATH_TO_BIN" ]; then
 	exit 1
 fi
 
-"$PATH_TO_BIN" -n "$SERVER_NAME" -e "$SERVER_ENDPOINTS" "$DIR/$CORE_BIN"
+"$PATH_TO_BIN" -n "$SERVER_NAME" -e "$SERVER_ENDPOINTS" -a "$DIR/$CORE_BIN"

@@ -40,9 +40,9 @@ using namespace std;
 #define PIPE_READ   0
 #define PIPE_WRITE  1
 
-const char * DEFAULT_SERVER_NAME = "AbducerServer";
-const char * DEFAULT_SERVER_ENDPOINTS = "default -p 10000";
-const char * DEFAULT_ABDUCER_PATH = "/usr/bin/false";
+const string DEFAULT_SERVER_NAME = "AbducerServer";
+const string DEFAULT_SERVER_ENDPOINTS = "default -p 10000";
+const string DEFAULT_ABDUCER_PATH = "/usr/bin/false";
 
 // this probably shouldn't be static
 static Ice::CommunicatorPtr ic;
@@ -84,6 +84,10 @@ main(int argc, char ** argv)
 			pipe(pipe_from_child);
 
 			pid_t pchild;
+
+			if (s.abducerPath == DEFAULT_ABDUCER_PATH) {
+				cerr << WARNING_MSG("using default path to the abducer binary") << endl;
+			}
 
 			if ((pchild = fork()) == 0) {
 				preparePlumbing(true);
@@ -129,8 +133,7 @@ runServer(pid_t abducer_pid, const Settings & s)
 	try {
 		ic = Ice::initialize();
 
-		cerr << SERVER_MSG("server name = \"" << s.serverName<< "\"") << endl;
-		cerr << SERVER_MSG("server endpoints = \"" << s.serverEndpoints << "\"") << endl;
+		cerr << SERVER_MSG("setting up server at [" << tty::white << s.serverName<< ":" << s.serverEndpoints << tty::dcol << "]") << endl;
 
 		Ice::ObjectAdapterPtr adapter
 				= ic->createObjectAdapterWithEndpoints("AbducerAdapter", s.serverEndpoints);
@@ -185,10 +188,10 @@ printStatus(pid_t abducerPID, const Settings & s)
 	char * cwd = new char[512];
 	getcwd(cwd, cwd_length);
 
-	cerr << SERVER_MSG("using server interface revision " << tty::white << ABDUCER_ICE_VERSION << tty::dcol) << endl;
-	cerr << SERVER_MSG("path to the abducer [" << s.abducerPath << "]") << endl;
-	cerr << SERVER_MSG("abducer PID [" << abducerPID << "]") << endl;
-	cerr << SERVER_MSG("abducer working directory [" << cwd << "]") << endl;
+	cerr << NOTIFY_MSG("using server interface revision " << tty::white << ABDUCER_ICE_VERSION << tty::dcol) << endl;
+	cerr << NOTIFY_MSG("path to the abducer [" << s.abducerPath << "]") << endl;
+	cerr << NOTIFY_MSG("abducer PID [" << abducerPID << "]") << endl;
+	cerr << NOTIFY_MSG("abducer working directory [" << cwd << "]") << endl;
 
 	delete cwd;
 }
@@ -196,11 +199,13 @@ printStatus(pid_t abducerPID, const Settings & s)
 void
 printUsage()
 {
-	cout << "abducer-server [OPTIONS] PATH_TO_ABDUCER" << endl << endl;
-	cout << "OPTIONS may be the following:" << endl;
-	cout << "  -n SERVER_NAME        Name of the ICE server" << endl;
-	cout << "  -e SERVER_ENDPOINT    Endpoints of the ICE server" << endl;
-	cout << "  -h                    Print (this) help" << endl;
+	cout << "abducer-server ARGS" << endl
+		<< endl
+		<< "ARGS may be the following (defaults in brackets):" << endl
+		<< "  -n NAME         Name of the ICE server [" << DEFAULT_SERVER_NAME << "]" << endl
+		<< "  -e ENDPOINTS    Endpoints of the ICE server [" << DEFAULT_SERVER_ENDPOINTS << "]" << endl
+		<< "  -a ABDUCER_BIN  Path to the abducer binary [" << DEFAULT_ABDUCER_PATH << "]" << endl
+		<< "  -h              Print (this) help" << endl;
 }
 
 void

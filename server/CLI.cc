@@ -35,6 +35,7 @@ processCommandLineArgs(int argc, char ** argv, Settings & setup)
 //			{"verbose",    no_argument,       0, 'v'},
 			{"name",       required_argument, 0, 'n'},
 			{"endpoints",  required_argument, 0, 'e'},
+			{"abducer",    required_argument, 0, 'a'},
 			{0, 0, 0, 0}
 		};
 
@@ -42,7 +43,7 @@ processCommandLineArgs(int argc, char ** argv, Settings & setup)
 		int c;
 		int idx = 0;
 
-		c = getopt_long(argc, argv, "hn:e:", longOptions, &idx);
+		c = getopt_long(argc, argv, "hn:e:a:", longOptions, &idx);
 		if (c == -1) {
 			break;
 		}
@@ -68,19 +69,16 @@ processCommandLineArgs(int argc, char ** argv, Settings & setup)
 			setup.serverEndpoints = optarg;
 			break;
 
+		case 'a':
+			setup.serverEndpoints = optarg;
+			break;
+
 		case '?':
 			return Error;
 
 		default:
 			return Error;
 		}
-	}
-
-	if (optind < argc) {
-		setup.abducerPath = argv[optind];
-	}
-	else {
-		return Error;
 	}
 
 	return (help ? PrintHelp : Start);
