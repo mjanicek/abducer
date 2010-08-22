@@ -31,6 +31,7 @@
 #include "ForwardedAbducerServer.h"
 #include "TtyUtils.h"
 
+#include "Version.h"
 #include "Logging.h"
 
 using namespace std;
@@ -58,6 +59,9 @@ void
 printUsage();
 
 void
+printVersion();
+
+void
 preparePlumbing(bool child);
 
 int
@@ -68,6 +72,8 @@ main(int argc, char ** argv)
 		return EXIT_FAILURE;
 	}
 	abducer_path = (const char *) argv[1];
+
+	printVersion();
 
 	pipe(pipe_to_child);
 	pipe(pipe_from_child);
@@ -160,6 +166,13 @@ printUsage()
 	cerr << SERVER_MSG("abducer working directory [" << cwd << "]") << endl;
 
 	delete cwd;
+}
+
+void
+printVersion()
+{
+	cerr << "Abducer server " << ABDUCER_VERSION << endl;
+	cerr << "(c) 2009-2010 DFKI GmbH Talking Robots" << endl;
 }
 
 void
