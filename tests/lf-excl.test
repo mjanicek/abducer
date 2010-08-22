@@ -1,9 +1,0 @@
-CLEAR
-	r(colour, r(tint, p(weird)) ^ p(red)).
-	r(colour, p(violet)).
-
-	@(c::colour, r(tint, t::tint)).
-	r(colour, c::colour).
-#	r(colour, d::colour).
-
-PRINT

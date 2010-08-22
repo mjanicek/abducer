@@ -1,5 +1,5 @@
-.PHONY: main
-main: server
+.PHONY: all
+all: server cli tests
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -#
 

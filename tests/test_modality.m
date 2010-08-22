@@ -11,20 +11,20 @@
 :- implementation.
 
 :- import_module list, string.
-:- import_module ctx_modality, modality, ctx_io, belief_model, stf.
+:- import_module ctx_modality, modality, ctx_io.
 :- import_module stringable.
 
 main(!IO) :-
-	test_ctx_modality_match([att], [any], !IO),
-	test_ctx_modality_match([any], [att], !IO),
-	test_ctx_modality_match([att], [att], !IO),
+	test_ctx_modality_match([attention], [any], !IO),
+	test_ctx_modality_match([any], [attention], !IO),
+	test_ctx_modality_match([attention], [attention], !IO),
 	test_ctx_modality_match([any], [], !IO),
 	test_ctx_modality_match([], [any], !IO),
 	test_ctx_modality_match([any], [any], !IO),
 	test_ctx_modality_match([any], [any, any], !IO),
 
-	test_ctx_modality_match([att], [any, att, any], !IO),
-	test_ctx_modality_match([att], [any, evt], !IO),
+	test_ctx_modality_match([attention], [any, attention, any], !IO),
+	test_ctx_modality_match([attention], [any, evt], !IO),
 
 	test_ctx_modality_match([], [], !IO).
 
