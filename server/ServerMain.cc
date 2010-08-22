@@ -85,10 +85,6 @@ main(int argc, char ** argv)
 
 			pid_t pchild;
 
-			if (s.abducerPath == DEFAULT_ABDUCER_PATH) {
-				cerr << WARNING_MSG("using default path to the abducer binary") << endl;
-			}
-
 			if ((pchild = fork()) == 0) {
 				preparePlumbing(true);
 
@@ -133,7 +129,7 @@ runServer(pid_t abducer_pid, const Settings & s)
 	try {
 		ic = Ice::initialize();
 
-		cerr << SERVER_MSG("setting up server at [" << tty::white << s.serverName<< ":" << s.serverEndpoints << tty::dcol << "]") << endl;
+		cerr << SERVER_MSG("setting up server at " << tty::white << s.serverName<< ":" << s.serverEndpoints << tty::dcol) << endl;
 
 		Ice::ObjectAdapterPtr adapter
 				= ic->createObjectAdapterWithEndpoints("AbducerAdapter", s.serverEndpoints);
@@ -188,10 +184,14 @@ printStatus(pid_t abducerPID, const Settings & s)
 	char * cwd = new char[512];
 	getcwd(cwd, cwd_length);
 
-	cerr << NOTIFY_MSG("using server interface revision " << tty::white << ABDUCER_ICE_VERSION << tty::dcol) << endl;
-	cerr << NOTIFY_MSG("path to the abducer [" << s.abducerPath << "]") << endl;
-	cerr << NOTIFY_MSG("abducer PID [" << abducerPID << "]") << endl;
-	cerr << NOTIFY_MSG("abducer working directory [" << cwd << "]") << endl;
+	cerr << NOTIFY_MSG("server interface revision " << tty::white << ABDUCER_ICE_VERSION << tty::dcol) << endl;
+	cerr << NOTIFY_MSG("abducer binary: " << s.abducerPath) << endl;
+	if (s.abducerPath == DEFAULT_ABDUCER_PATH) {
+		cerr << WARNING_MSG("abducer binary is set to default") << endl;
+	}
+
+	cerr << NOTIFY_MSG("abducer working directory: " << cwd) << endl;
+	cerr << NOTIFY_MSG("abducer PID: " << abducerPID) << endl;
 
 	delete cwd;
 }
