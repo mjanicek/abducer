@@ -1,0 +1,3 @@
+#!/bin/sh
+
+../abducer-cli test. < "$1"

@@ -1,0 +1,12 @@
+disjoint([p(y), q(y)]).
+disjoint([p(x), q(x)]).
+
+p(x).
+p(y).
+
+q(x).
+q(y).
+
+test <-
+	p(X),
+	q(Y).
