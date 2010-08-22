@@ -70,7 +70,7 @@ processCommandLineArgs(int argc, char ** argv, Settings & setup)
 			break;
 
 		case 'a':
-			setup.serverEndpoints = optarg;
+			setup.abducerPath = optarg;
 			break;
 
 		case '?':
