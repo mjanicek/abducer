@@ -1,6 +1,3 @@
-#ifndef VERSION_H__
-#define VERSION_H__  1
-
 // ----------------------------------------------------------------------------
 // Copyright (C) 2010 DFKI GmbH Talking Robots 
 // Miroslav Janicek (miroslav.janicek@dfki.de) 
@@ -21,6 +18,70 @@
 // 02111-1307, USA.
 // ----------------------------------------------------------------------------
 
-#define ABDUCER_VERSION  "0.3-pre"
+#include "CLI.h"
 
-#endif
+extern "C" {
+#include <unistd.h>
+#include <getopt.h>
+}
+
+CommandLineAction
+processCommandLineArgs(int argc, char ** argv, Settings & setup)
+{
+	bool help = false;
+
+	static struct option longOptions[] = {
+			{"help",       no_argument,       0, 'h'},
+//			{"verbose",    no_argument,       0, 'v'},
+			{"name",       required_argument, 0, 'n'},
+			{"endpoints",  required_argument, 0, 'e'},
+			{0, 0, 0, 0}
+		};
+
+	while (1) {
+		int c;
+		int idx = 0;
+
+		c = getopt_long(argc, argv, "hn:e:", longOptions, &idx);
+		if (c == -1) {
+			break;
+		}
+
+		switch (c) {
+		case 0:
+			// flags
+			break;
+
+		case 'h':
+			help = true;
+			break;
+
+//		case 'v':
+//			isVerbose = true;
+//			break;
+
+		case 'n':
+			setup.serverName = optarg;
+			break;
+
+		case 'e':
+			setup.serverEndpoints = optarg;
+			break;
+
+		case '?':
+			return Error;
+
+		default:
+			return Error;
+		}
+	}
+
+	if (optind < argc) {
+		setup.abducerPath = argv[optind];
+	}
+	else {
+		return Error;
+	}
+
+	return (help ? PrintHelp : Start);
+}

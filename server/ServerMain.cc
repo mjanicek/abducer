@@ -31,6 +31,7 @@
 #include "ForwardedAbducerServer.h"
 #include "TtyUtils.h"
 
+#include "CLI.h"
 #include "Version.h"
 #include "Logging.h"
 
@@ -39,21 +40,23 @@ using namespace std;
 #define PIPE_READ   0
 #define PIPE_WRITE  1
 
-const char * SERVER_NAME = "AbducerServer";
-const char * SERVER_ENDPOINTS = "default -p 10000";
+const char * DEFAULT_SERVER_NAME = "AbducerServer";
+const char * DEFAULT_SERVER_ENDPOINTS = "default -p 10000";
+const char * DEFAULT_ABDUCER_PATH = "/usr/bin/false";
 
 // this probably shouldn't be static
 static Ice::CommunicatorPtr ic;
 static int pipe_to_child[2];
 static int pipe_from_child[2];
 
-static const char * abducer_path = "/usr/bin/false";
-
 int
-runServer(pid_t abducer_pid);
+runServer(pid_t abducer_pid, const Settings & s);
 
 void
 shutdownServer(int);
+
+void
+printStatus(pid_t abducerPID, const Settings & s);
 
 void
 printUsage();
@@ -67,52 +70,73 @@ preparePlumbing(bool child);
 int
 main(int argc, char ** argv)
 {
-	if (argc != 2) {
-		cerr << "Usage error" << endl;
-		return EXIT_FAILURE;
+	Settings s;
+	s.serverName = DEFAULT_SERVER_NAME;
+	s.serverEndpoints = DEFAULT_SERVER_ENDPOINTS;
+	s.abducerPath = DEFAULT_ABDUCER_PATH;
+
+	switch (processCommandLineArgs(argc, argv, s)) {
+	case Start:
+		{
+			printVersion();
+
+			pipe(pipe_to_child);
+			pipe(pipe_from_child);
+
+			pid_t pchild;
+
+			if ((pchild = fork()) == 0) {
+				preparePlumbing(true);
+
+				execlp(s.abducerPath.c_str(), s.abducerPath.c_str(), NULL);
+				perror("Exec failed");
+			}
+			else {
+				preparePlumbing(false);
+				runServer(pchild, s);
+
+				wait(0);
+			}
+
+			return EXIT_SUCCESS;
+		}
+		break;
+
+	case PrintHelp:
+		{
+			printUsage();
+			return EXIT_SUCCESS;
+		}
+		break;
+
+	case Error:
+	default:
+		{
+			cout << "Usage error." << endl;
+			printUsage();
+			return EXIT_FAILURE;
+		}
+		break;
 	}
-	abducer_path = (const char *) argv[1];
-
-	printVersion();
-
-	pipe(pipe_to_child);
-	pipe(pipe_from_child);
-
-	pid_t pchild;
-
-	if ((pchild = fork()) == 0) {
-		preparePlumbing(true);
-
-		execlp(abducer_path, abducer_path, NULL);
-		perror("Exec failed");
-	}
-	else {
-		preparePlumbing(false);
-		runServer(pchild);
-
-		wait(0);
-	}
-
-	return EXIT_SUCCESS;
 }
 
 int
-runServer(pid_t abducer_pid)
+runServer(pid_t abducer_pid, const Settings & s)
 {
-	printUsage();
+	printStatus(abducer_pid, s);
 	IceUtil::CtrlCHandler ctrlCHandler(shutdownServer);
 	int status = 0;
 	try {
 		ic = Ice::initialize();
 
-		cerr << SERVER_MSG("server name = \"" << SERVER_NAME << "\"") << endl;
-		cerr << SERVER_MSG("server endpoints = \"" << SERVER_ENDPOINTS << "\"") << endl;
+		cerr << SERVER_MSG("server name = \"" << s.serverName<< "\"") << endl;
+		cerr << SERVER_MSG("server endpoints = \"" << s.serverEndpoints << "\"") << endl;
 
 		Ice::ObjectAdapterPtr adapter
-				= ic->createObjectAdapterWithEndpoints("AbducerAdapter", SERVER_ENDPOINTS);
+				= ic->createObjectAdapterWithEndpoints("AbducerAdapter", s.serverEndpoints);
 
 		Ice::ObjectPtr object = new ForwardedAbducerServer(abducer_pid);
-		adapter->add(object, ic->stringToIdentity(SERVER_NAME));
+		adapter->add(object, ic->stringToIdentity(s.serverName));
 		adapter->activate();
 
 		ic->waitForShutdown();
@@ -155,17 +179,28 @@ shutdownServer(int signum)
 }
 
 void
-printUsage()
+printStatus(pid_t abducerPID, const Settings & s)
 {
 	const size_t cwd_length = 512;
 	char * cwd = new char[512];
 	getcwd(cwd, cwd_length);
 
 	cerr << SERVER_MSG("using server interface revision " << tty::white << ABDUCER_ICE_VERSION << tty::dcol) << endl;
-	cerr << SERVER_MSG("path to the abducer [" << abducer_path << "]") << endl;
+	cerr << SERVER_MSG("path to the abducer [" << s.abducerPath << "]") << endl;
+	cerr << SERVER_MSG("abducer PID [" << abducerPID << "]") << endl;
 	cerr << SERVER_MSG("abducer working directory [" << cwd << "]") << endl;
 
 	delete cwd;
+}
+
+void
+printUsage()
+{
+	cout << "abducer-server [OPTIONS] PATH_TO_ABDUCER" << endl << endl;
+	cout << "OPTIONS may be the following:" << endl;
+	cout << "  -n SERVER_NAME        Name of the ICE server" << endl;
+	cout << "  -e SERVER_ENDPOINT    Endpoints of the ICE server" << endl;
+	cout << "  -h                    Print (this) help" << endl;
 }
 
 void

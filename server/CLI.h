@@ -1,5 +1,5 @@
-#ifndef VERSION_H__
-#define VERSION_H__  1
+#ifndef CLI_H__
+#define CLI_H__  1
 
 // ----------------------------------------------------------------------------
 // Copyright (C) 2010 DFKI GmbH Talking Robots 
@@ -21,6 +21,21 @@
 // 02111-1307, USA.
 // ----------------------------------------------------------------------------
 
-#define ABDUCER_VERSION  "0.3-pre"
+#include <string>
+
+enum CommandLineAction {
+	Error,
+	PrintHelp,
+	Start
+};
+
+struct Settings {
+	std::string serverName;
+	std::string serverEndpoints;
+	std::string abducerPath;
+};
+
+CommandLineAction
+processCommandLineArgs(int argc, char ** argv, Settings & s);
 
 #endif

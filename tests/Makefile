@@ -1,5 +1,3 @@
-# $Id: Makefile 4590 2009-11-13 15:21:40Z janicek $
-
 # Binary files to be built.
 #
 MBIN=test_formulae test_modality
