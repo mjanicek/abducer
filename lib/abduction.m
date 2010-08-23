@@ -206,12 +206,13 @@ transform(L0, VS0, BL0, L, VS, BL, Ctx) :-
 	then
 		L = L2,
 		VS = VS2,
-		BL = BL2
+		BL3 = BL2
 	else
 		L = L1,
 		VS = VS1,
-		BL = BL1
-	).
+		BL3 = BL1
+	),
+	check_disjoints(L, BL3, BL).
 
 /*
 	(if
@@ -565,6 +566,17 @@ solved_unifiable(Q, [QH|_T], Uni) :-
 
 solved_unifiable(Q, [_QH|T], Uni) :-
 	solved_unifiable(Q, T, Uni).
+
+%------------------------------------------------------------------------------%
+
+:- pred check_disjoints(list(query(M))::in, blacklist(M)::in, blacklist(M)::out) is semidet <= modality(M).
+
+check_disjoints(Qs, BL0, BL) :-
+	list.foldl((pred(Q::in, BL1::in, BL2::out) is semidet :-
+		(if ground_mprop(head_mprop(Q), G)
+		then check_mgprop(G, BL1, BL2)
+		else BL2 = BL1
+			)), Qs, BL0, BL).
 
 %------------------------------------------------------------------------------%
 

@@ -22,12 +22,18 @@
 
 :- interface.
 
+:- import_module set, map.
 :- import_module formula.
 :- import_module context, modality.
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-:- type blacklist(M).
+:- type blacklist(M)
+	--->	bl(
+		bl_map :: map(mgprop(M), disjoint(M)),
+		used :: set(mgprop(M)),
+		forbidden :: set(mgprop(M))
+	).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
@@ -41,14 +47,6 @@
 :- implementation.
 
 :- import_module solutions.
-:- import_module set, map.
-
-:- type blacklist(M)
-	--->	bl(
-		bl_map :: map(mgprop(M), disjoint(M)),
-		used :: set(mgprop(M)),
-		forbidden :: set(mgprop(M))
-	).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
@@ -71,11 +69,20 @@ init(Ctx) = bl(BLMap, set.init, set.init) :-
 
 check_mgprop(MGF, BL0, BL) :-
 	not set.member(MGF, BL0^forbidden),
-	(if map.search(BL0^bl_map, MGF, NewForbidden)
+	BL1 = BL0^used := set.insert(BL0^used, MGF),
+	(if map.search(BL1^bl_map, MGF, NewForbidden)
 	then 
-		set.empty(set.intersect(BL0^used, NewForbidden)),
-		BL1 = BL0^forbidden := set.union(BL0^forbidden, NewForbidden)
+		BL = BL1^forbidden := set.union(BL1^forbidden, NewForbidden),
+		set.empty(set.intersect(BL^used, BL^forbidden))
 	else
-		BL1 = BL0
-	),
-	BL = BL1^used := set.insert(BL1^used, MGF).
+		BL = BL1
+	).
+
+%	(if map.search(BL0^bl_map, MGF, NewForbidden)
+%	then 
+%		set.empty(set.intersect(BL0^used, NewForbidden)),
+%		BL1 = BL0^forbidden := set.union(BL0^forbidden, NewForbidden)
+%	else
+%		BL1 = BL0
+%	),
+%	BL = BL0^used := set.insert(BL0^used, MGF).

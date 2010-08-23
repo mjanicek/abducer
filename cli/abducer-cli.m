@@ -104,9 +104,12 @@ main(!IO) :-
 
 			format("\n  %d proof(s) found.\n", [i(list.length(Proofs))], !IO),
 
-			list.foldl((pred((Cost-proof(Gz, _BL))::in, !.IO::di, !:IO::uo) is det :-
+			list.foldl((pred((Cost-proof(Gz, BL))::in, !.IO::di, !:IO::uo) is det :-
 				print("---------------------------------------------------------------------\n", !IO),
 				format("proof cost = %f\n\n", [f(Cost)], !IO),
+				print("blacklist:\n", !IO),
+				print(blacklist_to_string(BL), !IO),
+				nl(!IO),
 				print("proven goal:\n  " ++ goal_to_string(Gz) ++ "\n", !IO),
 				nl(!IO)
 					), Proofs, !IO)

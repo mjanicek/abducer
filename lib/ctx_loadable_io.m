@@ -23,7 +23,7 @@
 :- interface.
 
 :- import_module io, list, varset, bag.
-:- import_module abduction, ctx_modality, formula, stringable, modality.
+:- import_module abduction, ctx_modality, formula, stringable, modality, blacklist.
 :- import_module ctx_loadable.
 
 :- pred print_facts(ctx::in, string::in, io::di, io::uo) is det.
@@ -49,6 +49,7 @@
 :- func step_to_string(step(M)) = string <= (modality(M), stringable(M)).
 :- func query_to_string(varset, query(ctx_modality)) = string.
 :- func proof_state_to_string(varset, list(query(ctx_modality))) = string.
+:- func blacklist_to_string(blacklist(ctx_modality)) = string.
 
 %------------------------------------------------------------------------------%
 
@@ -57,7 +58,7 @@
 :- import_module require, solutions.
 :- import_module map, set, list, pair, assoc_list, string, float, int, bag, bool.
 :- import_module utils.
-:- import_module abduction, formula, context, costs.
+:- import_module abduction, formula, context, costs, blacklist.
 
 :- import_module ctx_modality, ctx_loadable, ctx_io.
 :- import_module modality, stringable.
@@ -137,7 +138,12 @@ print_ctx(Stream, Ctx, !IO) :-
 	nl(Stream, !IO),
 
 	print(Stream, "disjoint declarations:\n", !IO),
-	print_disjoints(Stream, Ctx, "  ", !IO).
+	print_disjoints(Stream, Ctx, "  ", !IO),
+
+	nl(Stream, !IO),
+
+	print(Stream, "disjoint blacklist:\n", !IO),
+	print(Stream, blacklist_to_string(blacklist.init(Ctx)), !IO).
 
 print_ctx(Ctx, !IO) :-
 	print_ctx(stdout_stream, Ctx, !IO).
@@ -269,3 +275,22 @@ assertions_to_string(_Ctx, As) = Str :-
 
 proof_state_to_string(Varset, L) = S :-
 	S = string.join_list(",\n  ", list.map(query_to_string(Varset), L)).
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
+blacklist_to_string(BL) = S :-
+	S = "map:\n" ++ map.foldl((func(K, V, S0) = S0 ++ tty_mgprop_to_string(K) ++ " --> " ++ set_of_mgprop_to_string(V) ++ "\n"), BL^bl_map, "")
+			++ "used: " ++ set_of_mgprop_to_string(BL^used) ++ "\n"
+			++ "forbidden: " ++ set_of_mgprop_to_string(BL^forbidden) ++ "\n".
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
+:- func tty_mgprop_to_string(mgprop(ctx_modality)) = string.
+
+tty_mgprop_to_string(MGP) = tty_mprop_to_string(varset.init, ground_mprop_to_mprop(MGP)).
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
+:- func set_of_mgprop_to_string(set(mgprop(ctx_modality))) = string.
+
+set_of_mgprop_to_string(Set) = "[" ++ string.join_list(", ", list.map(tty_mgprop_to_string, set.to_sorted_list(Set))) ++ "]".
