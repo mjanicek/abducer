@@ -245,7 +245,7 @@ query_to_string(VS, asserted(MTest)) = tty_mtest_to_string(VS, MTest) ++ totty(m
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-goal_to_string(vs(G, VS)) = string.join_list(",\n  ", list.map(query_to_string(VS), G)).
+goal_to_string(vs(G, VS)) = string.join_list(",\n  ", list.reverse(list.map(query_to_string(VS), G))).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 

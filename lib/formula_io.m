@@ -78,6 +78,7 @@
 
 :- import_module require.
 :- import_module list, pair, string, map, set.
+:- import_module float, math.
 :- import_module costs.
 :- import_module formula_ops.
 :- import_module parser, term_io.
@@ -231,7 +232,7 @@ term_to_list_of_rule_antecedents(T, List) :-
 	then
 		term_to_rule_antecedent(TMP, This),
 		term_to_list_of_rule_antecedents(TMPs, MPs),
-		List = [This|MPs]
+		List = MPs ++ [This]
 	else
 		term_to_rule_antecedent(T, This),
 		List = [This]
@@ -301,6 +302,7 @@ term_to_rule_antecedent(MainT, Antecedent) :-
 
 term_to_cost_function(functor(atom(FName), [], _), f(FName)).
 term_to_cost_function(functor(float(FValue), [], _), const(FValue)).
+term_to_cost_function(functor(atom("p"), [functor(float(Prob), [], _)], _), const(-math.ln(Prob))).
 
 %------------------------------------------------------------------------------%
 
@@ -345,7 +347,13 @@ term_to_assumable_function_def(functor(atom("="), [FuncNameTerm, DefTerms], _), 
 		term_to_mprop(MPropTerm, m(Mod, Prop)),
 		ground_formula(Prop, GProp),
 		MGProp = m(Mod, GProp),
-		CostTerm = functor(float(Cost), [], _)
+		term_to_cost(CostTerm, Cost)
 			), ListCostTerms, Costs),
 	FuncDef = FuncName-map.from_assoc_list(Costs).
 
+%------------------------------------------------------------------------------%
+
+:- pred term_to_cost(term.term::in, float::out) is semidet.
+
+term_to_cost(functor(float(Cost), [], _), Cost).
+term_to_cost(functor(atom("p"), [functor(float(Prob), [], _)], _), -math.ln(Prob)).

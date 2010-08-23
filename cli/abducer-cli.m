@@ -32,6 +32,7 @@
 
 :- import_module require, solutions.
 :- import_module map, set, list, pair, assoc_list, string, float, int, bag, bool.
+:- import_module math.
 :- import_module utils.
 :- import_module abduction, formula, context, costs.
 :- import_module loading.
@@ -106,10 +107,10 @@ main(!IO) :-
 
 			list.foldl((pred((Cost-proof(Gz, BL))::in, !.IO::di, !:IO::uo) is det :-
 				print("---------------------------------------------------------------------\n", !IO),
-				format("proof cost = %f\n\n", [f(Cost)], !IO),
-				print("blacklist:\n", !IO),
-				print(blacklist_to_string(BL), !IO),
-				nl(!IO),
+				format("proof cost = %f (p=%f)\n\n", [f(Cost), f(math.exp(-Cost))], !IO),
+%				print("blacklist:\n", !IO),
+%				print(blacklist_to_string(BL), !IO),
+%				nl(!IO),
 				print("proven goal:\n  " ++ goal_to_string(Gz) ++ "\n", !IO),
 				nl(!IO)
 					), Proofs, !IO)
