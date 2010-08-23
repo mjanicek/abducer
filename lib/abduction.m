@@ -22,7 +22,7 @@
 
 :- interface.
 
-:- import_module list, bag.
+:- import_module list, set, bag.
 :- import_module varset.
 
 :- import_module modality.
@@ -67,7 +67,12 @@
 
 :- func new_proof(C, list(query(M)), varset) = proof(M) <= (context(C, M), modality(M)).
 
-:- pred prove(float::in, float::in, proof(M)::in, proof(M)::out, costs::in, C::in) is nondet <= (modality(M), context(C, M)).
+:- type iddfs_increment
+	--->	absolute(float)
+%	;	logarithmic(float)
+	.
+
+:- pred prove(float::in, iddfs_increment::in, proof(M)::in, set(proof(M))::out, costs::in, C::in) is det <= (modality(M), context(C, M)).
 
 %:- func last_goal(proof(M)) = vscope(list(query(M))) <= modality(M).
 
@@ -83,7 +88,7 @@
 :- implementation.
 
 :- import_module require, solutions.
-:- import_module map, set, assoc_list, pair.
+:- import_module map, assoc_list, pair.
 :- import_module string, float, bool.
 :- import_module modality.
 
@@ -140,10 +145,27 @@ goal_solved(L) :-
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-:- pragma promise_pure(prove/6).
+prove(CostBound, Increment, P0, Ps, Costs, Ctx) :-
+	Ps0 = solutions_set((pred(P::out) is nondet :-
+		prove_bound(CostBound, P0, P, Costs, Ctx)
+			)),
+	(if
+		anytime.pure_signalled(no)
+	then
+		(
+			Increment = absolute(AbsValue),
+			NewCostBound = CostBound + AbsValue
+		),
+		prove(NewCostBound, Increment, P0, Ps1, Costs, Ctx),
+		Ps = set.union(Ps0, Ps1)
+	else
+		Ps = Ps0
+	).
 
-prove(CurCost, CostBound, P0, P, Costs, Ctx) :-
-	impure anytime.signalled(no),
+:- pred prove_bound(float::in, proof(M)::in, proof(M)::out, costs::in, C::in) is nondet <= (modality(M), context(C, M)).
+
+prove_bound(CostBound, P0, P, Costs, Ctx) :-
+	anytime.pure_signalled(no),
 
 	P0 = proof(vs(L0, VS0), BL0),
 	(if
@@ -164,12 +186,8 @@ prove(CurCost, CostBound, P0, P, Costs, Ctx) :-
 		transform(L0, VS0, BL0, L, VS, BL, Ctx),
 		P1 = proof(vs(L, VS), BL),
 
-%		StepCost = step_cost(Ctx, Step, Costs),
-		% XXX TODO: costs here!
-		StepCost = 1.0,
-%			CurCost + StepCost =< CostBound,
-
-		prove(CurCost + StepCost, CostBound, P1, P, Costs, Ctx)
+		cost(Ctx, P1, Costs) < CostBound,
+		prove_bound(CostBound, P1, P, Costs, Ctx)
 	).
 
 %------------------------------------------------------------------------------%

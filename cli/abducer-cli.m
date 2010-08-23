@@ -72,15 +72,18 @@ main(!IO) :-
 
 %			DC0 = new_d_ctx,
 
-			Proofs0 = set.to_sorted_list(solutions_set((pred((Cost-P)::out) is nondet :-
-%				Costs = costs(1.0, 1.0),
-%				prove(0.0, InitAssumeCost, P0, P, Costs, !.Ctx),
-%				G = last_goal(P),
-%				Cost = cost(!.Ctx, P, Costs)
+			prove(1.0, absolute(0.2), P0, Ps, default_costs, !.Ctx),
+			Proofs0 = list.map((func(P) = Cost-P :- Cost = cost(!.Ctx, P, default_costs)), set.to_sorted_list(Ps)),
 
-				prove(0.0, 100.0, P0, P, default_costs, !.Ctx),
-				Cost = cost(!.Ctx, P, default_costs)
-					))),
+%			Proofs0 = set.to_sorted_list(solutions_set((pred((Cost-P)::out) is nondet :-
+%%				Costs = costs(1.0, 1.0),
+%%				prove(0.0, InitAssumeCost, P0, P, Costs, !.Ctx),
+%%				G = last_goal(P),
+%%				Cost = cost(!.Ctx, P, Costs)
+%
+%				prove(100.0, P0, P, default_costs, !.Ctx),
+%				Cost = cost(!.Ctx, P, default_costs)
+%					))),
 
 /*
 			% TODO: derivations
