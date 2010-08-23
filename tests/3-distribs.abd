@@ -1,0 +1,34 @@
+existence = [
+	(bel : world(b1, b1d1)) = 0.4,
+	(bel : world(b1, b1d2)) = 0.3
+].
+
+disjoint([
+	bel : world(b1, b1d1),
+	bel : world(b1, b1d2)
+]).
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
+bel : color(b1, red) <-
+	bel : world(b1, b1d1) / existence.
+
+bel : color(b1, blue) <-
+	bel : world(b1, b1d2) / existence.
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
+bel : shape(b1, long) <-
+	bel : world(b1, b1d1) / existence.
+
+bel : shape(b1, short) <-
+	bel : world(b1, b1d2) / existence.
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
+test(Id, Color, Shape) <-
+	bel : color(Id, Color),
+	bel : shape(Id, Shape).
+
+test <-
+	test(Id, Color, Shape).

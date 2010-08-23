@@ -199,9 +199,25 @@ segment_proof_state(Qs, {QsL, cf(QUnsolved, F), QsR} ) :-
 transform(L0, VS0, BL0, L, VS, BL, Ctx) :-
 	impure anytime.signalled(no),
 	segment_proof_state(L0, SegL0),
+
+	step(_Step, SegL0, VS0, BL0, L1, VS1, BL1, Ctx),
+	(if
+		factor_proof_state([], L1, VS1, BL1, L2, [], VS2, BL2, Ctx)
+	then
+		L = L2,
+		VS = VS2,
+		BL = BL2
+	else
+		L = L1,
+		VS = VS1,
+		BL = BL1
+	).
+
+/*
 	(if
 	 	% try to factor
-		do_factoring(SegL0, VS0, BL0, L1, VS1, BL1, Ctx)
+%		do_factoring(SegL0, VS0, BL0, L1, VS1, BL1, Ctx)
+		fail
 	then
 		% if it succeeds
 		(if
@@ -220,6 +236,7 @@ transform(L0, VS0, BL0, L, VS, BL, Ctx) :-
 		% if not, continue as before
 		step(_Step, SegL0, VS0, BL0, L, VS, BL, Ctx)
 	).
+*/
 		
 
 %	segment_proof_state(L0, SegL0),
@@ -495,6 +512,59 @@ do_factoring(
 	list.map_foldl(apply_subst_to_query_blacklist(Uni, Ctx), QsL0, QsL, BL0, BL1),
 	list.map_foldl(apply_subst_to_query_blacklist(Uni, Ctx), QsR0, QsR, BL1, BL),
 	trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "}", !IO) ).
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
+:- pred factor_proof_state(
+			% input
+		list(query(M))::in,
+		list(query(M))::in,
+		varset::in,  % variables used in the proof
+		blacklist(M)::in,  % blacklisted formulas
+
+			% output
+		list(query(M))::out,
+		list(query(M))::out,
+		varset::out,  % variables used in the goal
+		blacklist(M)::out,  % blacklisted formulas
+
+		C::in  % knowledge base
+	) is nondet <= (modality(M), context(C, M)).
+
+
+factor_proof_state(QsL, [], VS, BL, QsL, [], VS, BL, _Ctx).
+
+factor_proof_state(
+		QsL0, [H|T], VS, BL0,
+		QsL, QsR, VS, BL,
+		Ctx) :-
+
+	anytime.pure_signalled(no),
+
+	(if
+		solved_unifiable(H, T, Uni)
+	then
+		list.map_foldl(apply_subst_to_query_blacklist(Uni, Ctx), QsL0, QsL1, BL0, BL1),
+		list.map_foldl(apply_subst_to_query_blacklist(Uni, Ctx), T, QsR1, BL1, BL2),
+		factor_proof_state(QsL1, QsR1, VS, BL2, QsL, QsR, VS, BL, Ctx)
+	else
+		factor_proof_state(QsL0 ++ [H], T, VS, BL0, QsL, QsR, VS, BL, Ctx)
+	).
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
+:- pred solved_unifiable(query(M)::in, list(query(M))::in, subst::out) is nondet <= modality(M).
+
+solved_unifiable(Q, [QH|_T], Uni) :-
+	not Q = unsolved(_, _),
+	not QH = unsolved(_, _),
+	m(HM, HF) = head_mprop(QH),
+	m(M, F) = head_mprop(Q),
+	match(compose_list(HM), compose_list(M)),
+	unify_formulas(HF, F, Uni).
+
+solved_unifiable(Q, [_QH|T], Uni) :-
+	solved_unifiable(Q, T, Uni).
 
 %------------------------------------------------------------------------------%
 
