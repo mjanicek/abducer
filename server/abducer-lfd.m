@@ -218,7 +218,7 @@ process_request(prove(L), !SCtx, !IO) :-
 	nl(stderr_stream, !IO),
 */
 
-	prove(1.0, absolute(0.2), P0, Ps, default_costs, !.SCtx^cx),
+	prove(iddfs(1.0, absolute(0.2)), P0, Ps, default_costs, !.SCtx^cx),
 	Proofs0 = list.map((func(P) = Cost-P :- Cost = cost(!.SCtx^cx, P, default_costs)), set.to_sorted_list(Ps)),
 
 %	Proofs0 = set.to_sorted_list(solutions_set((pred((Cost-P)::out) is nondet :-

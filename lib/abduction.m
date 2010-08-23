@@ -67,12 +67,18 @@
 
 :- func new_proof(C, list(query(M)), varset) = proof(M) <= (context(C, M), modality(M)).
 
+:- type proof_search_method
+	--->	unbounded_dfs
+	;	bounded_dfs(float)
+	;	iddfs(float, iddfs_increment)
+	.
+
 :- type iddfs_increment
 	--->	absolute(float)
 %	;	logarithmic(float)
 	.
 
-:- pred prove(float::in, iddfs_increment::in, proof(M)::in, set(proof(M))::out, costs::in, C::in) is det <= (modality(M), context(C, M)).
+:- pred prove(proof_search_method::in, proof(M)::in, set(proof(M))::out, costs::in, C::in) is det <= (modality(M), context(C, M)).
 
 %:- func last_goal(proof(M)) = vscope(list(query(M))) <= modality(M).
 
@@ -88,7 +94,7 @@
 :- implementation.
 
 :- import_module require, solutions.
-:- import_module map, assoc_list, pair.
+:- import_module map, assoc_list, pair, maybe.
 :- import_module string, float, bool.
 :- import_module modality.
 
@@ -145,26 +151,36 @@ goal_solved(L) :-
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-prove(CostBound, Increment, P0, Ps, Costs, Ctx) :-
-	Ps0 = solutions_set((pred(P::out) is nondet :-
-		prove_bound(CostBound, P0, P, Costs, Ctx)
-			)),
+prove(unbounded_dfs, P0, Ps, Costs, Ctx) :-
+	Ps = solutions_set((pred(P::out) is nondet :-
+		prove_bound(no, P0, P, Costs, Ctx)
+			)).
+
+prove(bounded_dfs(Bound), P0, Ps, Costs, Ctx) :-
+	Ps = solutions_set((pred(P::out) is nondet :-
+		prove_bound(yes(Bound), P0, P, Costs, Ctx)
+			)).
+
+prove(iddfs(Bound, Increment), P0, Ps, Costs, Ctx) :-
+	prove(bounded_dfs(Bound), P0, Ps0, Costs, Ctx), 
 	(if
 		anytime.pure_signalled(no)
 	then
 		(
 			Increment = absolute(AbsValue),
-			NewCostBound = CostBound + AbsValue
+			NewBound = Bound + AbsValue
 		),
-		prove(NewCostBound, Increment, P0, Ps1, Costs, Ctx),
+		prove(iddfs(NewBound, Increment), P0, Ps1, Costs, Ctx),
 		Ps = set.union(Ps0, Ps1)
 	else
 		Ps = Ps0
 	).
 
-:- pred prove_bound(float::in, proof(M)::in, proof(M)::out, costs::in, C::in) is nondet <= (modality(M), context(C, M)).
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-prove_bound(CostBound, P0, P, Costs, Ctx) :-
+:- pred prove_bound(maybe(float)::in, proof(M)::in, proof(M)::out, costs::in, C::in) is nondet <= (modality(M), context(C, M)).
+
+prove_bound(MayBound, P0, P, Costs, Ctx) :-
 	anytime.pure_signalled(no),
 
 	P0 = proof(vs(L0, VS0), BL0),
@@ -186,8 +202,13 @@ prove_bound(CostBound, P0, P, Costs, Ctx) :-
 		transform(L0, VS0, BL0, L, VS, BL, Ctx),
 		P1 = proof(vs(L, VS), BL),
 
-		cost(Ctx, P1, Costs) < CostBound,
-		prove_bound(CostBound, P1, P, Costs, Ctx)
+		(
+			MayBound = yes(Bound),
+			cost(Ctx, P1, Costs) < Bound
+		;
+			MayBound = no
+		),
+		prove_bound(MayBound, P1, P, Costs, Ctx)
 	).
 
 %------------------------------------------------------------------------------%

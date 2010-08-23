@@ -72,7 +72,7 @@ main(!IO) :-
 
 %			DC0 = new_d_ctx,
 
-			prove(1.0, absolute(0.2), P0, Ps, default_costs, !.Ctx),
+			prove(iddfs(1.0, absolute(0.2)), P0, Ps, default_costs, !.Ctx),
 			Proofs0 = list.map((func(P) = Cost-P :- Cost = cost(!.Ctx, P, default_costs)), set.to_sorted_list(Ps)),
 
 %			Proofs0 = set.to_sorted_list(solutions_set((pred((Cost-P)::out) is nondet :-
