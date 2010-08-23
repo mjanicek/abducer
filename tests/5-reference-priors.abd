@@ -1,0 +1,182 @@
+%------------------------------------------------------------------------------%
+
+world_exist = [
+	(bel : w(b1, d1)) = 0.1566, %p(0.9),
+	(bel : w(b1, d2)) = 2.3538, %p(0.1),
+
+	(bel : w(b2, d1)) = 0.2107, %p(0.8),
+	(bel : w(b2, d2)) = 2.302, %p(0.2),
+
+	(bel : w(b3, d1)) = 0.2620, %p(0.8),
+	(bel : w(b3, d2)) = 2.4592, %p(0.08),
+	(bel : w(b3, d3)) = 2.4592, %p(0.08),
+	(bel : w(b3, d4)) = 4.6564, %p(0.04),
+
+	(bel : w(b4, d1)) = 0.2107, %p(0.75),
+	(bel : w(b4, d2)) = 2.302 %p(0.25)
+].
+
+belief_exist = [
+	(bel : b(b1)) = 0.05131524792316465886, %p(0.8),
+	(bel : b(b2)) = 0.10536297341863046316, %p(0.7),
+	(bel : b(b3)) = 0.05131524792316465886, %p(0.8),
+	(bel : b(b4)) = 0.10536297341863046316 %p(0.6)
+].
+
+disjoint([
+	bel : w(b1, d1),
+	bel : w(b1, d2)
+]).
+
+disjoint([
+	bel : w(b2, d1),
+	bel : w(b2, d2)
+]).
+
+disjoint([
+	bel : w(b3, d1),
+	bel : w(b3, d2),
+	bel : w(b3, d3),
+	bel : w(b3, d4)
+]).
+
+disjoint([
+	bel : w(b4, d1),
+	bel : w(b4, d2)
+]).
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
+bel : color(b1, known(red)) <- bel : w(b1, d1) / world_exist, bel : b(b1) / belief_exist.
+bel : shape(b1, known(compact)) <- bel : w(b1, d1) / world_exist, bel : b(b1) / belief_exist.
+
+bel : color(b1, unknown) <- bel : w(b1, d2) / world_exist, bel : b(b1) / belief_exist.
+bel : shape(b1, unknown) <- bel : w(b1, d2) / world_exist, bel : b(b1) / belief_exist.
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
+bel : color(b2, known(green)) <- bel : w(b2, d1) / world_exist, bel : b(b2) / belief_exist.
+bel : color(b2, unknown) <- bel : w(b1, d2) / world_exist, bel : b(b2) / belief_exist.
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
+bel : color(b3, known(red)) <- bel : w(b3, d1) / world_exist, bel : b(b3) / belief_exist.
+bel : shape(b3, known(elongated)) <- bel : w(b3, d1) / world_exist, bel : b(b3) / belief_exist.
+
+bel : color(b3, unknown) <- bel : w(b3, d2) / world_exist, bel : b(b3) / belief_exist.
+bel : shape(b3, known(elongated)) <- bel : w(b3, d2) / world_exist, bel : b(b3) / belief_exist.
+
+bel : color(b3, known(red)) <- bel : w(b3, d3) / world_exist, bel : b(b3) / belief_exist.
+bel : shape(b3, unknown) <- bel : w(b3, d3) / world_exist, bel : b(b3) / belief_exist.
+
+bel : color(b3, unknown) <- bel : w(b3, d4) / world_exist, bel : b(b3) / belief_exist.
+bel : shape(b3, unknown) <- bel : w(b3, d4) / world_exist, bel : b(b3) / belief_exist.
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
+bel : color(b4, known(red)) <- bel : w(b4, d1) / world_exist, bel : b(b4) / belief_exist.
+bel : color(b4, unknown) <- bel : w(b4, d2) / world_exist, bel : b(b4) / belief_exist.
+
+%------------------------------------------------------------------------------%
+
+% TODO: here we'd like to use non-ground assumability functions
+color_prior = [
+	(color_prior(blue)) = p(0.4),
+	(color_prior(red)) = p(0.3),
+	(color_prior(green)) = p(0.3)
+].
+
+bel : color(Id, known(Color)) <-
+	bel : color(Id, unknown),
+	color_prior(Color) / color_prior.
+
+%------------------------------------------------------------------------------%
+
+% TODO: here we'd like to use non-ground assumability functions
+shape_prior = [
+	(shape_prior(compact)) = p(0.4),
+	(shape_prior(elongated)) = p(0.3),
+	(shape_prior(round)) = p(0.3)
+].
+
+bel : shape(Id, known(Shape)) <-
+	bel : shape(Id, unknown),
+	shape_prior(Shape) / shape_prior.
+
+%------------------------------------------------------------------------------%
+
+ling_world_exist = [
+	(bel : w(bl, d1)) = 0.316, %p(0.8),
+	(bel : w(bl, d2)) = 2.5133, %p(0.08),
+	(bel : w(bl, d3)) = 2.5133, %p(0.08),
+	(bel : w(bl, d4)) = 4.710 %p(0.04)
+].
+
+ling_belief_exist = [
+	(bel : b(bl)) = 0.10536297341863046316 %p(0.9)
+].
+
+disjoint([
+	bel : w(bl, d1),
+	bel : w(bl, d2),
+	bel : w(bl, d3),
+	bel : w(bl, d4)
+]).
+
+bel : ling_color(bl, red) <- bel : w(bl, d1) / ling_world_exist.
+bel : ling_shape(bl, compact) <- bel : w(bl, d1) / ling_world_exist.
+
+bel : ling_color(bl, unknown) <- bel : w(bl, d2) / ling_world_exist.
+bel : ling_shape(bl, compact) <- bel : w(bl, d2) / ling_world_exist.
+
+bel : ling_color(bl, red) <- bel : w(bl, d3) / ling_world_exist.
+bel : ling_shape(bl, unknown) <- bel : w(bl, d3) / ling_world_exist.
+
+bel : ling_color(bl, unknown) <- bel : w(bl, d3) / ling_world_exist.
+bel : ling_shape(bl, unknown) <- bel : w(bl, d3) / ling_world_exist.
+
+%------------------------------------------------------------------------------%
+
+%correlate = [
+%	(color_to_ling_color(red, red)) = p(0.95),
+%	(color_to_ling_color(red, green)) = p(0.05),
+%	(color_to_ling_color(green, green)) = p(0.95),
+%	(color_to_ling_color(green, red)) = p(0.05),
+%
+%	(shape_to_ling_shape(elongated, elongated)) = p(0.95),
+%	(shape_to_ling_shape(elongated, compact)) = p(0.05),
+%	(shape_to_ling_shape(compact, compact)) = p(0.95),
+%	(shape_to_ling_shape(compact, elongated)) = p(0.05)
+%].
+
+correlate = [
+	(color_to_ling_color(red, red)) = p(1.0),
+	(color_to_ling_color(green, green)) = p(1.0),
+
+	(shape_to_ling_shape(elongated, elongated)) = p(1.0),
+	(shape_to_ling_shape(compact, compact)) = p(1.0)
+].
+
+%------------------------------------------------------------------------------%
+
+resolves_color(LId, Id) <-
+	bel : color(Id, known(Color)),
+	bel : ling_color(LId, LColor),
+	color_to_ling_color(Color, LColor) / correlate.
+
+resolves_shape(LId, Id) <-
+	bel : shape(Id, known(Shape)),
+	bel : ling_shape(LId, LShape),
+	shape_to_ling_shape(Shape, LShape) / correlate.
+
+resolves(LId, Id) <-
+	resolves_color(LId, Id),
+	resolves_shape(LId, Id).
+
+%------------------------------------------------------------------------------%
+
+test <-
+	resolves(bl, Id).
+
+%test <-
+%	bel : shape(Id, known(Shape)).

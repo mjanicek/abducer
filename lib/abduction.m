@@ -247,7 +247,7 @@ transform(L0, VS0, BL0, L, VS, BL, Ctx) :-
 
 %------------------------------------------------------------------------------%
 
-:- pragma promise_pure(step/8).
+%:- pragma promise_pure(step/8).
 
 :- pred step(
 		step(M)::out, 
@@ -572,6 +572,7 @@ solved_unifiable(Q, [_QH|T], Uni) :-
 :- pred check_disjoints(list(query(M))::in, blacklist(M)::in, blacklist(M)::out) is semidet <= modality(M).
 
 check_disjoints(Qs, BL0, BL) :-
+	anytime.pure_signalled(no),
 	list.foldl((pred(Q::in, BL1::in, BL2::out) is semidet :-
 		(if ground_mprop(head_mprop(Q), G)
 		then check_mgprop(G, BL1, BL2)
@@ -596,12 +597,16 @@ apply_subst_to_query(Subst, asserted(MTest)) = asserted(apply_subst_to_mtest(Sub
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-:- pred apply_subst_to_query_blacklist(subst::in, C::in, query(M)::in, query(M)::out, blacklist(M)::in, blacklist(M)::out) is semidet
+	% TODO: apply blacklist incrementally
+:- pred apply_subst_to_query_blacklist(subst::in, C::in, query(M)::in, query(M)::out, blacklist(M)::in, blacklist(M)::out) is det
 		<= (modality(M), context(C, M)).
 
-apply_subst_to_query_blacklist(Subst, Ctx, QIn, QOut, BLIn, BLOut) :-
-	QOut = apply_subst_to_query(Subst, QIn),
-	(if ground_mprop(head_mprop(QOut), G)
-	then check_mgprop(G, BLIn, BLOut)
-	else BLOut = BLIn
-	).
+apply_subst_to_query_blacklist(Subst, _Ctx, QIn, QOut, BL, BL) :-
+	QOut = apply_subst_to_query(Subst, QIn).
+
+%apply_subst_to_query_blacklist(Subst, Ctx, QIn, QOut, BLIn, BLOut) :-
+%	QOut = apply_subst_to_query(Subst, QIn),
+%	(if ground_mprop(head_mprop(QOut), G)
+%	then check_mgprop(G, BLIn, BLOut)
+%	else BLOut = BLIn
+%	).

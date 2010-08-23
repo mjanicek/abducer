@@ -1,0 +1,1164 @@
+world_exist = [
+	(bel : w(b_gen0, d0)) = p(0.75),
+	(bel : w(b_gen0, d1)) = p(0.1875),
+	(bel : w(b_gen0, d2)) = p(0.046875),
+	(bel : w(b_gen1, d0)) = p(0.75),
+	(bel : w(b_gen1, d1)) = p(0.1875),
+	(bel : w(b_gen1, d2)) = p(0.046875),
+	(bel : w(b_gen2, d0)) = p(0.75),
+	(bel : w(b_gen2, d1)) = p(0.1875),
+	(bel : w(b_gen2, d2)) = p(0.046875),
+	(bel : w(b_gen3, d0)) = p(0.75),
+	(bel : w(b_gen3, d1)) = p(0.1875),
+	(bel : w(b_gen3, d2)) = p(0.046875),
+	(bel : w(b_gen4, d0)) = p(0.75),
+	(bel : w(b_gen4, d1)) = p(0.1875),
+	(bel : w(b_gen4, d2)) = p(0.046875),
+	(bel : w(b_gen5, d0)) = p(0.75),
+	(bel : w(b_gen5, d1)) = p(0.1875),
+	(bel : w(b_gen5, d2)) = p(0.046875),
+	(bel : w(b_gen6, d0)) = p(0.75),
+	(bel : w(b_gen6, d1)) = p(0.1875),
+	(bel : w(b_gen6, d2)) = p(0.046875),
+	(bel : w(b_gen7, d0)) = p(0.75),
+	(bel : w(b_gen7, d1)) = p(0.1875),
+	(bel : w(b_gen7, d2)) = p(0.046875),
+	(bel : w(b_gen8, d0)) = p(0.75),
+	(bel : w(b_gen8, d1)) = p(0.1875),
+	(bel : w(b_gen8, d2)) = p(0.046875),
+	(bel : w(b_gen9, d0)) = p(0.75),
+	(bel : w(b_gen9, d1)) = p(0.1875),
+	(bel : w(b_gen9, d2)) = p(0.046875),
+	(bel : w(b_gen10, d0)) = p(0.75),
+	(bel : w(b_gen10, d1)) = p(0.1875),
+	(bel : w(b_gen10, d2)) = p(0.046875),
+	(bel : w(b_gen11, d0)) = p(0.75),
+	(bel : w(b_gen11, d1)) = p(0.1875),
+	(bel : w(b_gen11, d2)) = p(0.046875),
+	(bel : w(b_gen12, d0)) = p(0.75),
+	(bel : w(b_gen12, d1)) = p(0.1875),
+	(bel : w(b_gen12, d2)) = p(0.046875),
+	(bel : w(b_gen13, d0)) = p(0.75),
+	(bel : w(b_gen13, d1)) = p(0.1875),
+	(bel : w(b_gen13, d2)) = p(0.046875),
+	(bel : w(b_gen14, d0)) = p(0.75),
+	(bel : w(b_gen14, d1)) = p(0.1875),
+	(bel : w(b_gen14, d2)) = p(0.046875),
+	(bel : w(b_gen15, d0)) = p(0.75),
+	(bel : w(b_gen15, d1)) = p(0.1875),
+	(bel : w(b_gen15, d2)) = p(0.046875),
+	(bel : w(b_gen16, d0)) = p(0.75),
+	(bel : w(b_gen16, d1)) = p(0.1875),
+	(bel : w(b_gen16, d2)) = p(0.046875),
+	(bel : w(b_gen17, d0)) = p(0.75),
+	(bel : w(b_gen17, d1)) = p(0.1875),
+	(bel : w(b_gen17, d2)) = p(0.046875),
+	(bel : w(b_gen18, d0)) = p(0.75),
+	(bel : w(b_gen18, d1)) = p(0.1875),
+	(bel : w(b_gen18, d2)) = p(0.046875),
+	(bel : w(b_gen19, d0)) = p(0.75),
+	(bel : w(b_gen19, d1)) = p(0.1875),
+	(bel : w(b_gen19, d2)) = p(0.046875),
+	(bel : w(b_gen20, d0)) = p(0.75),
+	(bel : w(b_gen20, d1)) = p(0.1875),
+	(bel : w(b_gen20, d2)) = p(0.046875),
+	(bel : w(b_gen21, d0)) = p(0.75),
+	(bel : w(b_gen21, d1)) = p(0.1875),
+	(bel : w(b_gen21, d2)) = p(0.046875),
+	(bel : w(b_gen22, d0)) = p(0.75),
+	(bel : w(b_gen22, d1)) = p(0.1875),
+	(bel : w(b_gen22, d2)) = p(0.046875),
+	(bel : w(b_gen23, d0)) = p(0.75),
+	(bel : w(b_gen23, d1)) = p(0.1875),
+	(bel : w(b_gen23, d2)) = p(0.046875),
+	(bel : w(b_gen24, d0)) = p(0.75),
+	(bel : w(b_gen24, d1)) = p(0.1875),
+	(bel : w(b_gen24, d2)) = p(0.046875),
+	(bel : w(b_gen25, d0)) = p(0.75),
+	(bel : w(b_gen25, d1)) = p(0.1875),
+	(bel : w(b_gen25, d2)) = p(0.046875),
+	(bel : w(b_gen26, d0)) = p(0.75),
+	(bel : w(b_gen26, d1)) = p(0.1875),
+	(bel : w(b_gen26, d2)) = p(0.046875),
+	(bel : w(b_gen27, d0)) = p(0.75),
+	(bel : w(b_gen27, d1)) = p(0.1875),
+	(bel : w(b_gen27, d2)) = p(0.046875),
+	(bel : w(b_gen28, d0)) = p(0.75),
+	(bel : w(b_gen28, d1)) = p(0.1875),
+	(bel : w(b_gen28, d2)) = p(0.046875),
+	(bel : w(b_gen29, d0)) = p(0.75),
+	(bel : w(b_gen29, d1)) = p(0.1875),
+	(bel : w(b_gen29, d2)) = p(0.046875),
+	(bel : w(b_gen30, d0)) = p(0.75),
+	(bel : w(b_gen30, d1)) = p(0.1875),
+	(bel : w(b_gen30, d2)) = p(0.046875),
+	(bel : w(b_gen31, d0)) = p(0.75),
+	(bel : w(b_gen31, d1)) = p(0.1875),
+	(bel : w(b_gen31, d2)) = p(0.046875),
+	(bel : w(b_gen32, d0)) = p(0.75),
+	(bel : w(b_gen32, d1)) = p(0.1875),
+	(bel : w(b_gen32, d2)) = p(0.046875),
+	(bel : w(b_gen33, d0)) = p(0.75),
+	(bel : w(b_gen33, d1)) = p(0.1875),
+	(bel : w(b_gen33, d2)) = p(0.046875),
+	(bel : w(b_gen34, d0)) = p(0.75),
+	(bel : w(b_gen34, d1)) = p(0.1875),
+	(bel : w(b_gen34, d2)) = p(0.046875),
+	(bel : w(b_gen35, d0)) = p(0.75),
+	(bel : w(b_gen35, d1)) = p(0.1875),
+	(bel : w(b_gen35, d2)) = p(0.046875),
+	(bel : w(b_gen36, d0)) = p(0.75),
+	(bel : w(b_gen36, d1)) = p(0.1875),
+	(bel : w(b_gen36, d2)) = p(0.046875),
+	(bel : w(b_gen37, d0)) = p(0.75),
+	(bel : w(b_gen37, d1)) = p(0.1875),
+	(bel : w(b_gen37, d2)) = p(0.046875),
+	(bel : w(b_gen38, d0)) = p(0.75),
+	(bel : w(b_gen38, d1)) = p(0.1875),
+	(bel : w(b_gen38, d2)) = p(0.046875),
+	(bel : w(b_gen39, d0)) = p(0.75),
+	(bel : w(b_gen39, d1)) = p(0.1875),
+	(bel : w(b_gen39, d2)) = p(0.046875),
+	(bel : w(b_gen40, d0)) = p(0.75),
+	(bel : w(b_gen40, d1)) = p(0.1875),
+	(bel : w(b_gen40, d2)) = p(0.046875),
+	(bel : w(b_gen41, d0)) = p(0.75),
+	(bel : w(b_gen41, d1)) = p(0.1875),
+	(bel : w(b_gen41, d2)) = p(0.046875),
+	(bel : w(b_gen42, d0)) = p(0.75),
+	(bel : w(b_gen42, d1)) = p(0.1875),
+	(bel : w(b_gen42, d2)) = p(0.046875),
+	(bel : w(b_gen43, d0)) = p(0.75),
+	(bel : w(b_gen43, d1)) = p(0.1875),
+	(bel : w(b_gen43, d2)) = p(0.046875),
+	(bel : w(b_gen44, d0)) = p(0.75),
+	(bel : w(b_gen44, d1)) = p(0.1875),
+	(bel : w(b_gen44, d2)) = p(0.046875),
+	(bel : w(b_gen45, d0)) = p(0.75),
+	(bel : w(b_gen45, d1)) = p(0.1875),
+	(bel : w(b_gen45, d2)) = p(0.046875),
+	(bel : w(b_gen46, d0)) = p(0.75),
+	(bel : w(b_gen46, d1)) = p(0.1875),
+	(bel : w(b_gen46, d2)) = p(0.046875),
+	(bel : w(b_gen47, d0)) = p(0.75),
+	(bel : w(b_gen47, d1)) = p(0.1875),
+	(bel : w(b_gen47, d2)) = p(0.046875),
+	(bel : w(b_gen48, d0)) = p(0.75),
+	(bel : w(b_gen48, d1)) = p(0.1875),
+	(bel : w(b_gen48, d2)) = p(0.046875),
+	(bel : w(b_gen49, d0)) = p(0.75),
+	(bel : w(b_gen49, d1)) = p(0.1875),
+	(bel : w(b_gen49, d2)) = p(0.046875),
+	(bel : w(b_gen50, d0)) = p(0.75),
+	(bel : w(b_gen50, d1)) = p(0.1875),
+	(bel : w(b_gen50, d2)) = p(0.046875),
+	(bel : w(b_gen51, d0)) = p(0.75),
+	(bel : w(b_gen51, d1)) = p(0.1875),
+	(bel : w(b_gen51, d2)) = p(0.046875),
+	(bel : w(b_gen52, d0)) = p(0.75),
+	(bel : w(b_gen52, d1)) = p(0.1875),
+	(bel : w(b_gen52, d2)) = p(0.046875),
+	(bel : w(b_gen53, d0)) = p(0.75),
+	(bel : w(b_gen53, d1)) = p(0.1875),
+	(bel : w(b_gen53, d2)) = p(0.046875),
+	(bel : w(b_gen54, d0)) = p(0.75),
+	(bel : w(b_gen54, d1)) = p(0.1875),
+	(bel : w(b_gen54, d2)) = p(0.046875),
+	(bel : w(b_gen55, d0)) = p(0.75),
+	(bel : w(b_gen55, d1)) = p(0.1875),
+	(bel : w(b_gen55, d2)) = p(0.046875),
+	(bel : w(b_gen56, d0)) = p(0.75),
+	(bel : w(b_gen56, d1)) = p(0.1875),
+	(bel : w(b_gen56, d2)) = p(0.046875),
+	(bel : w(b_gen57, d0)) = p(0.75),
+	(bel : w(b_gen57, d1)) = p(0.1875),
+	(bel : w(b_gen57, d2)) = p(0.046875),
+	(bel : w(b_gen58, d0)) = p(0.75),
+	(bel : w(b_gen58, d1)) = p(0.1875),
+	(bel : w(b_gen58, d2)) = p(0.046875),
+	(bel : w(b_gen59, d0)) = p(0.75),
+	(bel : w(b_gen59, d1)) = p(0.1875),
+	(bel : w(b_gen59, d2)) = p(0.046875),
+	(bel : w(b_gen60, d0)) = p(0.75),
+	(bel : w(b_gen60, d1)) = p(0.1875),
+	(bel : w(b_gen60, d2)) = p(0.046875),
+	(bel : w(b_gen61, d0)) = p(0.75),
+	(bel : w(b_gen61, d1)) = p(0.1875),
+	(bel : w(b_gen61, d2)) = p(0.046875),
+	(bel : w(b_gen62, d0)) = p(0.75),
+	(bel : w(b_gen62, d1)) = p(0.1875),
+	(bel : w(b_gen62, d2)) = p(0.046875),
+	(bel : w(b_gen63, d0)) = p(0.75),
+	(bel : w(b_gen63, d1)) = p(0.1875),
+	(bel : w(b_gen63, d2)) = p(0.046875),
+	(bel : w(b_gen64, d0)) = p(0.75),
+	(bel : w(b_gen64, d1)) = p(0.1875),
+	(bel : w(b_gen64, d2)) = p(0.046875),
+	(bel : w(b_gen65, d0)) = p(0.75),
+	(bel : w(b_gen65, d1)) = p(0.1875),
+	(bel : w(b_gen65, d2)) = p(0.046875),
+	(bel : w(b_gen66, d0)) = p(0.75),
+	(bel : w(b_gen66, d1)) = p(0.1875),
+	(bel : w(b_gen66, d2)) = p(0.046875),
+	(bel : w(b_gen67, d0)) = p(0.75),
+	(bel : w(b_gen67, d1)) = p(0.1875),
+	(bel : w(b_gen67, d2)) = p(0.046875),
+	(bel : w(b_gen68, d0)) = p(0.75),
+	(bel : w(b_gen68, d1)) = p(0.1875),
+	(bel : w(b_gen68, d2)) = p(0.046875),
+	(bel : w(b_gen69, d0)) = p(0.75),
+	(bel : w(b_gen69, d1)) = p(0.1875),
+	(bel : w(b_gen69, d2)) = p(0.046875)
+].
+
+belief_exist = [
+	(bel : b(b_gen0)) = p(0.979331108116643),
+	(bel : b(b_gen1)) = p(0.0902901390540762),
+	(bel : b(b_gen2)) = p(0.901101531964866),
+	(bel : b(b_gen3)) = p(0.955591407461675),
+	(bel : b(b_gen4)) = p(0.0569356751048709),
+	(bel : b(b_gen5)) = p(0.218847460797392),
+	(bel : b(b_gen6)) = p(0.485653167727232),
+	(bel : b(b_gen7)) = p(0.22884558098766),
+	(bel : b(b_gen8)) = p(0.433876321409489),
+	(bel : b(b_gen9)) = p(0.201673936390534),
+	(bel : b(b_gen10)) = p(0.650495597410366),
+	(bel : b(b_gen11)) = p(0.133889908194284),
+	(bel : b(b_gen12)) = p(0.574825716234944),
+	(bel : b(b_gen13)) = p(0.884818438755033),
+	(bel : b(b_gen14)) = p(0.198113723032744),
+	(bel : b(b_gen15)) = p(0.909792441263669),
+	(bel : b(b_gen16)) = p(0.876271066460337),
+	(bel : b(b_gen17)) = p(0.0445139956418927),
+	(bel : b(b_gen18)) = p(0.0720820292539877),
+	(bel : b(b_gen19)) = p(0.781681938869049),
+	(bel : b(b_gen20)) = p(0.237338684799301),
+	(bel : b(b_gen21)) = p(0.0015254570649148),
+	(bel : b(b_gen22)) = p(0.321335604450407),
+	(bel : b(b_gen23)) = p(0.328140950976511),
+	(bel : b(b_gen24)) = p(0.105737031132069),
+	(bel : b(b_gen25)) = p(0.46395486692046),
+	(bel : b(b_gen26)) = p(0.223922165671052),
+	(bel : b(b_gen27)) = p(0.28213056050803),
+	(bel : b(b_gen28)) = p(0.259325095372152),
+	(bel : b(b_gen29)) = p(0.0756623699856647),
+	(bel : b(b_gen30)) = p(0.321039273341565),
+	(bel : b(b_gen31)) = p(0.891066908590055),
+	(bel : b(b_gen32)) = p(0.71646145824764),
+	(bel : b(b_gen33)) = p(0.947940374403146),
+	(bel : b(b_gen34)) = p(0.620328188428868),
+	(bel : b(b_gen35)) = p(0.240573591293533),
+	(bel : b(b_gen36)) = p(0.434055510175956),
+	(bel : b(b_gen37)) = p(0.731135238832493),
+	(bel : b(b_gen38)) = p(0.494169048656627),
+	(bel : b(b_gen39)) = p(0.632137293359129),
+	(bel : b(b_gen40)) = p(0.40288394049097),
+	(bel : b(b_gen41)) = p(0.182145525177361),
+	(bel : b(b_gen42)) = p(0.258671533769682),
+	(bel : b(b_gen43)) = p(0.0655606808955795),
+	(bel : b(b_gen44)) = p(0.515135542142719),
+	(bel : b(b_gen45)) = p(0.360365414681738),
+	(bel : b(b_gen46)) = p(0.209876265285057),
+	(bel : b(b_gen47)) = p(0.621525672939462),
+	(bel : b(b_gen48)) = p(0.117313423132547),
+	(bel : b(b_gen49)) = p(0.461537789729988),
+	(bel : b(b_gen50)) = p(0.106195156137868),
+	(bel : b(b_gen51)) = p(0.467165813571349),
+	(bel : b(b_gen52)) = p(0.508688687870308),
+	(bel : b(b_gen53)) = p(0.314610298382533),
+	(bel : b(b_gen54)) = p(0.0142691026324222),
+	(bel : b(b_gen55)) = p(0.858337634496159),
+	(bel : b(b_gen56)) = p(0.16572136184536),
+	(bel : b(b_gen57)) = p(0.925151006032536),
+	(bel : b(b_gen58)) = p(0.826279107641977),
+	(bel : b(b_gen59)) = p(0.816941695114714),
+	(bel : b(b_gen60)) = p(0.108625593989405),
+	(bel : b(b_gen61)) = p(0.369904561078741),
+	(bel : b(b_gen62)) = p(0.0605074525651013),
+	(bel : b(b_gen63)) = p(0.691463475638834),
+	(bel : b(b_gen64)) = p(0.348064795376789),
+	(bel : b(b_gen65)) = p(0.31600672167562),
+	(bel : b(b_gen66)) = p(0.176929208642274),
+	(bel : b(b_gen67)) = p(0.0257965412340084),
+	(bel : b(b_gen68)) = p(0.606451172956742),
+	(bel : b(b_gen69)) = p(0.456201170944254)
+].
+
+disjoint([
+	bel: w(b_gen0, d0),
+	bel: w(b_gen0, d1),
+	bel: w(b_gen0, d2)
+]).
+disjoint([
+	bel: w(b_gen1, d0),
+	bel: w(b_gen1, d1),
+	bel: w(b_gen1, d2)
+]).
+disjoint([
+	bel: w(b_gen2, d0),
+	bel: w(b_gen2, d1),
+	bel: w(b_gen2, d2)
+]).
+disjoint([
+	bel: w(b_gen3, d0),
+	bel: w(b_gen3, d1),
+	bel: w(b_gen3, d2)
+]).
+disjoint([
+	bel: w(b_gen4, d0),
+	bel: w(b_gen4, d1),
+	bel: w(b_gen4, d2)
+]).
+disjoint([
+	bel: w(b_gen5, d0),
+	bel: w(b_gen5, d1),
+	bel: w(b_gen5, d2)
+]).
+disjoint([
+	bel: w(b_gen6, d0),
+	bel: w(b_gen6, d1),
+	bel: w(b_gen6, d2)
+]).
+disjoint([
+	bel: w(b_gen7, d0),
+	bel: w(b_gen7, d1),
+	bel: w(b_gen7, d2)
+]).
+disjoint([
+	bel: w(b_gen8, d0),
+	bel: w(b_gen8, d1),
+	bel: w(b_gen8, d2)
+]).
+disjoint([
+	bel: w(b_gen9, d0),
+	bel: w(b_gen9, d1),
+	bel: w(b_gen9, d2)
+]).
+disjoint([
+	bel: w(b_gen10, d0),
+	bel: w(b_gen10, d1),
+	bel: w(b_gen10, d2)
+]).
+disjoint([
+	bel: w(b_gen11, d0),
+	bel: w(b_gen11, d1),
+	bel: w(b_gen11, d2)
+]).
+disjoint([
+	bel: w(b_gen12, d0),
+	bel: w(b_gen12, d1),
+	bel: w(b_gen12, d2)
+]).
+disjoint([
+	bel: w(b_gen13, d0),
+	bel: w(b_gen13, d1),
+	bel: w(b_gen13, d2)
+]).
+disjoint([
+	bel: w(b_gen14, d0),
+	bel: w(b_gen14, d1),
+	bel: w(b_gen14, d2)
+]).
+disjoint([
+	bel: w(b_gen15, d0),
+	bel: w(b_gen15, d1),
+	bel: w(b_gen15, d2)
+]).
+disjoint([
+	bel: w(b_gen16, d0),
+	bel: w(b_gen16, d1),
+	bel: w(b_gen16, d2)
+]).
+disjoint([
+	bel: w(b_gen17, d0),
+	bel: w(b_gen17, d1),
+	bel: w(b_gen17, d2)
+]).
+disjoint([
+	bel: w(b_gen18, d0),
+	bel: w(b_gen18, d1),
+	bel: w(b_gen18, d2)
+]).
+disjoint([
+	bel: w(b_gen19, d0),
+	bel: w(b_gen19, d1),
+	bel: w(b_gen19, d2)
+]).
+disjoint([
+	bel: w(b_gen20, d0),
+	bel: w(b_gen20, d1),
+	bel: w(b_gen20, d2)
+]).
+disjoint([
+	bel: w(b_gen21, d0),
+	bel: w(b_gen21, d1),
+	bel: w(b_gen21, d2)
+]).
+disjoint([
+	bel: w(b_gen22, d0),
+	bel: w(b_gen22, d1),
+	bel: w(b_gen22, d2)
+]).
+disjoint([
+	bel: w(b_gen23, d0),
+	bel: w(b_gen23, d1),
+	bel: w(b_gen23, d2)
+]).
+disjoint([
+	bel: w(b_gen24, d0),
+	bel: w(b_gen24, d1),
+	bel: w(b_gen24, d2)
+]).
+disjoint([
+	bel: w(b_gen25, d0),
+	bel: w(b_gen25, d1),
+	bel: w(b_gen25, d2)
+]).
+disjoint([
+	bel: w(b_gen26, d0),
+	bel: w(b_gen26, d1),
+	bel: w(b_gen26, d2)
+]).
+disjoint([
+	bel: w(b_gen27, d0),
+	bel: w(b_gen27, d1),
+	bel: w(b_gen27, d2)
+]).
+disjoint([
+	bel: w(b_gen28, d0),
+	bel: w(b_gen28, d1),
+	bel: w(b_gen28, d2)
+]).
+disjoint([
+	bel: w(b_gen29, d0),
+	bel: w(b_gen29, d1),
+	bel: w(b_gen29, d2)
+]).
+disjoint([
+	bel: w(b_gen30, d0),
+	bel: w(b_gen30, d1),
+	bel: w(b_gen30, d2)
+]).
+disjoint([
+	bel: w(b_gen31, d0),
+	bel: w(b_gen31, d1),
+	bel: w(b_gen31, d2)
+]).
+disjoint([
+	bel: w(b_gen32, d0),
+	bel: w(b_gen32, d1),
+	bel: w(b_gen32, d2)
+]).
+disjoint([
+	bel: w(b_gen33, d0),
+	bel: w(b_gen33, d1),
+	bel: w(b_gen33, d2)
+]).
+disjoint([
+	bel: w(b_gen34, d0),
+	bel: w(b_gen34, d1),
+	bel: w(b_gen34, d2)
+]).
+disjoint([
+	bel: w(b_gen35, d0),
+	bel: w(b_gen35, d1),
+	bel: w(b_gen35, d2)
+]).
+disjoint([
+	bel: w(b_gen36, d0),
+	bel: w(b_gen36, d1),
+	bel: w(b_gen36, d2)
+]).
+disjoint([
+	bel: w(b_gen37, d0),
+	bel: w(b_gen37, d1),
+	bel: w(b_gen37, d2)
+]).
+disjoint([
+	bel: w(b_gen38, d0),
+	bel: w(b_gen38, d1),
+	bel: w(b_gen38, d2)
+]).
+disjoint([
+	bel: w(b_gen39, d0),
+	bel: w(b_gen39, d1),
+	bel: w(b_gen39, d2)
+]).
+disjoint([
+	bel: w(b_gen40, d0),
+	bel: w(b_gen40, d1),
+	bel: w(b_gen40, d2)
+]).
+disjoint([
+	bel: w(b_gen41, d0),
+	bel: w(b_gen41, d1),
+	bel: w(b_gen41, d2)
+]).
+disjoint([
+	bel: w(b_gen42, d0),
+	bel: w(b_gen42, d1),
+	bel: w(b_gen42, d2)
+]).
+disjoint([
+	bel: w(b_gen43, d0),
+	bel: w(b_gen43, d1),
+	bel: w(b_gen43, d2)
+]).
+disjoint([
+	bel: w(b_gen44, d0),
+	bel: w(b_gen44, d1),
+	bel: w(b_gen44, d2)
+]).
+disjoint([
+	bel: w(b_gen45, d0),
+	bel: w(b_gen45, d1),
+	bel: w(b_gen45, d2)
+]).
+disjoint([
+	bel: w(b_gen46, d0),
+	bel: w(b_gen46, d1),
+	bel: w(b_gen46, d2)
+]).
+disjoint([
+	bel: w(b_gen47, d0),
+	bel: w(b_gen47, d1),
+	bel: w(b_gen47, d2)
+]).
+disjoint([
+	bel: w(b_gen48, d0),
+	bel: w(b_gen48, d1),
+	bel: w(b_gen48, d2)
+]).
+disjoint([
+	bel: w(b_gen49, d0),
+	bel: w(b_gen49, d1),
+	bel: w(b_gen49, d2)
+]).
+disjoint([
+	bel: w(b_gen50, d0),
+	bel: w(b_gen50, d1),
+	bel: w(b_gen50, d2)
+]).
+disjoint([
+	bel: w(b_gen51, d0),
+	bel: w(b_gen51, d1),
+	bel: w(b_gen51, d2)
+]).
+disjoint([
+	bel: w(b_gen52, d0),
+	bel: w(b_gen52, d1),
+	bel: w(b_gen52, d2)
+]).
+disjoint([
+	bel: w(b_gen53, d0),
+	bel: w(b_gen53, d1),
+	bel: w(b_gen53, d2)
+]).
+disjoint([
+	bel: w(b_gen54, d0),
+	bel: w(b_gen54, d1),
+	bel: w(b_gen54, d2)
+]).
+disjoint([
+	bel: w(b_gen55, d0),
+	bel: w(b_gen55, d1),
+	bel: w(b_gen55, d2)
+]).
+disjoint([
+	bel: w(b_gen56, d0),
+	bel: w(b_gen56, d1),
+	bel: w(b_gen56, d2)
+]).
+disjoint([
+	bel: w(b_gen57, d0),
+	bel: w(b_gen57, d1),
+	bel: w(b_gen57, d2)
+]).
+disjoint([
+	bel: w(b_gen58, d0),
+	bel: w(b_gen58, d1),
+	bel: w(b_gen58, d2)
+]).
+disjoint([
+	bel: w(b_gen59, d0),
+	bel: w(b_gen59, d1),
+	bel: w(b_gen59, d2)
+]).
+disjoint([
+	bel: w(b_gen60, d0),
+	bel: w(b_gen60, d1),
+	bel: w(b_gen60, d2)
+]).
+disjoint([
+	bel: w(b_gen61, d0),
+	bel: w(b_gen61, d1),
+	bel: w(b_gen61, d2)
+]).
+disjoint([
+	bel: w(b_gen62, d0),
+	bel: w(b_gen62, d1),
+	bel: w(b_gen62, d2)
+]).
+disjoint([
+	bel: w(b_gen63, d0),
+	bel: w(b_gen63, d1),
+	bel: w(b_gen63, d2)
+]).
+disjoint([
+	bel: w(b_gen64, d0),
+	bel: w(b_gen64, d1),
+	bel: w(b_gen64, d2)
+]).
+disjoint([
+	bel: w(b_gen65, d0),
+	bel: w(b_gen65, d1),
+	bel: w(b_gen65, d2)
+]).
+disjoint([
+	bel: w(b_gen66, d0),
+	bel: w(b_gen66, d1),
+	bel: w(b_gen66, d2)
+]).
+disjoint([
+	bel: w(b_gen67, d0),
+	bel: w(b_gen67, d1),
+	bel: w(b_gen67, d2)
+]).
+disjoint([
+	bel: w(b_gen68, d0),
+	bel: w(b_gen68, d1),
+	bel: w(b_gen68, d2)
+]).
+disjoint([
+	bel: w(b_gen69, d0),
+	bel: w(b_gen69, d1),
+	bel: w(b_gen69, d2)
+]).
+
+bel : color(b_gen0, known(blue)) <- bel : w(b_gen0, d0) / world_exist, bel : b(b_gen0) / belief_exist.
+bel : shape(b_gen0, known(compact)) <- bel : w(b_gen0, d0) / world_exist, bel : b(b_gen0) / belief_exist.
+bel : color(b_gen0, known(red)) <- bel : w(b_gen0, d1) / world_exist, bel : b(b_gen0) / belief_exist.
+bel : shape(b_gen0, known(elongated)) <- bel : w(b_gen0, d1) / world_exist, bel : b(b_gen0) / belief_exist.
+bel : color(b_gen0, known(green)) <- bel : w(b_gen0, d2) / world_exist, bel : b(b_gen0) / belief_exist.
+bel : shape(b_gen0, known(round)) <- bel : w(b_gen0, d2) / world_exist, bel : b(b_gen0) / belief_exist.
+
+bel : color(b_gen1, known(red)) <- bel : w(b_gen1, d0) / world_exist, bel : b(b_gen1) / belief_exist.
+bel : shape(b_gen1, known(elongated)) <- bel : w(b_gen1, d0) / world_exist, bel : b(b_gen1) / belief_exist.
+bel : color(b_gen1, known(green)) <- bel : w(b_gen1, d1) / world_exist, bel : b(b_gen1) / belief_exist.
+bel : shape(b_gen1, known(round)) <- bel : w(b_gen1, d1) / world_exist, bel : b(b_gen1) / belief_exist.
+bel : color(b_gen1, known(yellow)) <- bel : w(b_gen1, d2) / world_exist, bel : b(b_gen1) / belief_exist.
+bel : shape(b_gen1, known(compact)) <- bel : w(b_gen1, d2) / world_exist, bel : b(b_gen1) / belief_exist.
+bel : color(b_gen2, known(green)) <- bel : w(b_gen2, d0) / world_exist, bel : b(b_gen2) / belief_exist.
+bel : shape(b_gen2, known(round)) <- bel : w(b_gen2, d0) / world_exist, bel : b(b_gen2) / belief_exist.
+bel : color(b_gen2, known(yellow)) <- bel : w(b_gen2, d1) / world_exist, bel : b(b_gen2) / belief_exist.
+bel : shape(b_gen2, known(compact)) <- bel : w(b_gen2, d1) / world_exist, bel : b(b_gen2) / belief_exist.
+bel : color(b_gen2, known(blue)) <- bel : w(b_gen2, d2) / world_exist, bel : b(b_gen2) / belief_exist.
+bel : shape(b_gen2, known(elongated)) <- bel : w(b_gen2, d2) / world_exist, bel : b(b_gen2) / belief_exist.
+bel : color(b_gen3, known(yellow)) <- bel : w(b_gen3, d0) / world_exist, bel : b(b_gen3) / belief_exist.
+bel : shape(b_gen3, known(compact)) <- bel : w(b_gen3, d0) / world_exist, bel : b(b_gen3) / belief_exist.
+bel : color(b_gen3, known(blue)) <- bel : w(b_gen3, d1) / world_exist, bel : b(b_gen3) / belief_exist.
+bel : shape(b_gen3, known(elongated)) <- bel : w(b_gen3, d1) / world_exist, bel : b(b_gen3) / belief_exist.
+bel : color(b_gen3, known(red)) <- bel : w(b_gen3, d2) / world_exist, bel : b(b_gen3) / belief_exist.
+bel : shape(b_gen3, known(round)) <- bel : w(b_gen3, d2) / world_exist, bel : b(b_gen3) / belief_exist.
+bel : color(b_gen4, known(blue)) <- bel : w(b_gen4, d0) / world_exist, bel : b(b_gen4) / belief_exist.
+bel : shape(b_gen4, known(elongated)) <- bel : w(b_gen4, d0) / world_exist, bel : b(b_gen4) / belief_exist.
+bel : color(b_gen4, known(red)) <- bel : w(b_gen4, d1) / world_exist, bel : b(b_gen4) / belief_exist.
+bel : shape(b_gen4, known(round)) <- bel : w(b_gen4, d1) / world_exist, bel : b(b_gen4) / belief_exist.
+bel : color(b_gen4, known(green)) <- bel : w(b_gen4, d2) / world_exist, bel : b(b_gen4) / belief_exist.
+bel : shape(b_gen4, known(compact)) <- bel : w(b_gen4, d2) / world_exist, bel : b(b_gen4) / belief_exist.
+bel : color(b_gen5, known(red)) <- bel : w(b_gen5, d0) / world_exist, bel : b(b_gen5) / belief_exist.
+bel : shape(b_gen5, known(round)) <- bel : w(b_gen5, d0) / world_exist, bel : b(b_gen5) / belief_exist.
+bel : color(b_gen5, known(green)) <- bel : w(b_gen5, d1) / world_exist, bel : b(b_gen5) / belief_exist.
+bel : shape(b_gen5, known(compact)) <- bel : w(b_gen5, d1) / world_exist, bel : b(b_gen5) / belief_exist.
+bel : color(b_gen5, known(yellow)) <- bel : w(b_gen5, d2) / world_exist, bel : b(b_gen5) / belief_exist.
+bel : shape(b_gen5, known(elongated)) <- bel : w(b_gen5, d2) / world_exist, bel : b(b_gen5) / belief_exist.
+bel : color(b_gen6, known(green)) <- bel : w(b_gen6, d0) / world_exist, bel : b(b_gen6) / belief_exist.
+bel : shape(b_gen6, known(compact)) <- bel : w(b_gen6, d0) / world_exist, bel : b(b_gen6) / belief_exist.
+bel : color(b_gen6, known(yellow)) <- bel : w(b_gen6, d1) / world_exist, bel : b(b_gen6) / belief_exist.
+bel : shape(b_gen6, known(elongated)) <- bel : w(b_gen6, d1) / world_exist, bel : b(b_gen6) / belief_exist.
+bel : color(b_gen6, known(blue)) <- bel : w(b_gen6, d2) / world_exist, bel : b(b_gen6) / belief_exist.
+bel : shape(b_gen6, known(round)) <- bel : w(b_gen6, d2) / world_exist, bel : b(b_gen6) / belief_exist.
+bel : color(b_gen7, known(yellow)) <- bel : w(b_gen7, d0) / world_exist, bel : b(b_gen7) / belief_exist.
+bel : shape(b_gen7, known(elongated)) <- bel : w(b_gen7, d0) / world_exist, bel : b(b_gen7) / belief_exist.
+bel : color(b_gen7, known(blue)) <- bel : w(b_gen7, d1) / world_exist, bel : b(b_gen7) / belief_exist.
+bel : shape(b_gen7, known(round)) <- bel : w(b_gen7, d1) / world_exist, bel : b(b_gen7) / belief_exist.
+bel : color(b_gen7, known(red)) <- bel : w(b_gen7, d2) / world_exist, bel : b(b_gen7) / belief_exist.
+bel : shape(b_gen7, known(compact)) <- bel : w(b_gen7, d2) / world_exist, bel : b(b_gen7) / belief_exist.
+bel : color(b_gen8, known(blue)) <- bel : w(b_gen8, d0) / world_exist, bel : b(b_gen8) / belief_exist.
+bel : shape(b_gen8, known(round)) <- bel : w(b_gen8, d0) / world_exist, bel : b(b_gen8) / belief_exist.
+bel : color(b_gen8, known(red)) <- bel : w(b_gen8, d1) / world_exist, bel : b(b_gen8) / belief_exist.
+bel : shape(b_gen8, known(compact)) <- bel : w(b_gen8, d1) / world_exist, bel : b(b_gen8) / belief_exist.
+bel : color(b_gen8, known(green)) <- bel : w(b_gen8, d2) / world_exist, bel : b(b_gen8) / belief_exist.
+bel : shape(b_gen8, known(elongated)) <- bel : w(b_gen8, d2) / world_exist, bel : b(b_gen8) / belief_exist.
+bel : color(b_gen9, known(red)) <- bel : w(b_gen9, d0) / world_exist, bel : b(b_gen9) / belief_exist.
+bel : shape(b_gen9, known(compact)) <- bel : w(b_gen9, d0) / world_exist, bel : b(b_gen9) / belief_exist.
+bel : color(b_gen9, known(green)) <- bel : w(b_gen9, d1) / world_exist, bel : b(b_gen9) / belief_exist.
+bel : shape(b_gen9, known(elongated)) <- bel : w(b_gen9, d1) / world_exist, bel : b(b_gen9) / belief_exist.
+bel : color(b_gen9, known(yellow)) <- bel : w(b_gen9, d2) / world_exist, bel : b(b_gen9) / belief_exist.
+bel : shape(b_gen9, known(round)) <- bel : w(b_gen9, d2) / world_exist, bel : b(b_gen9) / belief_exist.
+bel : color(b_gen10, known(green)) <- bel : w(b_gen10, d0) / world_exist, bel : b(b_gen10) / belief_exist.
+bel : shape(b_gen10, known(elongated)) <- bel : w(b_gen10, d0) / world_exist, bel : b(b_gen10) / belief_exist.
+bel : color(b_gen10, known(yellow)) <- bel : w(b_gen10, d1) / world_exist, bel : b(b_gen10) / belief_exist.
+bel : shape(b_gen10, known(round)) <- bel : w(b_gen10, d1) / world_exist, bel : b(b_gen10) / belief_exist.
+bel : color(b_gen10, known(blue)) <- bel : w(b_gen10, d2) / world_exist, bel : b(b_gen10) / belief_exist.
+bel : shape(b_gen10, known(compact)) <- bel : w(b_gen10, d2) / world_exist, bel : b(b_gen10) / belief_exist.
+bel : color(b_gen11, known(yellow)) <- bel : w(b_gen11, d0) / world_exist, bel : b(b_gen11) / belief_exist.
+bel : shape(b_gen11, known(round)) <- bel : w(b_gen11, d0) / world_exist, bel : b(b_gen11) / belief_exist.
+bel : color(b_gen11, known(blue)) <- bel : w(b_gen11, d1) / world_exist, bel : b(b_gen11) / belief_exist.
+bel : shape(b_gen11, known(compact)) <- bel : w(b_gen11, d1) / world_exist, bel : b(b_gen11) / belief_exist.
+bel : color(b_gen11, known(red)) <- bel : w(b_gen11, d2) / world_exist, bel : b(b_gen11) / belief_exist.
+bel : shape(b_gen11, known(elongated)) <- bel : w(b_gen11, d2) / world_exist, bel : b(b_gen11) / belief_exist.
+bel : color(b_gen12, known(blue)) <- bel : w(b_gen12, d0) / world_exist, bel : b(b_gen12) / belief_exist.
+bel : shape(b_gen12, known(compact)) <- bel : w(b_gen12, d0) / world_exist, bel : b(b_gen12) / belief_exist.
+bel : color(b_gen12, known(red)) <- bel : w(b_gen12, d1) / world_exist, bel : b(b_gen12) / belief_exist.
+bel : shape(b_gen12, known(elongated)) <- bel : w(b_gen12, d1) / world_exist, bel : b(b_gen12) / belief_exist.
+bel : color(b_gen12, known(green)) <- bel : w(b_gen12, d2) / world_exist, bel : b(b_gen12) / belief_exist.
+bel : shape(b_gen12, known(round)) <- bel : w(b_gen12, d2) / world_exist, bel : b(b_gen12) / belief_exist.
+bel : color(b_gen13, known(red)) <- bel : w(b_gen13, d0) / world_exist, bel : b(b_gen13) / belief_exist.
+bel : shape(b_gen13, known(elongated)) <- bel : w(b_gen13, d0) / world_exist, bel : b(b_gen13) / belief_exist.
+bel : color(b_gen13, known(green)) <- bel : w(b_gen13, d1) / world_exist, bel : b(b_gen13) / belief_exist.
+bel : shape(b_gen13, known(round)) <- bel : w(b_gen13, d1) / world_exist, bel : b(b_gen13) / belief_exist.
+bel : color(b_gen13, known(yellow)) <- bel : w(b_gen13, d2) / world_exist, bel : b(b_gen13) / belief_exist.
+bel : shape(b_gen13, known(compact)) <- bel : w(b_gen13, d2) / world_exist, bel : b(b_gen13) / belief_exist.
+bel : color(b_gen14, known(green)) <- bel : w(b_gen14, d0) / world_exist, bel : b(b_gen14) / belief_exist.
+bel : shape(b_gen14, known(round)) <- bel : w(b_gen14, d0) / world_exist, bel : b(b_gen14) / belief_exist.
+bel : color(b_gen14, known(yellow)) <- bel : w(b_gen14, d1) / world_exist, bel : b(b_gen14) / belief_exist.
+bel : shape(b_gen14, known(compact)) <- bel : w(b_gen14, d1) / world_exist, bel : b(b_gen14) / belief_exist.
+bel : color(b_gen14, known(blue)) <- bel : w(b_gen14, d2) / world_exist, bel : b(b_gen14) / belief_exist.
+bel : shape(b_gen14, known(elongated)) <- bel : w(b_gen14, d2) / world_exist, bel : b(b_gen14) / belief_exist.
+bel : color(b_gen15, known(yellow)) <- bel : w(b_gen15, d0) / world_exist, bel : b(b_gen15) / belief_exist.
+bel : shape(b_gen15, known(compact)) <- bel : w(b_gen15, d0) / world_exist, bel : b(b_gen15) / belief_exist.
+bel : color(b_gen15, known(blue)) <- bel : w(b_gen15, d1) / world_exist, bel : b(b_gen15) / belief_exist.
+bel : shape(b_gen15, known(elongated)) <- bel : w(b_gen15, d1) / world_exist, bel : b(b_gen15) / belief_exist.
+bel : color(b_gen15, known(red)) <- bel : w(b_gen15, d2) / world_exist, bel : b(b_gen15) / belief_exist.
+bel : shape(b_gen15, known(round)) <- bel : w(b_gen15, d2) / world_exist, bel : b(b_gen15) / belief_exist.
+bel : color(b_gen16, known(blue)) <- bel : w(b_gen16, d0) / world_exist, bel : b(b_gen16) / belief_exist.
+bel : shape(b_gen16, known(elongated)) <- bel : w(b_gen16, d0) / world_exist, bel : b(b_gen16) / belief_exist.
+bel : color(b_gen16, known(red)) <- bel : w(b_gen16, d1) / world_exist, bel : b(b_gen16) / belief_exist.
+bel : shape(b_gen16, known(round)) <- bel : w(b_gen16, d1) / world_exist, bel : b(b_gen16) / belief_exist.
+bel : color(b_gen16, known(green)) <- bel : w(b_gen16, d2) / world_exist, bel : b(b_gen16) / belief_exist.
+bel : shape(b_gen16, known(compact)) <- bel : w(b_gen16, d2) / world_exist, bel : b(b_gen16) / belief_exist.
+bel : color(b_gen17, known(red)) <- bel : w(b_gen17, d0) / world_exist, bel : b(b_gen17) / belief_exist.
+bel : shape(b_gen17, known(round)) <- bel : w(b_gen17, d0) / world_exist, bel : b(b_gen17) / belief_exist.
+bel : color(b_gen17, known(green)) <- bel : w(b_gen17, d1) / world_exist, bel : b(b_gen17) / belief_exist.
+bel : shape(b_gen17, known(compact)) <- bel : w(b_gen17, d1) / world_exist, bel : b(b_gen17) / belief_exist.
+bel : color(b_gen17, known(yellow)) <- bel : w(b_gen17, d2) / world_exist, bel : b(b_gen17) / belief_exist.
+bel : shape(b_gen17, known(elongated)) <- bel : w(b_gen17, d2) / world_exist, bel : b(b_gen17) / belief_exist.
+bel : color(b_gen18, known(green)) <- bel : w(b_gen18, d0) / world_exist, bel : b(b_gen18) / belief_exist.
+bel : shape(b_gen18, known(compact)) <- bel : w(b_gen18, d0) / world_exist, bel : b(b_gen18) / belief_exist.
+bel : color(b_gen18, known(yellow)) <- bel : w(b_gen18, d1) / world_exist, bel : b(b_gen18) / belief_exist.
+bel : shape(b_gen18, known(elongated)) <- bel : w(b_gen18, d1) / world_exist, bel : b(b_gen18) / belief_exist.
+bel : color(b_gen18, known(blue)) <- bel : w(b_gen18, d2) / world_exist, bel : b(b_gen18) / belief_exist.
+bel : shape(b_gen18, known(round)) <- bel : w(b_gen18, d2) / world_exist, bel : b(b_gen18) / belief_exist.
+bel : color(b_gen19, known(yellow)) <- bel : w(b_gen19, d0) / world_exist, bel : b(b_gen19) / belief_exist.
+bel : shape(b_gen19, known(elongated)) <- bel : w(b_gen19, d0) / world_exist, bel : b(b_gen19) / belief_exist.
+bel : color(b_gen19, known(blue)) <- bel : w(b_gen19, d1) / world_exist, bel : b(b_gen19) / belief_exist.
+bel : shape(b_gen19, known(round)) <- bel : w(b_gen19, d1) / world_exist, bel : b(b_gen19) / belief_exist.
+bel : color(b_gen19, known(red)) <- bel : w(b_gen19, d2) / world_exist, bel : b(b_gen19) / belief_exist.
+bel : shape(b_gen19, known(compact)) <- bel : w(b_gen19, d2) / world_exist, bel : b(b_gen19) / belief_exist.
+bel : color(b_gen20, known(blue)) <- bel : w(b_gen20, d0) / world_exist, bel : b(b_gen20) / belief_exist.
+bel : shape(b_gen20, known(round)) <- bel : w(b_gen20, d0) / world_exist, bel : b(b_gen20) / belief_exist.
+bel : color(b_gen20, known(red)) <- bel : w(b_gen20, d1) / world_exist, bel : b(b_gen20) / belief_exist.
+bel : shape(b_gen20, known(compact)) <- bel : w(b_gen20, d1) / world_exist, bel : b(b_gen20) / belief_exist.
+bel : color(b_gen20, known(green)) <- bel : w(b_gen20, d2) / world_exist, bel : b(b_gen20) / belief_exist.
+bel : shape(b_gen20, known(elongated)) <- bel : w(b_gen20, d2) / world_exist, bel : b(b_gen20) / belief_exist.
+bel : color(b_gen21, known(red)) <- bel : w(b_gen21, d0) / world_exist, bel : b(b_gen21) / belief_exist.
+bel : shape(b_gen21, known(compact)) <- bel : w(b_gen21, d0) / world_exist, bel : b(b_gen21) / belief_exist.
+bel : color(b_gen21, known(green)) <- bel : w(b_gen21, d1) / world_exist, bel : b(b_gen21) / belief_exist.
+bel : shape(b_gen21, known(elongated)) <- bel : w(b_gen21, d1) / world_exist, bel : b(b_gen21) / belief_exist.
+bel : color(b_gen21, known(yellow)) <- bel : w(b_gen21, d2) / world_exist, bel : b(b_gen21) / belief_exist.
+bel : shape(b_gen21, known(round)) <- bel : w(b_gen21, d2) / world_exist, bel : b(b_gen21) / belief_exist.
+bel : color(b_gen22, known(green)) <- bel : w(b_gen22, d0) / world_exist, bel : b(b_gen22) / belief_exist.
+bel : shape(b_gen22, known(elongated)) <- bel : w(b_gen22, d0) / world_exist, bel : b(b_gen22) / belief_exist.
+bel : color(b_gen22, known(yellow)) <- bel : w(b_gen22, d1) / world_exist, bel : b(b_gen22) / belief_exist.
+bel : shape(b_gen22, known(round)) <- bel : w(b_gen22, d1) / world_exist, bel : b(b_gen22) / belief_exist.
+bel : color(b_gen22, known(blue)) <- bel : w(b_gen22, d2) / world_exist, bel : b(b_gen22) / belief_exist.
+bel : shape(b_gen22, known(compact)) <- bel : w(b_gen22, d2) / world_exist, bel : b(b_gen22) / belief_exist.
+bel : color(b_gen23, known(yellow)) <- bel : w(b_gen23, d0) / world_exist, bel : b(b_gen23) / belief_exist.
+bel : shape(b_gen23, known(round)) <- bel : w(b_gen23, d0) / world_exist, bel : b(b_gen23) / belief_exist.
+bel : color(b_gen23, known(blue)) <- bel : w(b_gen23, d1) / world_exist, bel : b(b_gen23) / belief_exist.
+bel : shape(b_gen23, known(compact)) <- bel : w(b_gen23, d1) / world_exist, bel : b(b_gen23) / belief_exist.
+bel : color(b_gen23, known(red)) <- bel : w(b_gen23, d2) / world_exist, bel : b(b_gen23) / belief_exist.
+bel : shape(b_gen23, known(elongated)) <- bel : w(b_gen23, d2) / world_exist, bel : b(b_gen23) / belief_exist.
+bel : color(b_gen24, known(blue)) <- bel : w(b_gen24, d0) / world_exist, bel : b(b_gen24) / belief_exist.
+bel : shape(b_gen24, known(compact)) <- bel : w(b_gen24, d0) / world_exist, bel : b(b_gen24) / belief_exist.
+bel : color(b_gen24, known(red)) <- bel : w(b_gen24, d1) / world_exist, bel : b(b_gen24) / belief_exist.
+bel : shape(b_gen24, known(elongated)) <- bel : w(b_gen24, d1) / world_exist, bel : b(b_gen24) / belief_exist.
+bel : color(b_gen24, known(green)) <- bel : w(b_gen24, d2) / world_exist, bel : b(b_gen24) / belief_exist.
+bel : shape(b_gen24, known(round)) <- bel : w(b_gen24, d2) / world_exist, bel : b(b_gen24) / belief_exist.
+bel : color(b_gen25, known(red)) <- bel : w(b_gen25, d0) / world_exist, bel : b(b_gen25) / belief_exist.
+bel : shape(b_gen25, known(elongated)) <- bel : w(b_gen25, d0) / world_exist, bel : b(b_gen25) / belief_exist.
+bel : color(b_gen25, known(green)) <- bel : w(b_gen25, d1) / world_exist, bel : b(b_gen25) / belief_exist.
+bel : shape(b_gen25, known(round)) <- bel : w(b_gen25, d1) / world_exist, bel : b(b_gen25) / belief_exist.
+bel : color(b_gen25, known(yellow)) <- bel : w(b_gen25, d2) / world_exist, bel : b(b_gen25) / belief_exist.
+bel : shape(b_gen25, known(compact)) <- bel : w(b_gen25, d2) / world_exist, bel : b(b_gen25) / belief_exist.
+bel : color(b_gen26, known(green)) <- bel : w(b_gen26, d0) / world_exist, bel : b(b_gen26) / belief_exist.
+bel : shape(b_gen26, known(round)) <- bel : w(b_gen26, d0) / world_exist, bel : b(b_gen26) / belief_exist.
+bel : color(b_gen26, known(yellow)) <- bel : w(b_gen26, d1) / world_exist, bel : b(b_gen26) / belief_exist.
+bel : shape(b_gen26, known(compact)) <- bel : w(b_gen26, d1) / world_exist, bel : b(b_gen26) / belief_exist.
+bel : color(b_gen26, known(blue)) <- bel : w(b_gen26, d2) / world_exist, bel : b(b_gen26) / belief_exist.
+bel : shape(b_gen26, known(elongated)) <- bel : w(b_gen26, d2) / world_exist, bel : b(b_gen26) / belief_exist.
+bel : color(b_gen27, known(yellow)) <- bel : w(b_gen27, d0) / world_exist, bel : b(b_gen27) / belief_exist.
+bel : shape(b_gen27, known(compact)) <- bel : w(b_gen27, d0) / world_exist, bel : b(b_gen27) / belief_exist.
+bel : color(b_gen27, known(blue)) <- bel : w(b_gen27, d1) / world_exist, bel : b(b_gen27) / belief_exist.
+bel : shape(b_gen27, known(elongated)) <- bel : w(b_gen27, d1) / world_exist, bel : b(b_gen27) / belief_exist.
+bel : color(b_gen27, known(red)) <- bel : w(b_gen27, d2) / world_exist, bel : b(b_gen27) / belief_exist.
+bel : shape(b_gen27, known(round)) <- bel : w(b_gen27, d2) / world_exist, bel : b(b_gen27) / belief_exist.
+bel : color(b_gen28, known(blue)) <- bel : w(b_gen28, d0) / world_exist, bel : b(b_gen28) / belief_exist.
+bel : shape(b_gen28, known(elongated)) <- bel : w(b_gen28, d0) / world_exist, bel : b(b_gen28) / belief_exist.
+bel : color(b_gen28, known(red)) <- bel : w(b_gen28, d1) / world_exist, bel : b(b_gen28) / belief_exist.
+bel : shape(b_gen28, known(round)) <- bel : w(b_gen28, d1) / world_exist, bel : b(b_gen28) / belief_exist.
+bel : color(b_gen28, known(green)) <- bel : w(b_gen28, d2) / world_exist, bel : b(b_gen28) / belief_exist.
+bel : shape(b_gen28, known(compact)) <- bel : w(b_gen28, d2) / world_exist, bel : b(b_gen28) / belief_exist.
+bel : color(b_gen29, known(red)) <- bel : w(b_gen29, d0) / world_exist, bel : b(b_gen29) / belief_exist.
+bel : shape(b_gen29, known(round)) <- bel : w(b_gen29, d0) / world_exist, bel : b(b_gen29) / belief_exist.
+bel : color(b_gen29, known(green)) <- bel : w(b_gen29, d1) / world_exist, bel : b(b_gen29) / belief_exist.
+bel : shape(b_gen29, known(compact)) <- bel : w(b_gen29, d1) / world_exist, bel : b(b_gen29) / belief_exist.
+bel : color(b_gen29, known(yellow)) <- bel : w(b_gen29, d2) / world_exist, bel : b(b_gen29) / belief_exist.
+bel : shape(b_gen29, known(elongated)) <- bel : w(b_gen29, d2) / world_exist, bel : b(b_gen29) / belief_exist.
+bel : color(b_gen30, known(green)) <- bel : w(b_gen30, d0) / world_exist, bel : b(b_gen30) / belief_exist.
+bel : shape(b_gen30, known(compact)) <- bel : w(b_gen30, d0) / world_exist, bel : b(b_gen30) / belief_exist.
+bel : color(b_gen30, known(yellow)) <- bel : w(b_gen30, d1) / world_exist, bel : b(b_gen30) / belief_exist.
+bel : shape(b_gen30, known(elongated)) <- bel : w(b_gen30, d1) / world_exist, bel : b(b_gen30) / belief_exist.
+bel : color(b_gen30, known(blue)) <- bel : w(b_gen30, d2) / world_exist, bel : b(b_gen30) / belief_exist.
+bel : shape(b_gen30, known(round)) <- bel : w(b_gen30, d2) / world_exist, bel : b(b_gen30) / belief_exist.
+bel : color(b_gen31, known(yellow)) <- bel : w(b_gen31, d0) / world_exist, bel : b(b_gen31) / belief_exist.
+bel : shape(b_gen31, known(elongated)) <- bel : w(b_gen31, d0) / world_exist, bel : b(b_gen31) / belief_exist.
+bel : color(b_gen31, known(blue)) <- bel : w(b_gen31, d1) / world_exist, bel : b(b_gen31) / belief_exist.
+bel : shape(b_gen31, known(round)) <- bel : w(b_gen31, d1) / world_exist, bel : b(b_gen31) / belief_exist.
+bel : color(b_gen31, known(red)) <- bel : w(b_gen31, d2) / world_exist, bel : b(b_gen31) / belief_exist.
+bel : shape(b_gen31, known(compact)) <- bel : w(b_gen31, d2) / world_exist, bel : b(b_gen31) / belief_exist.
+bel : color(b_gen32, known(blue)) <- bel : w(b_gen32, d0) / world_exist, bel : b(b_gen32) / belief_exist.
+bel : shape(b_gen32, known(round)) <- bel : w(b_gen32, d0) / world_exist, bel : b(b_gen32) / belief_exist.
+bel : color(b_gen32, known(red)) <- bel : w(b_gen32, d1) / world_exist, bel : b(b_gen32) / belief_exist.
+bel : shape(b_gen32, known(compact)) <- bel : w(b_gen32, d1) / world_exist, bel : b(b_gen32) / belief_exist.
+bel : color(b_gen32, known(green)) <- bel : w(b_gen32, d2) / world_exist, bel : b(b_gen32) / belief_exist.
+bel : shape(b_gen32, known(elongated)) <- bel : w(b_gen32, d2) / world_exist, bel : b(b_gen32) / belief_exist.
+bel : color(b_gen33, known(red)) <- bel : w(b_gen33, d0) / world_exist, bel : b(b_gen33) / belief_exist.
+bel : shape(b_gen33, known(compact)) <- bel : w(b_gen33, d0) / world_exist, bel : b(b_gen33) / belief_exist.
+bel : color(b_gen33, known(green)) <- bel : w(b_gen33, d1) / world_exist, bel : b(b_gen33) / belief_exist.
+bel : shape(b_gen33, known(elongated)) <- bel : w(b_gen33, d1) / world_exist, bel : b(b_gen33) / belief_exist.
+bel : color(b_gen33, known(yellow)) <- bel : w(b_gen33, d2) / world_exist, bel : b(b_gen33) / belief_exist.
+bel : shape(b_gen33, known(round)) <- bel : w(b_gen33, d2) / world_exist, bel : b(b_gen33) / belief_exist.
+bel : color(b_gen34, known(green)) <- bel : w(b_gen34, d0) / world_exist, bel : b(b_gen34) / belief_exist.
+bel : shape(b_gen34, known(elongated)) <- bel : w(b_gen34, d0) / world_exist, bel : b(b_gen34) / belief_exist.
+bel : color(b_gen34, known(yellow)) <- bel : w(b_gen34, d1) / world_exist, bel : b(b_gen34) / belief_exist.
+bel : shape(b_gen34, known(round)) <- bel : w(b_gen34, d1) / world_exist, bel : b(b_gen34) / belief_exist.
+bel : color(b_gen34, known(blue)) <- bel : w(b_gen34, d2) / world_exist, bel : b(b_gen34) / belief_exist.
+bel : shape(b_gen34, known(compact)) <- bel : w(b_gen34, d2) / world_exist, bel : b(b_gen34) / belief_exist.
+bel : color(b_gen35, known(yellow)) <- bel : w(b_gen35, d0) / world_exist, bel : b(b_gen35) / belief_exist.
+bel : shape(b_gen35, known(round)) <- bel : w(b_gen35, d0) / world_exist, bel : b(b_gen35) / belief_exist.
+bel : color(b_gen35, known(blue)) <- bel : w(b_gen35, d1) / world_exist, bel : b(b_gen35) / belief_exist.
+bel : shape(b_gen35, known(compact)) <- bel : w(b_gen35, d1) / world_exist, bel : b(b_gen35) / belief_exist.
+bel : color(b_gen35, known(red)) <- bel : w(b_gen35, d2) / world_exist, bel : b(b_gen35) / belief_exist.
+bel : shape(b_gen35, known(elongated)) <- bel : w(b_gen35, d2) / world_exist, bel : b(b_gen35) / belief_exist.
+bel : color(b_gen36, known(blue)) <- bel : w(b_gen36, d0) / world_exist, bel : b(b_gen36) / belief_exist.
+bel : shape(b_gen36, known(compact)) <- bel : w(b_gen36, d0) / world_exist, bel : b(b_gen36) / belief_exist.
+bel : color(b_gen36, known(red)) <- bel : w(b_gen36, d1) / world_exist, bel : b(b_gen36) / belief_exist.
+bel : shape(b_gen36, known(elongated)) <- bel : w(b_gen36, d1) / world_exist, bel : b(b_gen36) / belief_exist.
+bel : color(b_gen36, known(green)) <- bel : w(b_gen36, d2) / world_exist, bel : b(b_gen36) / belief_exist.
+bel : shape(b_gen36, known(round)) <- bel : w(b_gen36, d2) / world_exist, bel : b(b_gen36) / belief_exist.
+bel : color(b_gen37, known(red)) <- bel : w(b_gen37, d0) / world_exist, bel : b(b_gen37) / belief_exist.
+bel : shape(b_gen37, known(elongated)) <- bel : w(b_gen37, d0) / world_exist, bel : b(b_gen37) / belief_exist.
+bel : color(b_gen37, known(green)) <- bel : w(b_gen37, d1) / world_exist, bel : b(b_gen37) / belief_exist.
+bel : shape(b_gen37, known(round)) <- bel : w(b_gen37, d1) / world_exist, bel : b(b_gen37) / belief_exist.
+bel : color(b_gen37, known(yellow)) <- bel : w(b_gen37, d2) / world_exist, bel : b(b_gen37) / belief_exist.
+bel : shape(b_gen37, known(compact)) <- bel : w(b_gen37, d2) / world_exist, bel : b(b_gen37) / belief_exist.
+bel : color(b_gen38, known(green)) <- bel : w(b_gen38, d0) / world_exist, bel : b(b_gen38) / belief_exist.
+bel : shape(b_gen38, known(round)) <- bel : w(b_gen38, d0) / world_exist, bel : b(b_gen38) / belief_exist.
+bel : color(b_gen38, known(yellow)) <- bel : w(b_gen38, d1) / world_exist, bel : b(b_gen38) / belief_exist.
+bel : shape(b_gen38, known(compact)) <- bel : w(b_gen38, d1) / world_exist, bel : b(b_gen38) / belief_exist.
+bel : color(b_gen38, known(blue)) <- bel : w(b_gen38, d2) / world_exist, bel : b(b_gen38) / belief_exist.
+bel : shape(b_gen38, known(elongated)) <- bel : w(b_gen38, d2) / world_exist, bel : b(b_gen38) / belief_exist.
+bel : color(b_gen39, known(yellow)) <- bel : w(b_gen39, d0) / world_exist, bel : b(b_gen39) / belief_exist.
+bel : shape(b_gen39, known(compact)) <- bel : w(b_gen39, d0) / world_exist, bel : b(b_gen39) / belief_exist.
+bel : color(b_gen39, known(blue)) <- bel : w(b_gen39, d1) / world_exist, bel : b(b_gen39) / belief_exist.
+bel : shape(b_gen39, known(elongated)) <- bel : w(b_gen39, d1) / world_exist, bel : b(b_gen39) / belief_exist.
+bel : color(b_gen39, known(red)) <- bel : w(b_gen39, d2) / world_exist, bel : b(b_gen39) / belief_exist.
+bel : shape(b_gen39, known(round)) <- bel : w(b_gen39, d2) / world_exist, bel : b(b_gen39) / belief_exist.
+bel : color(b_gen40, known(blue)) <- bel : w(b_gen40, d0) / world_exist, bel : b(b_gen40) / belief_exist.
+bel : shape(b_gen40, known(elongated)) <- bel : w(b_gen40, d0) / world_exist, bel : b(b_gen40) / belief_exist.
+bel : color(b_gen40, known(red)) <- bel : w(b_gen40, d1) / world_exist, bel : b(b_gen40) / belief_exist.
+bel : shape(b_gen40, known(round)) <- bel : w(b_gen40, d1) / world_exist, bel : b(b_gen40) / belief_exist.
+bel : color(b_gen40, known(green)) <- bel : w(b_gen40, d2) / world_exist, bel : b(b_gen40) / belief_exist.
+bel : shape(b_gen40, known(compact)) <- bel : w(b_gen40, d2) / world_exist, bel : b(b_gen40) / belief_exist.
+bel : color(b_gen41, known(red)) <- bel : w(b_gen41, d0) / world_exist, bel : b(b_gen41) / belief_exist.
+bel : shape(b_gen41, known(round)) <- bel : w(b_gen41, d0) / world_exist, bel : b(b_gen41) / belief_exist.
+bel : color(b_gen41, known(green)) <- bel : w(b_gen41, d1) / world_exist, bel : b(b_gen41) / belief_exist.
+bel : shape(b_gen41, known(compact)) <- bel : w(b_gen41, d1) / world_exist, bel : b(b_gen41) / belief_exist.
+bel : color(b_gen41, known(yellow)) <- bel : w(b_gen41, d2) / world_exist, bel : b(b_gen41) / belief_exist.
+bel : shape(b_gen41, known(elongated)) <- bel : w(b_gen41, d2) / world_exist, bel : b(b_gen41) / belief_exist.
+bel : color(b_gen42, known(green)) <- bel : w(b_gen42, d0) / world_exist, bel : b(b_gen42) / belief_exist.
+bel : shape(b_gen42, known(compact)) <- bel : w(b_gen42, d0) / world_exist, bel : b(b_gen42) / belief_exist.
+bel : color(b_gen42, known(yellow)) <- bel : w(b_gen42, d1) / world_exist, bel : b(b_gen42) / belief_exist.
+bel : shape(b_gen42, known(elongated)) <- bel : w(b_gen42, d1) / world_exist, bel : b(b_gen42) / belief_exist.
+bel : color(b_gen42, known(blue)) <- bel : w(b_gen42, d2) / world_exist, bel : b(b_gen42) / belief_exist.
+bel : shape(b_gen42, known(round)) <- bel : w(b_gen42, d2) / world_exist, bel : b(b_gen42) / belief_exist.
+bel : color(b_gen43, known(yellow)) <- bel : w(b_gen43, d0) / world_exist, bel : b(b_gen43) / belief_exist.
+bel : shape(b_gen43, known(elongated)) <- bel : w(b_gen43, d0) / world_exist, bel : b(b_gen43) / belief_exist.
+bel : color(b_gen43, known(blue)) <- bel : w(b_gen43, d1) / world_exist, bel : b(b_gen43) / belief_exist.
+bel : shape(b_gen43, known(round)) <- bel : w(b_gen43, d1) / world_exist, bel : b(b_gen43) / belief_exist.
+bel : color(b_gen43, known(red)) <- bel : w(b_gen43, d2) / world_exist, bel : b(b_gen43) / belief_exist.
+bel : shape(b_gen43, known(compact)) <- bel : w(b_gen43, d2) / world_exist, bel : b(b_gen43) / belief_exist.
+bel : color(b_gen44, known(blue)) <- bel : w(b_gen44, d0) / world_exist, bel : b(b_gen44) / belief_exist.
+bel : shape(b_gen44, known(round)) <- bel : w(b_gen44, d0) / world_exist, bel : b(b_gen44) / belief_exist.
+bel : color(b_gen44, known(red)) <- bel : w(b_gen44, d1) / world_exist, bel : b(b_gen44) / belief_exist.
+bel : shape(b_gen44, known(compact)) <- bel : w(b_gen44, d1) / world_exist, bel : b(b_gen44) / belief_exist.
+bel : color(b_gen44, known(green)) <- bel : w(b_gen44, d2) / world_exist, bel : b(b_gen44) / belief_exist.
+bel : shape(b_gen44, known(elongated)) <- bel : w(b_gen44, d2) / world_exist, bel : b(b_gen44) / belief_exist.
+bel : color(b_gen45, known(red)) <- bel : w(b_gen45, d0) / world_exist, bel : b(b_gen45) / belief_exist.
+bel : shape(b_gen45, known(compact)) <- bel : w(b_gen45, d0) / world_exist, bel : b(b_gen45) / belief_exist.
+bel : color(b_gen45, known(green)) <- bel : w(b_gen45, d1) / world_exist, bel : b(b_gen45) / belief_exist.
+bel : shape(b_gen45, known(elongated)) <- bel : w(b_gen45, d1) / world_exist, bel : b(b_gen45) / belief_exist.
+bel : color(b_gen45, known(yellow)) <- bel : w(b_gen45, d2) / world_exist, bel : b(b_gen45) / belief_exist.
+bel : shape(b_gen45, known(round)) <- bel : w(b_gen45, d2) / world_exist, bel : b(b_gen45) / belief_exist.
+bel : color(b_gen46, known(green)) <- bel : w(b_gen46, d0) / world_exist, bel : b(b_gen46) / belief_exist.
+bel : shape(b_gen46, known(elongated)) <- bel : w(b_gen46, d0) / world_exist, bel : b(b_gen46) / belief_exist.
+bel : color(b_gen46, known(yellow)) <- bel : w(b_gen46, d1) / world_exist, bel : b(b_gen46) / belief_exist.
+bel : shape(b_gen46, known(round)) <- bel : w(b_gen46, d1) / world_exist, bel : b(b_gen46) / belief_exist.
+bel : color(b_gen46, known(blue)) <- bel : w(b_gen46, d2) / world_exist, bel : b(b_gen46) / belief_exist.
+bel : shape(b_gen46, known(compact)) <- bel : w(b_gen46, d2) / world_exist, bel : b(b_gen46) / belief_exist.
+bel : color(b_gen47, known(yellow)) <- bel : w(b_gen47, d0) / world_exist, bel : b(b_gen47) / belief_exist.
+bel : shape(b_gen47, known(round)) <- bel : w(b_gen47, d0) / world_exist, bel : b(b_gen47) / belief_exist.
+bel : color(b_gen47, known(blue)) <- bel : w(b_gen47, d1) / world_exist, bel : b(b_gen47) / belief_exist.
+bel : shape(b_gen47, known(compact)) <- bel : w(b_gen47, d1) / world_exist, bel : b(b_gen47) / belief_exist.
+bel : color(b_gen47, known(red)) <- bel : w(b_gen47, d2) / world_exist, bel : b(b_gen47) / belief_exist.
+bel : shape(b_gen47, known(elongated)) <- bel : w(b_gen47, d2) / world_exist, bel : b(b_gen47) / belief_exist.
+bel : color(b_gen48, known(blue)) <- bel : w(b_gen48, d0) / world_exist, bel : b(b_gen48) / belief_exist.
+bel : shape(b_gen48, known(compact)) <- bel : w(b_gen48, d0) / world_exist, bel : b(b_gen48) / belief_exist.
+bel : color(b_gen48, known(red)) <- bel : w(b_gen48, d1) / world_exist, bel : b(b_gen48) / belief_exist.
+bel : shape(b_gen48, known(elongated)) <- bel : w(b_gen48, d1) / world_exist, bel : b(b_gen48) / belief_exist.
+bel : color(b_gen48, known(green)) <- bel : w(b_gen48, d2) / world_exist, bel : b(b_gen48) / belief_exist.
+bel : shape(b_gen48, known(round)) <- bel : w(b_gen48, d2) / world_exist, bel : b(b_gen48) / belief_exist.
+bel : color(b_gen49, known(red)) <- bel : w(b_gen49, d0) / world_exist, bel : b(b_gen49) / belief_exist.
+bel : shape(b_gen49, known(elongated)) <- bel : w(b_gen49, d0) / world_exist, bel : b(b_gen49) / belief_exist.
+bel : color(b_gen49, known(green)) <- bel : w(b_gen49, d1) / world_exist, bel : b(b_gen49) / belief_exist.
+bel : shape(b_gen49, known(round)) <- bel : w(b_gen49, d1) / world_exist, bel : b(b_gen49) / belief_exist.
+bel : color(b_gen49, known(yellow)) <- bel : w(b_gen49, d2) / world_exist, bel : b(b_gen49) / belief_exist.
+bel : shape(b_gen49, known(compact)) <- bel : w(b_gen49, d2) / world_exist, bel : b(b_gen49) / belief_exist.
+bel : color(b_gen50, known(green)) <- bel : w(b_gen50, d0) / world_exist, bel : b(b_gen50) / belief_exist.
+bel : shape(b_gen50, known(round)) <- bel : w(b_gen50, d0) / world_exist, bel : b(b_gen50) / belief_exist.
+bel : color(b_gen50, known(yellow)) <- bel : w(b_gen50, d1) / world_exist, bel : b(b_gen50) / belief_exist.
+bel : shape(b_gen50, known(compact)) <- bel : w(b_gen50, d1) / world_exist, bel : b(b_gen50) / belief_exist.
+bel : color(b_gen50, known(blue)) <- bel : w(b_gen50, d2) / world_exist, bel : b(b_gen50) / belief_exist.
+bel : shape(b_gen50, known(elongated)) <- bel : w(b_gen50, d2) / world_exist, bel : b(b_gen50) / belief_exist.
+bel : color(b_gen51, known(yellow)) <- bel : w(b_gen51, d0) / world_exist, bel : b(b_gen51) / belief_exist.
+bel : shape(b_gen51, known(compact)) <- bel : w(b_gen51, d0) / world_exist, bel : b(b_gen51) / belief_exist.
+bel : color(b_gen51, known(blue)) <- bel : w(b_gen51, d1) / world_exist, bel : b(b_gen51) / belief_exist.
+bel : shape(b_gen51, known(elongated)) <- bel : w(b_gen51, d1) / world_exist, bel : b(b_gen51) / belief_exist.
+bel : color(b_gen51, known(red)) <- bel : w(b_gen51, d2) / world_exist, bel : b(b_gen51) / belief_exist.
+bel : shape(b_gen51, known(round)) <- bel : w(b_gen51, d2) / world_exist, bel : b(b_gen51) / belief_exist.
+bel : color(b_gen52, known(blue)) <- bel : w(b_gen52, d0) / world_exist, bel : b(b_gen52) / belief_exist.
+bel : shape(b_gen52, known(elongated)) <- bel : w(b_gen52, d0) / world_exist, bel : b(b_gen52) / belief_exist.
+bel : color(b_gen52, known(red)) <- bel : w(b_gen52, d1) / world_exist, bel : b(b_gen52) / belief_exist.
+bel : shape(b_gen52, known(round)) <- bel : w(b_gen52, d1) / world_exist, bel : b(b_gen52) / belief_exist.
+bel : color(b_gen52, known(green)) <- bel : w(b_gen52, d2) / world_exist, bel : b(b_gen52) / belief_exist.
+bel : shape(b_gen52, known(compact)) <- bel : w(b_gen52, d2) / world_exist, bel : b(b_gen52) / belief_exist.
+bel : color(b_gen53, known(red)) <- bel : w(b_gen53, d0) / world_exist, bel : b(b_gen53) / belief_exist.
+bel : shape(b_gen53, known(round)) <- bel : w(b_gen53, d0) / world_exist, bel : b(b_gen53) / belief_exist.
+bel : color(b_gen53, known(green)) <- bel : w(b_gen53, d1) / world_exist, bel : b(b_gen53) / belief_exist.
+bel : shape(b_gen53, known(compact)) <- bel : w(b_gen53, d1) / world_exist, bel : b(b_gen53) / belief_exist.
+bel : color(b_gen53, known(yellow)) <- bel : w(b_gen53, d2) / world_exist, bel : b(b_gen53) / belief_exist.
+bel : shape(b_gen53, known(elongated)) <- bel : w(b_gen53, d2) / world_exist, bel : b(b_gen53) / belief_exist.
+bel : color(b_gen54, known(green)) <- bel : w(b_gen54, d0) / world_exist, bel : b(b_gen54) / belief_exist.
+bel : shape(b_gen54, known(compact)) <- bel : w(b_gen54, d0) / world_exist, bel : b(b_gen54) / belief_exist.
+bel : color(b_gen54, known(yellow)) <- bel : w(b_gen54, d1) / world_exist, bel : b(b_gen54) / belief_exist.
+bel : shape(b_gen54, known(elongated)) <- bel : w(b_gen54, d1) / world_exist, bel : b(b_gen54) / belief_exist.
+bel : color(b_gen54, known(blue)) <- bel : w(b_gen54, d2) / world_exist, bel : b(b_gen54) / belief_exist.
+bel : shape(b_gen54, known(round)) <- bel : w(b_gen54, d2) / world_exist, bel : b(b_gen54) / belief_exist.
+bel : color(b_gen55, known(yellow)) <- bel : w(b_gen55, d0) / world_exist, bel : b(b_gen55) / belief_exist.
+bel : shape(b_gen55, known(elongated)) <- bel : w(b_gen55, d0) / world_exist, bel : b(b_gen55) / belief_exist.
+bel : color(b_gen55, known(blue)) <- bel : w(b_gen55, d1) / world_exist, bel : b(b_gen55) / belief_exist.
+bel : shape(b_gen55, known(round)) <- bel : w(b_gen55, d1) / world_exist, bel : b(b_gen55) / belief_exist.
+bel : color(b_gen55, known(red)) <- bel : w(b_gen55, d2) / world_exist, bel : b(b_gen55) / belief_exist.
+bel : shape(b_gen55, known(compact)) <- bel : w(b_gen55, d2) / world_exist, bel : b(b_gen55) / belief_exist.
+bel : color(b_gen56, known(blue)) <- bel : w(b_gen56, d0) / world_exist, bel : b(b_gen56) / belief_exist.
+bel : shape(b_gen56, known(round)) <- bel : w(b_gen56, d0) / world_exist, bel : b(b_gen56) / belief_exist.
+bel : color(b_gen56, known(red)) <- bel : w(b_gen56, d1) / world_exist, bel : b(b_gen56) / belief_exist.
+bel : shape(b_gen56, known(compact)) <- bel : w(b_gen56, d1) / world_exist, bel : b(b_gen56) / belief_exist.
+bel : color(b_gen56, known(green)) <- bel : w(b_gen56, d2) / world_exist, bel : b(b_gen56) / belief_exist.
+bel : shape(b_gen56, known(elongated)) <- bel : w(b_gen56, d2) / world_exist, bel : b(b_gen56) / belief_exist.
+bel : color(b_gen57, known(red)) <- bel : w(b_gen57, d0) / world_exist, bel : b(b_gen57) / belief_exist.
+bel : shape(b_gen57, known(compact)) <- bel : w(b_gen57, d0) / world_exist, bel : b(b_gen57) / belief_exist.
+bel : color(b_gen57, known(green)) <- bel : w(b_gen57, d1) / world_exist, bel : b(b_gen57) / belief_exist.
+bel : shape(b_gen57, known(elongated)) <- bel : w(b_gen57, d1) / world_exist, bel : b(b_gen57) / belief_exist.
+bel : color(b_gen57, known(yellow)) <- bel : w(b_gen57, d2) / world_exist, bel : b(b_gen57) / belief_exist.
+bel : shape(b_gen57, known(round)) <- bel : w(b_gen57, d2) / world_exist, bel : b(b_gen57) / belief_exist.
+bel : color(b_gen58, known(green)) <- bel : w(b_gen58, d0) / world_exist, bel : b(b_gen58) / belief_exist.
+bel : shape(b_gen58, known(elongated)) <- bel : w(b_gen58, d0) / world_exist, bel : b(b_gen58) / belief_exist.
+bel : color(b_gen58, known(yellow)) <- bel : w(b_gen58, d1) / world_exist, bel : b(b_gen58) / belief_exist.
+bel : shape(b_gen58, known(round)) <- bel : w(b_gen58, d1) / world_exist, bel : b(b_gen58) / belief_exist.
+bel : color(b_gen58, known(blue)) <- bel : w(b_gen58, d2) / world_exist, bel : b(b_gen58) / belief_exist.
+bel : shape(b_gen58, known(compact)) <- bel : w(b_gen58, d2) / world_exist, bel : b(b_gen58) / belief_exist.
+bel : color(b_gen59, known(yellow)) <- bel : w(b_gen59, d0) / world_exist, bel : b(b_gen59) / belief_exist.
+bel : shape(b_gen59, known(round)) <- bel : w(b_gen59, d0) / world_exist, bel : b(b_gen59) / belief_exist.
+bel : color(b_gen59, known(blue)) <- bel : w(b_gen59, d1) / world_exist, bel : b(b_gen59) / belief_exist.
+bel : shape(b_gen59, known(compact)) <- bel : w(b_gen59, d1) / world_exist, bel : b(b_gen59) / belief_exist.
+bel : color(b_gen59, known(red)) <- bel : w(b_gen59, d2) / world_exist, bel : b(b_gen59) / belief_exist.
+bel : shape(b_gen59, known(elongated)) <- bel : w(b_gen59, d2) / world_exist, bel : b(b_gen59) / belief_exist.
+bel : color(b_gen60, known(blue)) <- bel : w(b_gen60, d0) / world_exist, bel : b(b_gen60) / belief_exist.
+bel : shape(b_gen60, known(compact)) <- bel : w(b_gen60, d0) / world_exist, bel : b(b_gen60) / belief_exist.
+bel : color(b_gen60, known(red)) <- bel : w(b_gen60, d1) / world_exist, bel : b(b_gen60) / belief_exist.
+bel : shape(b_gen60, known(elongated)) <- bel : w(b_gen60, d1) / world_exist, bel : b(b_gen60) / belief_exist.
+bel : color(b_gen60, known(green)) <- bel : w(b_gen60, d2) / world_exist, bel : b(b_gen60) / belief_exist.
+bel : shape(b_gen60, known(round)) <- bel : w(b_gen60, d2) / world_exist, bel : b(b_gen60) / belief_exist.
+bel : color(b_gen61, known(red)) <- bel : w(b_gen61, d0) / world_exist, bel : b(b_gen61) / belief_exist.
+bel : shape(b_gen61, known(elongated)) <- bel : w(b_gen61, d0) / world_exist, bel : b(b_gen61) / belief_exist.
+bel : color(b_gen61, known(green)) <- bel : w(b_gen61, d1) / world_exist, bel : b(b_gen61) / belief_exist.
+bel : shape(b_gen61, known(round)) <- bel : w(b_gen61, d1) / world_exist, bel : b(b_gen61) / belief_exist.
+bel : color(b_gen61, known(yellow)) <- bel : w(b_gen61, d2) / world_exist, bel : b(b_gen61) / belief_exist.
+bel : shape(b_gen61, known(compact)) <- bel : w(b_gen61, d2) / world_exist, bel : b(b_gen61) / belief_exist.
+bel : color(b_gen62, known(green)) <- bel : w(b_gen62, d0) / world_exist, bel : b(b_gen62) / belief_exist.
+bel : shape(b_gen62, known(round)) <- bel : w(b_gen62, d0) / world_exist, bel : b(b_gen62) / belief_exist.
+bel : color(b_gen62, known(yellow)) <- bel : w(b_gen62, d1) / world_exist, bel : b(b_gen62) / belief_exist.
+bel : shape(b_gen62, known(compact)) <- bel : w(b_gen62, d1) / world_exist, bel : b(b_gen62) / belief_exist.
+bel : color(b_gen62, known(blue)) <- bel : w(b_gen62, d2) / world_exist, bel : b(b_gen62) / belief_exist.
+bel : shape(b_gen62, known(elongated)) <- bel : w(b_gen62, d2) / world_exist, bel : b(b_gen62) / belief_exist.
+bel : color(b_gen63, known(yellow)) <- bel : w(b_gen63, d0) / world_exist, bel : b(b_gen63) / belief_exist.
+bel : shape(b_gen63, known(compact)) <- bel : w(b_gen63, d0) / world_exist, bel : b(b_gen63) / belief_exist.
+bel : color(b_gen63, known(blue)) <- bel : w(b_gen63, d1) / world_exist, bel : b(b_gen63) / belief_exist.
+bel : shape(b_gen63, known(elongated)) <- bel : w(b_gen63, d1) / world_exist, bel : b(b_gen63) / belief_exist.
+bel : color(b_gen63, known(red)) <- bel : w(b_gen63, d2) / world_exist, bel : b(b_gen63) / belief_exist.
+bel : shape(b_gen63, known(round)) <- bel : w(b_gen63, d2) / world_exist, bel : b(b_gen63) / belief_exist.
+bel : color(b_gen64, known(blue)) <- bel : w(b_gen64, d0) / world_exist, bel : b(b_gen64) / belief_exist.
+bel : shape(b_gen64, known(elongated)) <- bel : w(b_gen64, d0) / world_exist, bel : b(b_gen64) / belief_exist.
+bel : color(b_gen64, known(red)) <- bel : w(b_gen64, d1) / world_exist, bel : b(b_gen64) / belief_exist.
+bel : shape(b_gen64, known(round)) <- bel : w(b_gen64, d1) / world_exist, bel : b(b_gen64) / belief_exist.
+bel : color(b_gen64, known(green)) <- bel : w(b_gen64, d2) / world_exist, bel : b(b_gen64) / belief_exist.
+bel : shape(b_gen64, known(compact)) <- bel : w(b_gen64, d2) / world_exist, bel : b(b_gen64) / belief_exist.
+bel : color(b_gen65, known(red)) <- bel : w(b_gen65, d0) / world_exist, bel : b(b_gen65) / belief_exist.
+bel : shape(b_gen65, known(round)) <- bel : w(b_gen65, d0) / world_exist, bel : b(b_gen65) / belief_exist.
+bel : color(b_gen65, known(green)) <- bel : w(b_gen65, d1) / world_exist, bel : b(b_gen65) / belief_exist.
+bel : shape(b_gen65, known(compact)) <- bel : w(b_gen65, d1) / world_exist, bel : b(b_gen65) / belief_exist.
+bel : color(b_gen65, known(yellow)) <- bel : w(b_gen65, d2) / world_exist, bel : b(b_gen65) / belief_exist.
+bel : shape(b_gen65, known(elongated)) <- bel : w(b_gen65, d2) / world_exist, bel : b(b_gen65) / belief_exist.
+bel : color(b_gen66, known(green)) <- bel : w(b_gen66, d0) / world_exist, bel : b(b_gen66) / belief_exist.
+bel : shape(b_gen66, known(compact)) <- bel : w(b_gen66, d0) / world_exist, bel : b(b_gen66) / belief_exist.
+bel : color(b_gen66, known(yellow)) <- bel : w(b_gen66, d1) / world_exist, bel : b(b_gen66) / belief_exist.
+bel : shape(b_gen66, known(elongated)) <- bel : w(b_gen66, d1) / world_exist, bel : b(b_gen66) / belief_exist.
+bel : color(b_gen66, known(blue)) <- bel : w(b_gen66, d2) / world_exist, bel : b(b_gen66) / belief_exist.
+bel : shape(b_gen66, known(round)) <- bel : w(b_gen66, d2) / world_exist, bel : b(b_gen66) / belief_exist.
+bel : color(b_gen67, known(yellow)) <- bel : w(b_gen67, d0) / world_exist, bel : b(b_gen67) / belief_exist.
+bel : shape(b_gen67, known(elongated)) <- bel : w(b_gen67, d0) / world_exist, bel : b(b_gen67) / belief_exist.
+bel : color(b_gen67, known(blue)) <- bel : w(b_gen67, d1) / world_exist, bel : b(b_gen67) / belief_exist.
+bel : shape(b_gen67, known(round)) <- bel : w(b_gen67, d1) / world_exist, bel : b(b_gen67) / belief_exist.
+bel : color(b_gen67, known(red)) <- bel : w(b_gen67, d2) / world_exist, bel : b(b_gen67) / belief_exist.
+bel : shape(b_gen67, known(compact)) <- bel : w(b_gen67, d2) / world_exist, bel : b(b_gen67) / belief_exist.
+bel : color(b_gen68, known(blue)) <- bel : w(b_gen68, d0) / world_exist, bel : b(b_gen68) / belief_exist.
+bel : shape(b_gen68, known(round)) <- bel : w(b_gen68, d0) / world_exist, bel : b(b_gen68) / belief_exist.
+bel : color(b_gen68, known(red)) <- bel : w(b_gen68, d1) / world_exist, bel : b(b_gen68) / belief_exist.
+bel : shape(b_gen68, known(compact)) <- bel : w(b_gen68, d1) / world_exist, bel : b(b_gen68) / belief_exist.
+bel : color(b_gen68, known(green)) <- bel : w(b_gen68, d2) / world_exist, bel : b(b_gen68) / belief_exist.
+bel : shape(b_gen68, known(elongated)) <- bel : w(b_gen68, d2) / world_exist, bel : b(b_gen68) / belief_exist.
+bel : color(b_gen69, known(red)) <- bel : w(b_gen69, d0) / world_exist, bel : b(b_gen69) / belief_exist.
+bel : shape(b_gen69, known(compact)) <- bel : w(b_gen69, d0) / world_exist, bel : b(b_gen69) / belief_exist.
+bel : color(b_gen69, known(green)) <- bel : w(b_gen69, d1) / world_exist, bel : b(b_gen69) / belief_exist.
+bel : shape(b_gen69, known(elongated)) <- bel : w(b_gen69, d1) / world_exist, bel : b(b_gen69) / belief_exist.
+bel : color(b_gen69, known(yellow)) <- bel : w(b_gen69, d2) / world_exist, bel : b(b_gen69) / belief_exist.
+bel : shape(b_gen69, known(round)) <- bel : w(b_gen69, d2) / world_exist, bel : b(b_gen69) / belief_exist.
+
+%------------------------------------------------------------------------------%
+
+ling_world_exist = [
+	(bel : w(bl, d1)) = p(0.7), %p(0.8),
+	(bel : w(bl, d2)) = p(0.2),
+	(bel : w(bl, d3)) = p(0.1)
+
+%	(bel : w(bl, d1)) = 0.316, %p(0.8),
+%	(bel : w(bl, d2)) = 2.5133, %p(0.08),
+%	(bel : w(bl, d3)) = 2.5133, %p(0.08),
+%	(bel : w(bl, d4)) = 4.710 %p(0.04)
+].
+
+%ling_belief_exist = [
+%	(bel : b(bl)) = 0.10536297341863046316 %p(0.9)
+%].
+
+disjoint([
+	bel : w(bl, d1),
+	bel : w(bl, d2),
+	bel : w(bl, d3)
+]).
+
+bel : ling_color(bl, red) <- bel : w(bl, d1) / ling_world_exist.
+bel : ling_shape(bl, compact) <- bel : w(bl, d1) / ling_world_exist.
+
+bel : ling_color(bl, red) <- bel : w(bl, d2) / ling_world_exist.
+bel : ling_shape(bl, elongated) <- bel : w(bl, d2) / ling_world_exist.
+
+bel : ling_color(bl, red) <- bel : w(bl, d3) / ling_world_exist.
+bel : ling_shape(bl, round) <- bel : w(bl, d3) / ling_world_exist.
+
+%bel : ling_color(bl, red) <- bel : w(bl, d1) / ling_world_exist.
+%bel : ling_shape(bl, compact) <- bel : w(bl, d1) / ling_world_exist.
+%
+%bel : ling_color(bl, unknown) <- bel : w(bl, d2) / ling_world_exist.
+%bel : ling_shape(bl, compact) <- bel : w(bl, d2) / ling_world_exist.
+%
+%bel : ling_color(bl, red) <- bel : w(bl, d3) / ling_world_exist.
+%bel : ling_shape(bl, unknown) <- bel : w(bl, d3) / ling_world_exist.
+%
+%bel : ling_color(bl, unknown) <- bel : w(bl, d3) / ling_world_exist.
+%bel : ling_shape(bl, unknown) <- bel : w(bl, d3) / ling_world_exist.
+
+%------------------------------------------------------------------------------%
+
+correlate = [
+	(color_to_ling_color(red, red)) = p(0.8),
+	(color_to_ling_color(red, green)) = p(0.05),
+	(color_to_ling_color(red, blue)) = p(0.1),
+	(color_to_ling_color(red, yellow)) = p(0.05),
+
+	(color_to_ling_color(green, red)) = p(0.1),
+	(color_to_ling_color(green, green)) = p(0.8),
+	(color_to_ling_color(green, blue)) = p(0.05),
+	(color_to_ling_color(green, yellow)) = p(0.05),
+
+	(color_to_ling_color(blue, red)) = p(0.05),
+	(color_to_ling_color(blue, green)) = p(0.1),
+	(color_to_ling_color(blue, blue)) = p(0.8),
+	(color_to_ling_color(blue, yellow)) = p(0.05),
+
+	(color_to_ling_color(yellow, red)) = p(0.1),
+	(color_to_ling_color(yellow, green)) = p(0.05),
+	(color_to_ling_color(yellow, blue)) = p(0.05),
+	(color_to_ling_color(yellow, yellow)) = p(0.8),
+
+%	(shape_to_ling_shape(elongated, elongated)) = p(0.95),
+%	(shape_to_ling_shape(elongated, compact)) = p(0.05),
+%	(shape_to_ling_shape(compact, compact)) = p(0.95),
+%	(shape_to_ling_shape(compact, elongated)) = p(0.05)
+
+	(shape_to_ling_shape(elongated, elongated)) = p(1.0),
+	(shape_to_ling_shape(compact, compact)) = p(1.0),
+	(shape_to_ling_shape(round, round)) = p(1.0)
+].
+
+%correlate = [
+%	(color_to_ling_color(red, red)) = p(1.0),
+%	(color_to_ling_color(green, green)) = p(1.0),
+%
+%	(shape_to_ling_shape(elongated, elongated)) = p(1.0),
+%	(shape_to_ling_shape(compact, compact)) = p(1.0)
+%].
+
+%------------------------------------------------------------------------------%
+
+resolves_color(LId, Id) <-
+	bel : color(Id, known(Color)),
+	bel : ling_color(LId, LColor),
+	color_to_ling_color(Color, LColor) / correlate.
+
+resolves_shape(LId, Id) <-
+	bel : shape(Id, known(Shape)),
+	bel : ling_shape(LId, LShape),
+	shape_to_ling_shape(Shape, LShape) / correlate.
+
+resolves(LId, Id) <-
+	resolves_color(LId, Id),
+	resolves_shape(LId, Id).
+
+%------------------------------------------------------------------------------%
+
+test <-
+	resolves(bl, Id).

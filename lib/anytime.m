@@ -51,7 +51,7 @@
 void set_signalled(int sig_num)
 {
 	anytime_sig = MR_YES;
-	/* fprintf(stderr, \"[signalled]\"\n); */
+/*	fprintf(stderr, \"[signalled]\"\n); */
 }
 ").
 
@@ -59,6 +59,7 @@ void set_signalled(int sig_num)
 
 :- impure pred register_handler is det.
 :- pragma foreign_proc("C", register_handler, [will_not_call_mercury], "
+/*	fprintf(stderr, \"[register]\"\n); */
 	signal(SIGUSR1, set_signalled);
 	anytime_sig = MR_NO;
 ").
@@ -67,7 +68,7 @@ void set_signalled(int sig_num)
 
 :- pragma foreign_proc("C", reset_signaller, [will_not_call_mercury], "
 	anytime_sig = MR_NO;
-	/* fprintf(stderr, \"[reset]\"\n); */
+/*	fprintf(stderr, \"[reset]\"\n); */
 ").
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
@@ -86,8 +87,10 @@ void set_signalled(int sig_num)
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
+%:- import_module io, list.
+
 :- pragma promise_pure(pure_signalled/1).
 
 pure_signalled(Flag) :-
 	impure signalled(Flag).
-%	trace[compile_time(flag("debug")), io(!IO)] ( (if Flag = yes then print(stderr_stream, "X", !IO) else true) ).
+%	trace[io(!IO)] ( (if Flag = yes then print(stderr_stream, ".", !IO) else print(stderr_stream, ":", !IO)) ).

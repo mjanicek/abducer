@@ -36,6 +36,7 @@
 :- import_module utils.
 :- import_module abduction, formula, context, costs.
 :- import_module loading.
+:- import_module anytime.
 
 :- import_module ctx_modality, ctx_loadable, ctx_io, ctx_loadable_io.
 :- import_module modality, stringable.
@@ -44,7 +45,10 @@
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
+:- pragma promise_pure(main/2).
+
 main(!IO) :-
+	impure reset_signaller,
 	io.command_line_arguments(CmdArgs, !IO),
 	(if
 		CmdArgs = [Goal]
@@ -63,9 +67,8 @@ main(!IO) :-
 			P0 = proof(XG, _XBL),
 			format("goal:\n  %s\n\n", [s(goal_to_string(XG))], !IO),
 
-			print_ctx(!.Ctx, !IO),
-
-			nl(!IO),
+%			print_ctx(!.Ctx, !IO),
+%			nl(!IO),
 
 %			DC0 = new_d_ctx,
 
@@ -105,15 +108,16 @@ main(!IO) :-
 
 			format("\n  %d proof(s) found.\n", [i(list.length(Proofs))], !IO),
 
-			list.foldl((pred((Cost-proof(Gz, BL))::in, !.IO::di, !:IO::uo) is det :-
+			list.foldl2((pred((Cost-proof(Gz, BL))::in, Idx0::in, Idx::out, !.IO::di, !:IO::uo) is det :-
 				print("---------------------------------------------------------------------\n", !IO),
-				format("proof cost = %f (p=%f)\n\n", [f(Cost), f(math.exp(-Cost))], !IO),
+				format("#%d, cost = %f (p=%f)\n\n", [i(Idx0), f(Cost), f(math.exp(-Cost))], !IO),
 %				print("blacklist:\n", !IO),
 %				print(blacklist_to_string(BL), !IO),
 %				nl(!IO),
 				print("proven goal:\n  " ++ goal_to_string(Gz) ++ "\n", !IO),
-				nl(!IO)
-					), Proofs, !IO)
+				nl(!IO),
+				Idx = Idx0 + 1
+					), Proofs, 1, _, !IO)
 
 /*
 			list.foldl((pred((Cost-G)-Ds::in, !.IO::di, !:IO::uo) is det :-
