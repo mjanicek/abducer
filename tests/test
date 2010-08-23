@@ -1,7 +1,7 @@
 #!/bin/sh
 
 if [ $# -eq 2 ]; then
-	timeout -sigusr1 "$2" -- ../abducer-cli test. <"$1" >log; less -R log
+	../timeout -usr1 "$2" -- ../abducer-cli test. <"$1" >log; less -R log
 else
-	mdprof ../abducer-cli test. <"$1" | less -R
+	../abducer-cli test. <"$1" | less -R
 fi

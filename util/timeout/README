@@ -1,0 +1,2 @@
+timeout runs a given command with its arguments and sends it a signal
+or a sequence of signals after a given time.

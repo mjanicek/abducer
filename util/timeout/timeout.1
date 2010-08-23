@@ -1,0 +1,99 @@
+.Dd August 23, 2010
+.Dt TIMEOUT 1
+.Sh NAME
+.Nm timeout
+.Nd invoke a command and send it a signal after a specified time
+.Sh SYNOPSIS
+.Nm
+.Po
+.Brq Fl signal_name | Fl signal_number
+.Ar msec
+.Pc
+\&...
+.Op Fl -
+.Ar command
+.Op Ar arg No ...
+.Nm
+.Fl h
+.Nm
+.Fl v
+.Sh DESCRIPTION
+.Pp
+.Nm
+runs the given
+.Ar command
+with its arguments
+and sends it a signal or a sequence of signals after a given time.
+All signals sent to
+.Nm
+will be passed to
+.Ar command .
+.Pp
+The options are as follows:
+.Pp
+.Bl -tag -width Ds
+.It Fl signal_name Ar msec
+Send the given signal to
+.Ar command
+after
+.Ar msec
+miliseconds have elapsed. The signal name is case-insensitive.
+.It Fl signal_number Ar msec
+Specify the signal to be sent to
+.Ar command
+by its number instead of its symbolic name.
+.It Fl h
+Print a help message.
+.It Fl v
+Print version and licencing info.
+.El
+.Pp
+.Ar msec
+is a positive integer giving the number of miliseconds to elapse
+before the signal is sent.
+At least one timeout specification is required.
+.Sh ENVIRONMENT
+.Nm
+looks for the
+.Ar command
+in directories contained in the
+.Ev PATH
+environment variable.
+.Sh DIAGNOSTICS
+The
+.Nm
+utility exits with one of the following values:
+.Bl -tag -width Ds
+.It 126
+The
+.Ar command
+was found but could not be invoked.
+.It 127
+The
+.Ar command
+could not be found or an error occurred in
+.Nm .
+.El
+.Pp
+Otherwise, the exit status of
+.Nm
+is that of the
+.Ar command .
+.Sh EXAMPLES
+.Pp
+Try to perform
+.Sq svn update ,
+sending it
+.Dv SIGTERM
+after 10 seconds and
+.Dv SIGKILL
+5 seconds later (so that even if the process blocks the
+.Dv SIGTERM ,
+it will get killed in the end anyway):
+.Pp
+.D1 $ timeout -term 10000 -kill 15000 svn update
+.Sh SEE ALSO
+.Xr kill 1 ,
+.Xr sh 1
+.Sh AUTHOR
+.An Miroslav Janicek Aq sandius@matfyz.cz

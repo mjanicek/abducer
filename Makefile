@@ -20,13 +20,22 @@ cli: lib
 	[ -e abducer-cli ] || ln -s cli/abducer-cli
 
 .PHONY: tests
-tests: lib
+tests: lib util
 	make -C tests
+
+.PHONY: util
+util:
+	make -C util
+	[ -e timeout ] || ln -s util/timeout/timeout
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -#
 
 .PHONY: clean
 clean:
 	make -C lib clean
 	make -C server clean
 	make -C tests clean
+	make -C util clean
 	rm -f abducer-server-bin abducer-server-core
 	rm -f abducer-cli check-file
+	rm -f timeout

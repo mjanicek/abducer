@@ -1,0 +1,6 @@
+Just type
+
+  $ make
+
+and pray everything runs smoothly. Timeout doesn't need anything
+special, just a pthread-capable system.
