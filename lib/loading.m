@@ -61,9 +61,9 @@ load_stdin(Result, !Ctx, !IO) :-
 					LoopResult = ok,
 					Continue = yes
 				else
-					(if term_to_disjoint(Term, DD)
+					(if term_to_disjoint_decl(Term, DD)
 					then
-						add_disjoint(DD, !Ctx),
+						add_disjoint_decl(DD, !Ctx),
 						LoopResult = ok,
 						Continue = yes
 					else

@@ -30,7 +30,7 @@
 
 :- type blacklist(M)
 	--->	bl(
-		bl_map :: map(mgatom(M), disjoint(M)),
+		bl_map :: map(mgatom(M), disjoint_decl(M)),
 		used :: set(mgatom(M)),
 		forbidden :: set(mgatom(M))
 	).
@@ -52,7 +52,7 @@
 
 init(Ctx) = bl(BLMap, set.init, set.init) :-
 	% compile the map
-	aggregate((pred(DDSel::out) is nondet :- disjoint_decl(Ctx, DDSel)),
+	aggregate((pred(DDSel::out) is nondet :- find_disjoint_decl(Ctx, DDSel)),
 			(pred(DD::in, M0::in, M::out) is det :-
 			 	set.fold((pred(MGF::in, Mb0::in, Mb::out) is det :-
 					(if map.search(Mb0, MGF, Vals0)

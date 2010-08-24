@@ -22,6 +22,7 @@
 
 :- interface.
 
+:- import_module map, pair.
 :- import_module formula, modality.
 :- import_module stringable.
 
@@ -57,14 +58,16 @@
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-:- func string_to_disjoint(string) = disjoint(M) is semidet <= (modality(M), term_parsable(M)).
-:- func disjoint_to_string(disjoint(M)) = string <= (modality(M), stringable(M)).
+:- func string_to_disjoint_decl(string) = disjoint_decl(M) is semidet <= (modality(M), term_parsable(M)).
+:- func disjoint_decl_to_string(disjoint_decl(M)) = string <= (modality(M), stringable(M)).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
+:- type assumable_function_def(M) == pair(string, map(mgatom(M), float)).
+
 :- pred term_to_matom(term.term::in, matom(M)::out) is semidet <= (modality(M), term_parsable(M)).
 :- pred term_to_mrule(term.term::in, mrule(M)::out) is semidet <= (modality(M), term_parsable(M)).
-:- pred term_to_disjoint(term.term::in, disjoint(M)::out) is semidet <= (modality(M), term_parsable(M)).
+:- pred term_to_disjoint_decl(term.term::in, disjoint_decl(M)::out) is semidet <= (modality(M), term_parsable(M)).
 :- pred term_to_assumable_function_def(term.term::in, assumable_function_def(M)::out) is semidet
 		<= (modality(M), term_parsable(M)).
 
@@ -307,7 +310,7 @@ term_to_assumability_function(functor(atom("p"), [functor(float(Prob), [], _)], 
 
 %------------------------------------------------------------------------------%
 
-term_to_disjoint(functor(atom("disjoint"), [Arg], _), DD) :-
+term_to_disjoint_decl(functor(atom("disjoint"), [Arg], _), DD) :-
 	parse_list(Arg, Ts),
 	list.map((pred(T::in, MGF::out) is semidet :- term_to_matom(T, MF), ground_matom(MF, MGF)), Ts, MGFs),
 	DD = set.from_list(MGFs).
@@ -322,12 +325,12 @@ parse_list(functor(atom("[|]"), [TermH, TermT], _), [TermH|T]) :-
 
 %------------------------------------------------------------------------------%
 
-string_to_disjoint(Str) = DD :-
+string_to_disjoint_decl(Str) = DD :-
 	read_term_from_string_with_op_table(init_wabd_op_table, "", Str, _, term(_Varset, T)),
 	generic_term(T),
-	term_to_disjoint(T, DD).
+	term_to_disjoint_decl(T, DD).
 
-disjoint_to_string(DD) = "disjoint([" ++ S ++ "])" :-
+disjoint_decl_to_string(DD) = "disjoint([" ++ S ++ "])" :-
 	S = string.join_list(", ", list.map((func(MGF) = S0 :- ground_matom(MF, MGF), S0 = matom_to_string(varset.init, MF)), set.to_sorted_list(DD))).
 
 %------------------------------------------------------------------------------%

@@ -95,10 +95,7 @@
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
 :- type vscope(T)
-	--->	vs(
-		body :: T,
-		vars :: varset
-	).
+	--->	vs(T, varset).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
@@ -121,20 +118,15 @@
 	;	test(mtest(M))
 	.
 
-:- type matom(M) == modalised(list(M), atom).
-:- type mrule(M) == modalised(list(M), pair(list(rule_antecedent(M)), rule_head(M))).
-
 :- type mtest(M)
 	--->	prop(matom(M))
 	;	impl(list(matom(M)), matom(M))  % embedded implication
 	.
 
+:- type matom(M) == modalised(list(M), atom).
 :- type mgatom(M) == modalised(list(M), ground_atom).
-
-% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
-
-:- type disjoint(M) == set(mgatom(M)).
-:- type assumable_function_def(M) == pair(string, map(mgatom(M), float)).
+:- type mrule(M) == modalised(list(M), pair(list(rule_antecedent(M)), rule_head(M))).
+:- type disjoint_decl(M) == set(mgatom(M)).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 

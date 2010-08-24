@@ -32,7 +32,7 @@
 :- pred print_assumables(ctx::in, string::in, io::di, io::uo) is det.
 :- pred print_assumables(io.output_stream::in, ctx::in, string::in, io::di, io::uo) is det.
 
-:- pred print_disjoints(io.output_stream::in, ctx::in, string::in, io::di, io::uo) is det.
+:- pred print_disjoint_decls(io.output_stream::in, ctx::in, string::in, io::di, io::uo) is det.
 
 :- pred print_rules(ctx::in, string::in, io::di, io::uo) is det.
 :- pred print_rules(io.output_stream::in, ctx::in, string::in, io::di, io::uo) is det.
@@ -107,12 +107,12 @@ print_assumables(Ctx, Indent, !IO) :-
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-print_disjoints(Stream, Ctx, Indent, !IO) :-
+print_disjoint_decls(Stream, Ctx, Indent, !IO) :-
 	set.fold((pred(DD::in, !.IO::di, !:IO::uo) is det :-
 		print(Stream, Indent, !IO),
-		print(Stream, disjoint_to_string(DD), !IO),
+		print(Stream, disjoint_decl_to_string(DD), !IO),
 		nl(Stream, !IO)
-			), disjoints(Ctx), !IO).
+			), disjoint_decls(Ctx), !IO).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
@@ -133,12 +133,9 @@ print_ctx(Stream, Ctx, !IO) :-
 	nl(Stream, !IO),
 
 	print(Stream, "disjoint declarations:\n", !IO),
-	print_disjoints(Stream, Ctx, "  ", !IO),
+	print_disjoint_decls(Stream, Ctx, "  ", !IO),
 
-	nl(Stream, !IO),
-
-	print(Stream, "disjoint blacklist:\n", !IO),
-	print(Stream, blacklist_to_string(blacklist.init(Ctx)), !IO).
+	nl(Stream, !IO).
 
 print_ctx(Ctx, !IO) :-
 	print_ctx(stdout_stream, Ctx, !IO).

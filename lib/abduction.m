@@ -357,7 +357,8 @@ proof_step({QsL0, cf(m(MQ, PQ), not_assumable), QsR0}, VS0, BL0,
 	find_rule(Ctx, MQ, PredSym, Rule),
 %	rule_found(Ctx, vs(m(MQ, PQ), VS0), Rule),
 	trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "r{", !IO) ),
-	Rule = vs(m(MR, _-RHead0), VSR),
+	Rule = vs(RuleBody, VSR),
+	RuleBody = m(MR, _-RHead0),
 	( RHead0 = std(m(MH, _))
 	; RHead0 = test(prop(m(MH, _)))
 	; RHead0 = test(impl(_, m(MH, _)))
@@ -366,7 +367,7 @@ proof_step({QsL0, cf(m(MQ, PQ), not_assumable), QsR0}, VS0, BL0,
 	match(compose_list(MR ++ MH), compose_list(MQ)),
 
 	varset.merge_renaming(VS0, VSR, VS, Renaming),
-	m(MR, Ante-RHead) = rename_vars_in_mrule(Renaming, Rule^body),
+	m(MR, Ante-RHead) = rename_vars_in_mrule(Renaming, RuleBody),
 
 	( RHead = std(m(_, PH))
 	; RHead = test(prop(m(_, PH)))

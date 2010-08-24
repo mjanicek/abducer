@@ -23,7 +23,7 @@
 :- interface.
 
 :- import_module set, map.
-:- import_module formula.
+:- import_module formula, formula_io.
 :- import_module context.
 :- import_module ctx_modality.
 
@@ -35,19 +35,19 @@
 :- pred add_fact(vscope(matom(ctx_modality))::in, ctx::in, ctx::out) is det.
 :- pred add_rule(vscope(mrule(ctx_modality))::in, ctx::in, ctx::out) is det.
 :- pred add_assumable(assumable_function_def(ctx_modality)::in, ctx::in, ctx::out) is det.
-:- pred add_disjoint(disjoint(ctx_modality)::in, ctx::in, ctx::out) is det.
+:- pred add_disjoint_decl(disjoint_decl(ctx_modality)::in, ctx::in, ctx::out) is det.
 
 :- pred set_facts(set(vscope(matom(ctx_modality)))::in, ctx::in, ctx::out) is det.
 :- pred set_rules(set(vscope(mrule(ctx_modality)))::in, ctx::in, ctx::out) is det.
 :- pred set_assumables(map(string, map(mgatom(ctx_modality), float))::in, ctx::in, ctx::out)
 		is det.
-:- pred set_disjoints(set(disjoint(ctx_modality))::in, ctx::in, ctx::out) is det.
+:- pred set_disjoint_decls(set(disjoint_decl(ctx_modality))::in, ctx::in, ctx::out) is det.
 
 	% for debugging purposes only!
 :- func facts(ctx) = set(vscope(matom(ctx_modality))).
 :- func rules(ctx) = set(vscope(mrule(ctx_modality))).
 :- func assumables(ctx) = map(string, map(mgatom(ctx_modality), float)).
-:- func disjoints(ctx) = set(disjoint(ctx_modality)).
+:- func disjoint_decls(ctx) = set(disjoint_decl(ctx_modality)).
 
 %------------------------------------------------------------------------------%
 
@@ -65,7 +65,7 @@
 		ctx_facts :: multi_map(pair(list(ctx_modality), string), vscope(matom(ctx_modality))),
 		ctx_rules :: multi_map(pair(list(ctx_modality), string), vscope(mrule(ctx_modality))),
 		ctx_assumables :: map(string, map(mgatom(ctx_modality), float)),
-		ctx_disjoints :: set(set(mgatom(ctx_modality)))
+		ctx_disjoint_decls :: set(set(mgatom(ctx_modality)))
 	).
 
 :- instance context(ctx, ctx_modality) where [
@@ -73,7 +73,7 @@
 	pred(find_rule/4) is find_ctx_rule,
 	pred(assumable_func/4) is ctx_assumable_func,
 	func(min_assumption_cost/2) is ctx_min_assumption_cost,
-	pred(disjoint_decl/2) is ctx_disjoint_decl
+	pred(find_disjoint_decl/2) is find_ctx_disjoint_decl
 ].
 
 new_ctx = ctx(multi_map.init, multi_map.init, map.init, set.init).
@@ -95,8 +95,8 @@ add_assumable(FuncName-Costs, Ctx0, Ctx) :-
 	AssumFuncs = Ctx0^ctx_assumables,
 	Ctx = Ctx0^ctx_assumables := map.set(AssumFuncs, FuncName, Costs).
 
-add_disjoint(DD, Ctx0, Ctx) :-
-	Ctx = Ctx0^ctx_disjoints := set.insert(Ctx0^ctx_disjoints, DD).
+add_disjoint_decl(DD, Ctx0, Ctx) :-
+	Ctx = Ctx0^ctx_disjoint_decls := set.insert(Ctx0^ctx_disjoint_decls, DD).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
@@ -115,8 +115,8 @@ set_rules(_Rules, Ctx0, Ctx) :-
 set_assumables(Assumables, Ctx0, Ctx) :-
 	Ctx = Ctx0^ctx_assumables := Assumables.
 
-set_disjoints(DDs, Ctx0, Ctx) :-
-	Ctx = Ctx0^ctx_disjoints := DDs.
+set_disjoint_decls(DDs, Ctx0, Ctx) :-
+	Ctx = Ctx0^ctx_disjoint_decls := DDs.
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
@@ -130,7 +130,7 @@ rules(Ctx) = solutions_set(pred(Rule::out) is nondet :-
 
 assumables(Ctx) = Ctx^ctx_assumables.
 
-disjoints(Ctx) = Ctx^ctx_disjoints.
+disjoint_decls(Ctx) = Ctx^ctx_disjoint_decls.
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
@@ -162,25 +162,13 @@ ctx_assumable_func(Ctx, FuncName, GProp, Cost) :-
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-:- pred ctx_disjoint_decl(ctx::in, set(mgatom(ctx_modality))::out) is nondet.
+:- pred find_ctx_disjoint_decl(ctx::in, set(mgatom(ctx_modality))::out) is nondet.
 
-ctx_disjoint_decl(Ctx, DD) :-
-	set.member(DD, Ctx^ctx_disjoints).
+find_ctx_disjoint_decl(Ctx, DD) :-
+	set.member(DD, Ctx^ctx_disjoint_decls).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
 :- func ctx_min_assumption_cost(ctx, ctx_modality) = float.
 
 ctx_min_assumption_cost(_, _) = 0.1.
-
-%------------------------------------------------------------------------------%
-
-/*
-:- pred add_to_focus(string) `with_type` ctx_change.
-:- mode add_to_focus(in) `with_inst` ctx_change.
-
-add_to_focus(A, DC0, DC) :-
-	F0 = DC0^d_focus,
-	set.insert(F0, A, F),
-	DC = DC0^d_focus := F.
-*/

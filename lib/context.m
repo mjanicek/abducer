@@ -41,8 +41,8 @@
 
 	func min_assumption_cost(C, M) = float,
 
-	pred disjoint_decl(C, set(mgatom(M))),
-	mode disjoint_decl(in, out) is nondet
+	pred find_disjoint_decl(C, set(mgatom(M))),
+	mode find_disjoint_decl(in, out) is nondet
 ].
 
 :- func assumption_cost(C, assumability_function, matom(M)) = float <= (context(C, M), modality(M)).
