@@ -212,17 +212,17 @@ det_term_to_lang_term(T) = FT :-
 
 %------------------------------------------------------------------------------%
 
-apply_subst_to_mtest(Subst, prop(MProp)) = prop(apply_subst_to_matom(Subst, MProp)).
+apply_subst_to_mtest(Subst, prop(MAtom)) = prop(apply_subst_to_matom(Subst, MAtom)).
 apply_subst_to_mtest(Subst, impl(MPs, HMP)) = impl(list.map(apply_subst_to_matom(Subst), MPs),
 		apply_subst_to_matom(Subst, HMP)).
 
-apply_subst_to_matom(Subst, m(M, Prop)) = m(M, apply_subst_to_formula(Subst, Prop)).
+apply_subst_to_matom(Subst, m(M, Atom)) = m(M, apply_subst_to_formula(Subst, Atom)).
 
-apply_subst_to_formula(Subst, p(PropSym, Args)) = p(PropSym, SubstArgs) :-
+apply_subst_to_formula(Subst, p(PredSym, Args)) = p(PredSym, SubstArgs) :-
 	SubstArgs0 = list.map(apply_subst_to_term(Subst), Args),
 	(if SubstArgs0 = Args
 	then SubstArgs = SubstArgs0
-	else p(_, SubstArgs) = apply_subst_to_formula(Subst, p(PropSym, SubstArgs0))
+	else p(_, SubstArgs) = apply_subst_to_formula(Subst, p(PredSym, SubstArgs0))
 	).
 
 apply_subst_to_term(Subst, t(Functor, Args)) = t(Functor, SubstArgs) :-
@@ -252,20 +252,20 @@ rename_vars_in_term(Renaming, t(F, Args)) = t(F, SubstArgs) :-
 rename_vars_in_formula(Renaming, p(PS, Args)) = p(PS, SubstArgs) :-
 	SubstArgs = list.map(rename_vars_in_term(Renaming), Args).
 
-rename_vars_in_matom(Renaming, m(M, Prop)) = m(M, rename_vars_in_formula(Renaming, Prop)).
+rename_vars_in_matom(Renaming, m(M, Atom)) = m(M, rename_vars_in_formula(Renaming, Atom)).
 
-rename_vars_in_annot_matom(Renaming, cf(MProp, F)) = cf(rename_vars_in_matom(Renaming, MProp), F).
+rename_vars_in_annot_matom(Renaming, cf(MAtom, F)) = cf(rename_vars_in_matom(Renaming, MAtom), F).
 
-rename_vars_in_mtest(Renaming, prop(MProp)) = prop(rename_vars_in_matom(Renaming, MProp)).
+rename_vars_in_mtest(Renaming, prop(MAtom)) = prop(rename_vars_in_matom(Renaming, MAtom)).
 rename_vars_in_mtest(Renaming, impl(MPs, HMP)) = impl(list.map(rename_vars_in_matom(Renaming), MPs),
 		rename_vars_in_matom(Renaming, HMP)).
 
 rename_vars_in_rule_antecedent(Renaming, test(MTest)) = test(rename_vars_in_mtest(Renaming, MTest)).
-rename_vars_in_rule_antecedent(Renaming, std(AnnotMProp))
-		= std(rename_vars_in_annot_matom(Renaming, AnnotMProp)).
+rename_vars_in_rule_antecedent(Renaming, std(AnnotMAtom))
+		= std(rename_vars_in_annot_matom(Renaming, AnnotMAtom)).
 
 rename_vars_in_rule_head(Renaming, test(MTest)) = test(rename_vars_in_mtest(Renaming, MTest)).
-rename_vars_in_rule_head(Renaming, std(MProp)) = std(rename_vars_in_matom(Renaming, MProp)).
+rename_vars_in_rule_head(Renaming, std(MAtom)) = std(rename_vars_in_matom(Renaming, MAtom)).
 
 rename_vars_in_mrule(Renaming, m(M, Ante-Succ)) =
 		m(M, list.map(rename_vars_in_rule_antecedent(Renaming), Ante)-rename_vars_in_rule_head(Renaming, Succ)).
@@ -327,6 +327,6 @@ ground_term(Term::in, term_to_ground_term(Term)::out).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-rule_head_matom(std(MProp)) = MProp.
-rule_head_matom(test(prop(MProp))) = MProp.
-rule_head_matom(test(impl(_, MProp))) = MProp.
+rule_head_matom(std(MAtom)) = MAtom.
+rule_head_matom(test(prop(MAtom))) = MAtom.
+rule_head_matom(test(impl(_, MAtom))) = MAtom.

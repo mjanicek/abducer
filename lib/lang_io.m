@@ -115,18 +115,18 @@ annot_vsmatom_to_string(vs(cf(MP, F), Varset)) = vsmatom_to_string(vs(MP, Varset
 
 test_vsmatom_to_string(vs(MP, Varset)) = "?" ++ vsmatom_to_string(vs(MP, Varset)).
 
-mtest_to_string(Varset, prop(MProp)) = matom_to_string(Varset, MProp).
+mtest_to_string(Varset, prop(MAtom)) = matom_to_string(Varset, MAtom).
 mtest_to_string(Varset, impl(MPs, HMP)) = string.join_list(", ", list.map(matom_to_string(Varset), MPs))
 		++ " -> " ++ matom_to_string(Varset, HMP).
 
 :- func rule_antecedent_to_string(varset, rule_antecedent(M)) = string <= (modality(M), stringable(M)).
 
-rule_antecedent_to_string(Varset, std(AnnotMProp)) = annot_vsmatom_to_string(vs(AnnotMProp, Varset)).
+rule_antecedent_to_string(Varset, std(AnnotMAtom)) = annot_vsmatom_to_string(vs(AnnotMAtom, Varset)).
 rule_antecedent_to_string(Varset, test(MTest)) = "<" ++ mtest_to_string(Varset, MTest) ++ ">?".
 
 :- func rule_head_to_string(varset, rule_head(M)) = string <= (modality(M), stringable(M)).
 
-rule_head_to_string(Varset, std(MProp)) = matom_to_string(Varset, MProp).
+rule_head_to_string(Varset, std(MAtom)) = matom_to_string(Varset, MAtom).
 rule_head_to_string(Varset, test(MTest)) = "<" ++ mtest_to_string(Varset, MTest) ++ ">?".
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
@@ -222,8 +222,8 @@ term_to_nonmod_rule(functor(atom("<-"), [THead, TAnte], _), Ante-Head) :-
 	then
 		Head = test(MTest)
 	else
-		term_to_matom(THead, MProp),
-		Head = std(MProp)
+		term_to_matom(THead, MAtom),
+		Head = std(MAtom)
 	),
 	term_to_list_of_rule_antecedents(TAnte, Ante).
 
@@ -269,8 +269,8 @@ term_to_mtest(functor(atom("?"), [T], _), MTest) :-
 		term_to_matom(THMP, HMP),
 		MTest = impl(MPs, HMP)
 	else
-		term_to_matom(T, MProp),
-		MTest = prop(MProp)
+		term_to_matom(T, MAtom),
+		MTest = prop(MAtom)
 	).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
@@ -346,11 +346,10 @@ subst_to_string(Varset, Subst) = "{" ++ Str ++ "}" :-
 term_to_assumable_function_def(functor(atom("="), [FuncNameTerm, DefTerms], _), FuncDef) :-
 	FuncNameTerm = functor(atom(FuncName), [], _),
 	parse_list(DefTerms, ListCostTerms),
-	list.map((pred(AssignTerm::in, MGProp-Cost::out) is semidet :-
-		AssignTerm = functor(atom("="), [MPropTerm, CostTerm], _),
-		term_to_matom(MPropTerm, m(Mod, Prop)),
-		ground_formula(Prop, GProp),
-		MGProp = m(Mod, GProp),
+	list.map((pred(AssignTerm::in, MGAtom-Cost::out) is semidet :-
+		AssignTerm = functor(atom("="), [MAtomTerm, CostTerm], _),
+		term_to_matom(MAtomTerm, MAtom),
+		ground_matom(MAtom, MGAtom),
 		term_to_cost(CostTerm, Cost)
 			), ListCostTerms, Costs),
 	FuncDef = FuncName-map.from_assoc_list(Costs).

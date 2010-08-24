@@ -72,7 +72,6 @@
 	pred(find_fact/4) is find_ctx_fact,
 	pred(find_rule/4) is find_ctx_rule,
 	pred(assumable_func/4) is ctx_assumable_func,
-	func(min_assumption_cost/2) is ctx_min_assumption_cost,
 	pred(find_disjoint_decl/2) is find_ctx_disjoint_decl
 ].
 
@@ -80,16 +79,16 @@ new_ctx = ctx(multi_map.init, multi_map.init, map.init, set.init).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-add_fact(Prop, Ctx0, Ctx) :-
+add_fact(MAtom, Ctx0, Ctx) :-
 	Facts = Ctx0^ctx_facts,
-	Prop = vs(m(Mod, p(PredSym, _Args)), _VS),
-	Ctx = Ctx0^ctx_facts := multi_map.add(Facts, Mod-PredSym, Prop).
+	MAtom = vs(m(Mod, p(PredSym, _Args)), _VS),
+	Ctx = Ctx0^ctx_facts := multi_map.add(Facts, Mod-PredSym, MAtom).
 
-add_rule(Rule, Ctx0, Ctx) :-
+add_rule(MRule, Ctx0, Ctx) :-
 	Rules = Ctx0^ctx_rules,
-	Rule = vs(m(Mod, _-Head), _VS),
+	MRule = vs(m(Mod, _-Head), _VS),
 	m(ModH, p(PredSym, _)) = rule_head_matom(Head),
-	Ctx = Ctx0^ctx_rules := multi_map.add(Rules, (Mod++ModH)-PredSym, Rule).
+	Ctx = Ctx0^ctx_rules := multi_map.add(Rules, (Mod++ModH)-PredSym, MRule).
 
 add_assumable(FuncName-Costs, Ctx0, Ctx) :-
 	AssumFuncs = Ctx0^ctx_assumables,
@@ -99,8 +98,6 @@ add_disjoint_decl(DD, Ctx0, Ctx) :-
 	Ctx = Ctx0^ctx_disjoint_decls := set.insert(Ctx0^ctx_disjoint_decls, DD).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
-
-	% XXX these!
 
 set_facts(Facts, Ctx0, Ctx) :-
 	set.fold((pred(Fact::in, Fs0::in, Fs::out) is det :-
@@ -155,10 +152,10 @@ find_ctx_rule(Ctx, Ms, PredSym, Rule) :-
 
 :- pred ctx_assumable_func(ctx::in, string::in, mgatom(ctx_modality)::out, float::out) is nondet.
 
-ctx_assumable_func(Ctx, FuncName, GProp, Cost) :-
+ctx_assumable_func(Ctx, FuncName, MGAtom, Cost) :-
 	map.search(Ctx^ctx_assumables, FuncName, MapCosts),
 	trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "A", !IO) ),
-	map.member(MapCosts, GProp, Cost).
+	map.member(MapCosts, MGAtom, Cost).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
@@ -166,9 +163,3 @@ ctx_assumable_func(Ctx, FuncName, GProp, Cost) :-
 
 find_ctx_disjoint_decl(Ctx, DD) :-
 	set.member(DD, Ctx^ctx_disjoint_decls).
-
-% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
-
-:- func ctx_min_assumption_cost(ctx, ctx_modality) = float.
-
-ctx_min_assumption_cost(_, _) = 0.1.

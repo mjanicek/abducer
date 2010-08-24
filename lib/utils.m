@@ -66,21 +66,21 @@ map_merge_op(Pred, M1, M2, M) :-
 assoc_lists_merge_op(_, [], [], []).
 assoc_lists_merge_op(_, [H|T], [], [H|T]).
 assoc_lists_merge_op(_, [], [H|T], [H|T]).
-assoc_lists_merge_op(MergeProp, [K1-V1|T1], [K2-V2|T2], [K-V|T]) :-
+assoc_lists_merge_op(MergePred, [K1-V1|T1], [K2-V2|T2], [K-V|T]) :-
 	compare(Comp, K1, K2),
 	(
 		Comp = (=),
 		K = K1,
-		call(MergeProp, V1, V2, V),
-		assoc_lists_merge_op(MergeProp, T1, T2, T)
+		call(MergePred, V1, V2, V),
+		assoc_lists_merge_op(MergePred, T1, T2, T)
 	;
 		Comp = (<),
 		K = K1, V = V1,
-		assoc_lists_merge_op(MergeProp, T1, [K2-V2|T2], T)
+		assoc_lists_merge_op(MergePred, T1, [K2-V2|T2], T)
 	;
 		Comp = (>),
 		K = K2, V = V2,
-		assoc_lists_merge_op(MergeProp, [K1-V1|T1], T2, T)
+		assoc_lists_merge_op(MergePred, [K1-V1|T1], T2, T)
 	).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%

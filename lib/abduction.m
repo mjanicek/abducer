@@ -110,7 +110,7 @@ new_proof(Ctx, Goal, Varset) = proof(vs(Goal, Varset), blacklist.init(Ctx)).
 :- func query_cost(C, query(M), structure_costs) = float <= (context(C, M), modality(M)).
 
 query_cost(_Ctx, unsolved(_, _), _) = 0.0.
-query_cost(Ctx, assumed(MProp, CostFunction), _Costs) = assumption_cost(Ctx, CostFunction, MProp).
+query_cost(Ctx, assumed(MAtom, CostFunction), _Costs) = assumption_cost(Ctx, CostFunction, MAtom).
 query_cost(_Ctx, proved(_), Costs) = Costs^fact_cost.
 query_cost(_Ctx, asserted(_), Costs) = Costs^assertion_cost.
 
@@ -272,9 +272,9 @@ proof_step({QsL0, cf(m(MQ, PQ0), f(Func)), QsR0}, VS, BL0,
 
 	anytime.pure_signalled(no),
 
-	assumable_func(Ctx, Func, m(MQ, GroundProp), _Cost),
-	ground_formula(Prop, GroundProp),
-	unify_formulas(PQ0, Prop, Uni),
+	assumable_func(Ctx, Func, m(MQ, GroundAtom), _Cost),
+	ground_formula(Atom, GroundAtom),
+	unify_formulas(PQ0, Atom, Uni),
 
 	PQ = apply_subst_to_formula(Uni, PQ0),
 %	QsL = list.map(apply_subst_to_query(Uni), QsL0),
@@ -470,11 +470,11 @@ check_disjoints(Qs, BL0, BL) :-
 
 :- func head_matom(query(M)) = matom(M) is det <= modality(M).
 
-head_matom(proved(MProp)) = MProp.
-head_matom(unsolved(MProp, _)) = MProp.
-head_matom(assumed(MProp, _)) = MProp.
-head_matom(asserted(prop(MProp))) = MProp.
-head_matom(asserted(impl(_, MProp))) = MProp.
+head_matom(proved(MAtom)) = MAtom.
+head_matom(unsolved(MAtom, _)) = MAtom.
+head_matom(assumed(MAtom, _)) = MAtom.
+head_matom(asserted(prop(MAtom))) = MAtom.
+head_matom(asserted(impl(_, MAtom))) = MAtom.
 
 :- pred leftmost_unifiable(matom(M)::in, list(matom(M))::in, subst::out) is semidet.
 
@@ -499,9 +499,9 @@ map_fst(Func, LIn) = LOut :-
 
 :- func apply_subst_to_query(subst, query(M)) = query(M) <= modality(M).
 
-apply_subst_to_query(Subst, unsolved(MProp, F)) = unsolved(apply_subst_to_matom(Subst, MProp), F).
-apply_subst_to_query(Subst, proved(MProp)) = proved(apply_subst_to_matom(Subst, MProp)).
-apply_subst_to_query(Subst, assumed(MProp, F)) = assumed(apply_subst_to_matom(Subst, MProp), F).
+apply_subst_to_query(Subst, unsolved(MAtom, F)) = unsolved(apply_subst_to_matom(Subst, MAtom), F).
+apply_subst_to_query(Subst, proved(MAtom)) = proved(apply_subst_to_matom(Subst, MAtom)).
+apply_subst_to_query(Subst, assumed(MAtom, F)) = assumed(apply_subst_to_matom(Subst, MAtom), F).
 apply_subst_to_query(Subst, asserted(MTest)) = asserted(apply_subst_to_mtest(Subst, MTest)).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%

@@ -78,7 +78,6 @@ print_facts(Ctx, Indent, !IO) :-
 
 print_rules(Stream, Ctx, Indent, !IO) :-
 	set.fold((pred(Rule::in, !.IO::di, !:IO::uo) is det :-
-			% XXX global context
 		print(Stream, Indent, !IO),
 		print(Stream, vsmrule_to_string(Rule), !IO),
 		nl(Stream, !IO)
@@ -94,8 +93,8 @@ print_assumables(Stream, Ctx, Indent, !IO) :-
 		print(Stream, Indent, !IO),
 		print(Stream, FuncName ++ " = ", !IO),
 
-		CostStrs = list.map((func(m(Mod, GProp)-Cost) = S :-
-			S = vsmatom_to_string(vs(m(Mod, ground_formula_to_formula(GProp)), varset.init))
+		CostStrs = list.map((func(m(Mod, GAtom)-Cost) = S :-
+			S = vsmatom_to_string(vs(m(Mod, ground_formula_to_formula(GAtom)), varset.init))
 					++ " = " ++ float_to_string(Cost)
 				), map.to_assoc_list(Costs)),
 
@@ -203,7 +202,7 @@ tty_matom_to_string(Varset, MP) = tty_vsmatom_to_string(vs(MP, Varset)).
 
 :- func tty_mtest_to_string(varset, mtest(M)) = string <= (modality(M), stringable(M)).
 
-tty_mtest_to_string(Varset, prop(MProp)) = matom_to_string(Varset, MProp).
+tty_mtest_to_string(Varset, prop(MAtom)) = matom_to_string(Varset, MAtom).
 tty_mtest_to_string(Varset, impl(MPs, HMP)) = string.join_list(", ", list.map(matom_to_string(Varset), MPs))
 		++ " -> " ++ matom_to_string(Varset, HMP).
 
@@ -216,10 +215,10 @@ tty_modality_to_string([H|T]) = totty(green) ++ string.join_list(" : ", list.map
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-query_to_string(VS, unsolved(MProp, F)) = tty_matom_to_string(VS, MProp)
+query_to_string(VS, unsolved(MAtom, F)) = tty_matom_to_string(VS, MAtom)
 		++ "[unsolved / " ++ assumability_function_to_string(F) ++ "]".
-query_to_string(VS, proved(MProp)) = tty_matom_to_string(VS, MProp) ++ totty(yellow) ++ "[proved]" ++ totty(reset).
-query_to_string(VS, assumed(MProp, F)) = tty_matom_to_string(VS, MProp)
+query_to_string(VS, proved(MAtom)) = tty_matom_to_string(VS, MAtom) ++ totty(yellow) ++ "[proved]" ++ totty(reset).
+query_to_string(VS, assumed(MAtom, F)) = tty_matom_to_string(VS, MAtom)
 		++ totty(red) ++ "[assumed / " ++ assumability_function_to_string(F) ++ "]" ++ totty(reset).
 query_to_string(VS, asserted(MTest)) = tty_mtest_to_string(VS, MTest) ++ totty(magenta) ++ "[asserted]" ++ totty(reset).
 

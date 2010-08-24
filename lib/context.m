@@ -39,8 +39,6 @@
 	pred assumable_func(C, string, mgatom(M), float),
 	mode assumable_func(in, in, out, out) is nondet,
 
-	func min_assumption_cost(C, M) = float,
-
 	pred find_disjoint_decl(C, set(mgatom(M))),
 	mode find_disjoint_decl(in, out) is nondet
 ].
