@@ -1,10 +1,10 @@
 # Binary files to be built.
 #
-MBIN=test_formulae test_modality
+MBIN=test_parsing test_modality
 
 # Mercury source files.
 #
-MFILES=test_formulae.m test_modality.m
+MFILES=test_parsing.m test_modality.m
 
 LIBABDUCER=../lib/libabducer.a
 

@@ -33,7 +33,7 @@
 :- import_module require, solutions.
 :- import_module map, set, list, pair, assoc_list, string, float, int, bag, bool.
 :- import_module utils.
-:- import_module abduction, formula, context, assumability.
+:- import_module abduction, lang, context, assumability.
 :- import_module loading.
 :- import_module prob.
 :- import_module anytime.
@@ -41,7 +41,7 @@
 :- import_module ctx_modality, ctx_loadable, ctx_io, ctx_loadable_io.
 :- import_module modality, stringable.
 
-:- import_module parser, term_io, term, varset, formula_io, formula_ops.
+:- import_module parser, term_io, term, varset, lang_io, lang_ops.
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 

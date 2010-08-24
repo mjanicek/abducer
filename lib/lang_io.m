@@ -18,12 +18,12 @@
 % 02111-1307, USA.
 %------------------------------------------------------------------------------%
 
-:- module formula_io.
+:- module lang_io.
 
 :- interface.
 
 :- import_module map, pair.
-:- import_module formula, modality.
+:- import_module lang, modality.
 :- import_module stringable.
 
 :- import_module term, varset.
@@ -41,7 +41,7 @@
 :- func vsmatom_to_string(vscope(matom(M))) = string <= (modality(M), stringable(M)).
 
 :- func atom_to_string(varset, atom) = string.
-:- func formula_term_to_string(varset, formula.term) = string.
+:- func lang_term_to_string(varset, lang.term) = string.
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
@@ -84,7 +84,7 @@
 :- import_module string.
 :- import_module assumability.
 :- import_module prob.
-:- import_module formula_ops.
+:- import_module lang_ops.
 :- import_module parser, term_io.
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
@@ -178,15 +178,15 @@ term_to_mrule(T, m(Mod, R)) :-
 
 atom_to_string(_Varset, p(PredSym, [])) = "'" ++ PredSym ++ "'".
 atom_to_string(Varset, p(PredSym, [H|T])) = "'" ++ PredSym ++ "'(" ++ ArgStr ++ ")" :-
-	ArgStr = string.join_list(", ", list.map(formula_term_to_string(Varset), [H|T])).
+	ArgStr = string.join_list(", ", list.map(lang_term_to_string(Varset), [H|T])).
 
-formula_term_to_string(Varset, Arg) = S :-
+lang_term_to_string(Varset, Arg) = S :-
 	(
 		Arg = t(Functor, []),
 		S = "'" ++ Functor ++ "'"
 	;
 		Arg = t(Functor, [H|T]),
-		S = "'" ++ Functor ++ "'(" ++ string.join_list(", ", list.map(formula_term_to_string(Varset), [H|T])) ++ ")"
+		S = "'" ++ Functor ++ "'(" ++ string.join_list(", ", list.map(lang_term_to_string(Varset), [H|T])) ++ ")"
 	;
 		Arg = v(Var),
 		S = varset.lookup_name(Varset, Var)
@@ -338,7 +338,7 @@ disjoint_decl_to_string(DD) = "disjoint([" ++ S ++ "])" :-
 subst_to_string(Varset, Subst) = "{" ++ Str ++ "}" :-
 	L = map.to_assoc_list(Subst),
 	L0 = list.map((func(Var-Value) = S :-
-		S = varset.lookup_name(Varset, Var) ++ "=" ++ formula_term_to_string(Varset, Value)), L),
+		S = varset.lookup_name(Varset, Var) ++ "=" ++ lang_term_to_string(Varset, Value)), L),
 	Str = string.join_list(", ", L0).
 
 %------------------------------------------------------------------------------%

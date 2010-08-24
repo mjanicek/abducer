@@ -26,7 +26,7 @@
 :- import_module varset.
 
 :- import_module modality.
-:- import_module formula, assumability, context.
+:- import_module lang, assumability, context.
 :- import_module blacklist.
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%

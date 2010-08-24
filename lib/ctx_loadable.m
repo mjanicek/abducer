@@ -23,7 +23,7 @@
 :- interface.
 
 :- import_module set, map.
-:- import_module formula, formula_io.
+:- import_module lang, lang_io.
 :- import_module context.
 :- import_module ctx_modality.
 

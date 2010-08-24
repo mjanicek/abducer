@@ -23,7 +23,7 @@
 :- interface.
 
 :- import_module set, map.
-:- import_module formula.
+:- import_module lang.
 :- import_module context, modality.
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%

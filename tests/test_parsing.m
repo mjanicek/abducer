@@ -1,6 +1,24 @@
-% $Id: test_formulae.m 3449 2009-10-11 22:13:11Z janicek $
+%------------------------------------------------------------------------------%
+% Copyright (C) 2009-2010 DFKI GmbH Talking Robots 
+% Miroslav Janicek (miroslav.janicek@dfki.de) 
+%
+% This library is free software; you can redistribute it and/or
+% modify it under the terms of the GNU Lesser General Public License 
+% as published by the Free Software Foundation; either version 2.1 of
+% the License, or (at your option) any later version.
+%
+% This library is distributed in the hope that it will be useful, but
+% WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+% Lesser General Public License for more details.
+%
+% You should have received a copy of the GNU Lesser General Public
+% License along with this program; if not, write to the Free Software
+% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+% 02111-1307, USA.
+%------------------------------------------------------------------------------%
 
-:- module test_formulae.
+:- module test_parsing.
 
 :- interface.
 
@@ -14,7 +32,7 @@
 
 :- import_module string, pair, list, map.
 :- import_module varset, term, term_io, parser.
-:- import_module formula, formula_io.
+:- import_module lang, lang_io.
 
 :- import_module ctx_modality, ctx_io.
 
@@ -69,7 +87,7 @@ main(!IO) :-
 	
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-:- import_module formula_ops.
+:- import_module lang_ops.
 
 :- pred test_term_parse(string::in, io::di, io::uo) is det.
 
@@ -138,7 +156,7 @@ test_unify(A, B, !IO) :-
 	(if
 		unify_formulas(PA, PB, Unifier)
 	then
-		print(test_formulae.subst_to_string(VS, Unifier), !IO),
+		print(test_parsing.subst_to_string(VS, Unifier), !IO),
 		print(" --> ", !IO),
 		format("\"%s\", \"%s\"\n",
 			[s(vsmatom_to_string(vs(apply_subst_to_matom(Unifier, MPA), VS))),
@@ -154,5 +172,5 @@ test_unify(A, B, !IO) :-
 subst_to_string(Varset, Subst) = Str :-
 	L = map.to_assoc_list(Subst),
 	L0 = list.map((func(Var-Value) = S :-
-		S = varset.lookup_name(Varset, Var) ++ "=" ++ formula_term_to_string(Varset, Value)), L),
+		S = varset.lookup_name(Varset, Var) ++ "=" ++ lang_term_to_string(Varset, Value)), L),
 	Str = string.join_list(", ", L0).

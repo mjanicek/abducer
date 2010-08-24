@@ -22,9 +22,9 @@
 
 :- interface.
 
-:- import_module formula.
-:- import_module formula_io.
-:- import_module formula_ops.
+:- import_module lang.
+:- import_module lang_io.
+:- import_module lang_ops.
 :- import_module anytime.
 :- import_module blacklist.
 :- import_module context.

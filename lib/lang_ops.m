@@ -20,7 +20,7 @@
 
 % NOTE: the original taken from the Mercury standard library, which is LGPL'd
 
-:- module formula_ops.
+:- module lang_ops.
 :- interface.
 
 :- import_module ops.

@@ -23,7 +23,7 @@
 :- interface.
 
 :- import_module io, list, varset.
-:- import_module abduction, ctx_modality, formula, blacklist.
+:- import_module abduction, ctx_modality, lang, blacklist.
 :- import_module ctx_loadable.
 
 :- pred print_facts(ctx::in, string::in, io::di, io::uo) is det.
@@ -53,12 +53,12 @@
 :- implementation.
 
 :- import_module map, set, list, pair, string.
-:- import_module abduction, formula, assumability, blacklist.
+:- import_module abduction, assumability, blacklist.
 
 :- import_module ctx_modality, ctx_loadable, ctx_io.
 :- import_module modality, stringable.
 
-:- import_module term, varset, formula_io.
+:- import_module term, varset, lang_io.
 
 :- import_module tty.
 
@@ -174,19 +174,19 @@ protect(S0) = S :-
 	).
 
 :- func tty_atom_to_string(varset, atom) = string.
-:- func tty_formula_term_to_string(varset, formula.term) = string.
+:- func tty_lang_term_to_string(varset, lang.term) = string.
 
 tty_atom_to_string(_Varset, p(PredSym, [])) = totty(bold) ++ protect(PredSym) ++ totty(reset).
 tty_atom_to_string(Varset, p(PredSym, [H|T])) = totty(bold) ++ protect(PredSym) ++ totty(reset) ++ "(" ++ ArgStr ++ ")" :-
-	ArgStr = string.join_list(", ", list.map(tty_formula_term_to_string(Varset), [H|T])).
+	ArgStr = string.join_list(", ", list.map(tty_lang_term_to_string(Varset), [H|T])).
 
-tty_formula_term_to_string(Varset, Arg) = S :-
+tty_lang_term_to_string(Varset, Arg) = S :-
 	(
 		Arg = t(Functor, []),
 		S = protect(Functor)
 	;
 		Arg = t(Functor, [H|T]),
-		S = protect(Functor) ++ "(" ++ string.join_list(", ", list.map(tty_formula_term_to_string(Varset), [H|T])) ++ ")"
+		S = protect(Functor) ++ "(" ++ string.join_list(", ", list.map(tty_lang_term_to_string(Varset), [H|T])) ++ ")"
 	;
 		Arg = v(Var),
 		S = totty(cyan) ++ varset.lookup_name(Varset, Var) ++ totty(reset)

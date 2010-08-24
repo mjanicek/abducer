@@ -33,7 +33,6 @@
 :- import_module term, term_io.
 :- import_module utils.
 :- import_module stringable.
-:- import_module formula, formula_io, formula_ops, modality.
 :- import_module ctx_loadable, ctx_loadable_io, ctx_io.
 :- import_module loading.
 

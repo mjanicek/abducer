@@ -22,7 +22,7 @@
 
 :- interface.
 
-:- import_module formula, modality.
+:- import_module lang, modality.
 :- import_module list, set.
 :- import_module assumability.
 

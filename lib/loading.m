@@ -39,7 +39,7 @@
 :- import_module bool.
 :- import_module utils.
 :- import_module term.
-:- import_module formula, formula_io, formula_ops.
+:- import_module lang, lang_io, lang_ops.
 :- import_module term_io.
 :- import_module ctx_modality, ctx_io.
 

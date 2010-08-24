@@ -18,7 +18,7 @@
 % 02111-1307, USA.
 %------------------------------------------------------------------------------%
 
-:- module formula.
+:- module lang.
 
 :- interface.
 
@@ -31,7 +31,7 @@
 
 :- type term
 	--->	v(var)
-	;	t(string, list(formula.term))
+	;	t(string, list(lang.term))
 	.
 
 :- type ground_term
@@ -44,19 +44,19 @@
 	;	false(T)
 	.
 
-	% prolog term <--> formula.term
-:- func formula_term_to_term(formula.term) = term.term.
+	% prolog term <--> lang.term
+:- func lang_term_to_term(lang.term) = term.term.
 
-:- pred term_to_formula_term(term.term::in, formula.term::out) is semidet.
-:- func term_to_formula_term(term.term) = formula.term is semidet.
-:- func det_term_to_formula_term(term.term) = formula.term.
+:- pred term_to_lang_term(term.term::in, lang.term::out) is semidet.
+:- func term_to_lang_term(term.term) = lang.term is semidet.
+:- func det_term_to_lang_term(term.term) = lang.term.
 
 	% term <--> ground term
-:- func ground_term_to_term(ground_term) = formula.term.
-:- func term_to_ground_term(formula.term) = ground_term is semidet.
+:- func ground_term_to_term(ground_term) = lang.term.
+:- func term_to_ground_term(lang.term) = ground_term is semidet.
 
 	% predicate version of the above
-:- pred ground_term(formula.term, ground_term).
+:- pred ground_term(lang.term, ground_term).
 :- mode ground_term(in, out) is semidet.
 :- mode ground_term(out, in) is det.
 
@@ -65,7 +65,7 @@
 :- type atom
 	--->	p(
 		string,  % predicate symbol
-		list(formula.term)
+		list(lang.term)
 	).
 
 :- type ground_atom
@@ -74,7 +74,7 @@
 		list(ground_term)
 	).
 
-	% prolog term <--> formula.atom
+	% prolog term <--> lang.atom
 :- func atom_to_term(atom) = term.term.
 
 :- pred term_to_atom(term.term::in, atom::out) is semidet.
@@ -130,14 +130,14 @@
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-:- type subst == map(var, formula.term).
+:- type subst == map(var, lang.term).
 
-:- func apply_subst_to_term(subst, formula.term) = formula.term.
+:- func apply_subst_to_term(subst, lang.term) = lang.term.
 :- func apply_subst_to_formula(subst, atom) = atom.
 :- func apply_subst_to_matom(subst, matom(M)) = matom(M) <= modality(M).
 :- func apply_subst_to_mtest(subst, mtest(M)) = mtest(M) <= modality(M).
 
-:- func rename_vars_in_term(map(var, var), formula.term) = formula.term.
+:- func rename_vars_in_term(map(var, var), lang.term) = lang.term.
 :- func rename_vars_in_formula(map(var, var), atom) = atom.
 :- func rename_vars_in_matom(map(var, var), matom(M)) = matom(M) <= modality(M).
 :- func rename_vars_in_annot_matom(map(var, var), with_assumability_function(matom(M))) = with_assumability_function(matom(M))
@@ -159,7 +159,7 @@
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
 :- pred unify_formulas(atom::in, atom::in, subst::out) is semidet.
-:- pred unify_terms(formula.term::in, formula.term::in, subst::out) is semidet.
+:- pred unify_terms(lang.term::in, lang.term::in, subst::out) is semidet.
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
@@ -175,14 +175,14 @@
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
 atom_to_term(p(PredSym, Args))
-		= functor(atom(PredSym), list.map(formula_term_to_term, Args), context("", 0)).
+		= functor(atom(PredSym), list.map(lang_term_to_term, Args), context("", 0)).
 
 term_to_atom(T, AF) :-
 	AF = term_to_atom(T).
 
 term_to_atom(functor(atom(PredSym), TermArgs, _))
 		= p(PredSym, Args) :-
-	list.map(term_to_formula_term, TermArgs, Args).
+	list.map(term_to_lang_term, TermArgs, Args).
 
 det_term_to_atom(T) = AF :-
 	(if AF0 = term_to_atom(T)
@@ -192,22 +192,22 @@ det_term_to_atom(T) = AF :-
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-formula_term_to_term(v(Var)) = variable(Var, context("", 0)).
-formula_term_to_term(t(F, Args)) = functor(atom(F), list.map(formula_term_to_term, Args), context("", 0)).
+lang_term_to_term(v(Var)) = variable(Var, context("", 0)).
+lang_term_to_term(t(F, Args)) = functor(atom(F), list.map(lang_term_to_term, Args), context("", 0)).
 
-term_to_formula_term(T, FT) :-
-	FT = term_to_formula_term(T).
+term_to_lang_term(T, FT) :-
+	FT = term_to_lang_term(T).
 
-term_to_formula_term(variable(Var, _)) = v(Var).
-term_to_formula_term(functor(atom(Functor), TermArgs, _)) = t(Functor, Args) :-
-	list.map(term_to_formula_term, TermArgs, Args).
-term_to_formula_term(functor(string(Str), TermArgs, _)) = t(Str, Args) :-
-	list.map(term_to_formula_term, TermArgs, Args).
+term_to_lang_term(variable(Var, _)) = v(Var).
+term_to_lang_term(functor(atom(Functor), TermArgs, _)) = t(Functor, Args) :-
+	list.map(term_to_lang_term, TermArgs, Args).
+term_to_lang_term(functor(string(Str), TermArgs, _)) = t(Str, Args) :-
+	list.map(term_to_lang_term, TermArgs, Args).
 
-det_term_to_formula_term(T) = FT :-
-	(if FT0 = term_to_formula_term(T)
+det_term_to_lang_term(T) = FT :-
+	(if FT0 = term_to_lang_term(T)
 	then FT = FT0
-	else error("error in func det_term_to_formula_term/1 for \"" ++ string(T) ++ "\"")
+	else error("error in func det_term_to_lang_term/1 for \"" ++ string(T) ++ "\"")
 	).
 
 %------------------------------------------------------------------------------%
@@ -285,11 +285,11 @@ matom_to_ground_matom(M) = GM :-
 
 unify_formulas(A, B, U) :-
 	unify_term(atom_to_term(A), atom_to_term(B), init, TermU),
-	U = map.map_values((func(_, TermTgt) = det_term_to_formula_term(TermTgt)), TermU).
+	U = map.map_values((func(_, TermTgt) = det_term_to_lang_term(TermTgt)), TermU).
 
 unify_terms(TA, TB, U) :-
-	unify_term(formula_term_to_term(TA), formula_term_to_term(TB), init, TermU),
-	U = map.map_values((func(_, TermTgt) = det_term_to_formula_term(TermTgt)), TermU).
+	unify_term(lang_term_to_term(TA), lang_term_to_term(TB), init, TermU),
+	U = map.map_values((func(_, TermTgt) = det_term_to_lang_term(TermTgt)), TermU).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
