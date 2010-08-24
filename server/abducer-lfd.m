@@ -33,14 +33,15 @@
 :- import_module require, solutions.
 :- import_module map, set, list, pair, assoc_list, string, float, int, bag, bool, maybe.
 :- import_module utils.
-:- import_module abduction, formula, context, costs.
+:- import_module abduction, formula, context, assumability.
 :- import_module loading.
+:- import_module prob.
 :- import_module anytime.
 
 :- import_module context, ctx_modality, ctx_loadable, ctx_io, ctx_loadable_io.
 :- import_module modality, stringable.
 
-:- import_module parser, term_io, term, varset, formula_io, formula_ops, costs.
+:- import_module parser, term_io, term, varset, formula_io, formula_ops.
 :- import_module gc.
 :- import_module protocol.
 
@@ -218,8 +219,8 @@ process_request(prove(L), !SCtx, !IO) :-
 	nl(stderr_stream, !IO),
 */
 
-	prove(iddfs(1.0, absolute(0.2)), P0, Ps, default_costs, !.SCtx^cx),
-	Proofs0 = list.map((func(P) = Cost-P :- Cost = cost(!.SCtx^cx, P, default_costs)), set.to_sorted_list(Ps)),
+	prove(unbounded_dfs, P0, Ps, probabilistic_costs, !.SCtx^cx),
+	Proofs0 = list.map((func(P) = Cost-P :- Cost = proof_cost(!.SCtx^cx, P, probabilistic_costs)), set.to_sorted_list(Ps)),
 
 %	Proofs0 = set.to_sorted_list(solutions_set((pred((Cost-P)::out) is nondet :-
 %		prove(100.0, P0, P, default_costs, !.SCtx^cx),
@@ -316,12 +317,6 @@ dissect_query(unsolved(MProp, _)) = "U"-MProp.
 dissect_query(assumed(MProp, _)) = "A"-MProp.
 dissect_query(asserted(prop(MProp))) = "R"-MProp.
 dissect_query(asserted(impl(_, MProp))) = "R"-MProp.
-
-% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
-
-:- func default_costs = costs.
-
-default_costs = costs(0.0, 0.0).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 

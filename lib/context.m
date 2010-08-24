@@ -24,7 +24,7 @@
 
 :- import_module formula, modality.
 :- import_module list, set.
-:- import_module costs.
+:- import_module assumability.
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
@@ -36,7 +36,7 @@
 	pred find_rule(C, list(M), string, vscope(mrule(M))),
 	mode find_rule(in, in, in, out) is nondet,
 
-	pred assumable_func(C, cost_function_name, mgprop(M), float),
+	pred assumable_func(C, string, mgprop(M), float),
 	mode assumable_func(in, in, out, out) is nondet,
 
 	func min_assumption_cost(C, M) = float,
@@ -45,10 +45,7 @@
 	mode disjoint_decl(in, out) is nondet
 ].
 
-:- pred assumable(C::in, vscope(mprop(M))::in, cost_function::in, vscope(mprop(M))::out, float::out) is nondet
-		<= (context(C, M), modality(M)).
-
-:- func cost(C, cost_function, vscope(mprop(M))) = float <= (context(C, M), modality(M)).
+:- func assumption_cost(C, assumability_function, mprop(M)) = float <= (context(C, M), modality(M)).
 
 %------------------------------------------------------------------------------%
 
@@ -56,29 +53,18 @@
 
 :- import_module require, solutions.
 :- import_module set, list, pair, string.
-:- import_module varset.
-
-:- import_module io.
 
 %------------------------------------------------------------------------------%
-%------------------------------------------------------------------------------%
-%------------------------------------------------------------------------------%
 
-assumable(C, vs(m(Mod, PropIn), VS), f(FuncName), vs(m(Mod, Prop), VS), Cost) :-
-	assumable_func(C, FuncName, m(Mod, GroundProp), Cost),
-	ground_formula(Prop, GroundProp),
-	unify_formulas(PropIn, Prop, _).  % XXX this?
+assumption_cost(_Ctx, const(Cost), _MF) = Cost.
 
-assumable(_C, Prop, const(Cost), Prop, Cost) :-
-	trace[compile_time(flag("debug")), io(!IO)] ( format(stderr_stream, "/%f\\", [f(Cost)], !IO) ).
-
-% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
-
-cost(C, F, Prop) = Cost :-
-	solutions_set((pred(SolCost::out) is nondet :-
-		assumable(C, Prop, F, Prop, SolCost)  % XXX look at the Prop, Prop here
-			), Costs),
-	(if singleton_set(Costs, Cost0)
+assumption_cost(Ctx, f(Name), MF) = Cost :-
+	solutions_set((pred(C::out) is nondet :- assumable_func(Ctx, Name, mprop_to_ground_mprop(MF), C)), Costs),
+	(if set.singleton_set(Costs, Cost0)
 	then Cost = Cost0
-	else error("error in cost/3: prop=" ++ string(Prop) ++ ", length=" ++ string.from_int(set.count(Costs)))
+	else error("error in assumption_cost/3: " ++ string(MF)
+			++ ", " ++ string.from_int(set.count(Costs)) ++ " alternatives")
 	).
+
+assumption_cost(_Ctx, not_assumable, MF) = _Cost :-
+	error("non-assumable predicate in assumption_cost/3: " ++ string(MF)).

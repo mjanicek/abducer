@@ -22,8 +22,8 @@
 
 :- interface.
 
-:- import_module io, list, varset, bag.
-:- import_module abduction, ctx_modality, formula, stringable, modality, blacklist.
+:- import_module io, list, varset.
+:- import_module abduction, ctx_modality, formula, blacklist.
 :- import_module ctx_loadable.
 
 :- pred print_facts(ctx::in, string::in, io::di, io::uo) is det.
@@ -43,10 +43,7 @@
 :- pred print_proof_trace(ctx::in, proof(ctx_modality)::in, io::di, io::uo) is det.
 :- pred print_proof_trace(io.output_stream::in, ctx::in, proof(ctx_modality)::in, io::di, io::uo) is det.
 
-:- func assumptions_to_string(ctx, bag(with_cost_function(mgprop(ctx_modality)))) = string.
-:- func assertions_to_string(ctx, bag(vscope(mtest(ctx_modality)))) = string.
 :- func goal_to_string(vscope(list(query(ctx_modality)))) = string.
-:- func step_to_string(step(M)) = string <= (modality(M), stringable(M)).
 :- func query_to_string(varset, query(ctx_modality)) = string.
 :- func proof_state_to_string(varset, list(query(ctx_modality))) = string.
 :- func blacklist_to_string(blacklist(ctx_modality)) = string.
@@ -55,15 +52,13 @@
 
 :- implementation.
 
-:- import_module require, solutions.
-:- import_module map, set, list, pair, assoc_list, string, float, int, bag, bool.
-:- import_module utils.
-:- import_module abduction, formula, context, costs, blacklist.
+:- import_module map, set, list, pair, string.
+:- import_module abduction, formula, assumability, blacklist.
 
 :- import_module ctx_modality, ctx_loadable, ctx_io.
 :- import_module modality, stringable.
 
-:- import_module parser, term_io, term, varset, formula_io, formula_ops, costs.
+:- import_module term, varset, formula_io.
 
 :- import_module tty.
 
@@ -224,52 +219,16 @@ tty_modality_to_string([H|T]) = totty(green) ++ string.join_list(" : ", list.map
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-step_to_string(assume(vs(MProp, Varset), Subst, F)) = "assume("
-		++ vsmprop_to_string(vs(MProp, Varset)) ++ "), "
-		++ subst_to_string(Varset, Subst) ++ ", cost=" ++ cost_function_to_string(F).
-step_to_string(resolve_rule(vs(MRule, Varset), Subst)) = "resolve_rule("
-		++ vsmrule_to_string(vs(MRule, Varset)) ++ "), " ++ subst_to_string(Varset, Subst).
-step_to_string(use_fact(vs(MProp, Varset), Subst)) = "use_fact("
-		++ vsmprop_to_string(vs(MProp, Varset)) ++ "), " ++ subst_to_string(Varset, Subst)
-		++ ", cost=1.0".  % XXX DON'T have this hard-wired here!!!
-step_to_string(factor(Subst, Varset)) = "factor, " ++ subst_to_string(Varset, Subst).
-
-% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
-
 query_to_string(VS, unsolved(MProp, F)) = tty_mprop_to_string(VS, MProp)
-		++ "[unsolved / " ++ cost_function_to_string(F) ++ "]".
+		++ "[unsolved / " ++ assumability_function_to_string(F) ++ "]".
 query_to_string(VS, proved(MProp)) = tty_mprop_to_string(VS, MProp) ++ totty(yellow) ++ "[proved]" ++ totty(reset).
 query_to_string(VS, assumed(MProp, F)) = tty_mprop_to_string(VS, MProp)
-		++ totty(red) ++ "[assumed / " ++ cost_function_to_string(F) ++ "]" ++ totty(reset).
+		++ totty(red) ++ "[assumed / " ++ assumability_function_to_string(F) ++ "]" ++ totty(reset).
 query_to_string(VS, asserted(MTest)) = tty_mtest_to_string(VS, MTest) ++ totty(magenta) ++ "[asserted]" ++ totty(reset).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
 goal_to_string(vs(G, VS)) = string.join_list(",\n  ", list.reverse(list.map(query_to_string(VS), G))).
-
-% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
-
-assumptions_to_string(Ctx, As) = Str :-
-	(if not As = bag.init
-	then
-		Str = string.join_list("\n  ", list.map((func(cf(m(Mod, GProp), Func)) = S :-
-			MProp = m(Mod, ground_formula_to_formula(GProp)),
-			Cost = cost(Ctx, Func, vs(MProp, varset.init)),
-			S = mprop_to_string(varset.init, MProp)
-					++ " / " ++ cost_function_to_string(Func) ++ " = " ++ float_to_string(Cost)
-				), bag.to_list(As)))
-	else
-		Str = "(none)"
-	).
-
-% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
-
-assertions_to_string(_Ctx, As) = Str :-
-	(if not As = bag.init
-	then Str = string.join_list("\n  ", list.map((func(vs(MTest, VS)) = mtest_to_string(VS, MTest)),
-			bag.to_list(As)))
-	else Str = "(none)"
-	).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 

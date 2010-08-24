@@ -18,63 +18,43 @@
 % 02111-1307, USA.
 %------------------------------------------------------------------------------%
 
-:- module stringable.
+:- module prob.
 
 :- interface.
 
-:- import_module term.
-
-:- typeclass stringable(T) where [
-	func to_string(T) = string
-].
-
-:- instance stringable(string).
-
-:- typeclass parsable(T) where [
-	func from_string(string::in) = (T::out) is semidet
-].
-
-:- func det_from_string(string) = T <= parsable(T).
-
-:- instance parsable(string).
+:- import_module abduction.
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-:- typeclass term_parsable(T) where [
-	func from_term(term.term::in) = (T::out) is semidet
-].
+:- func probabilistic_costs = structure_costs.
 
-:- func det_from_term(term.term) = T <= term_parsable(T).
+:- func to_cost(float) = float.
+:- func from_cost(float) = float.
+
+:- func bound_subtract(float::in) `with_type` bound_transform `with_inst` bound_transform.
+:- func bound_divide(float::in) `with_type` bound_transform `with_inst` bound_transform.
 
 %------------------------------------------------------------------------------%
 
 :- implementation.
 
-:- import_module require.
-:- import_module string.
+:- import_module float.
+:- import_module math.
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-det_from_string(S) = Rep :-
-	(if Rep0 = from_string(S)
-	then Rep = Rep0
-	else error("failed to parse string `" ++ S ++ "' in func det_from_string/1.")
-	).
+probabilistic_costs = structure_costs(0.0, 0.0).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-det_from_term(Rep) = Val :-
-	(if Val0 = from_term(Rep)
-	then Val = Val0
-	else error("failed to parse `" ++ string(Rep) ++ "' in func det_parse/1.")
-	).
+to_cost(P) = -math.ln(P).
+from_cost(Cost) = math.exp(-Cost).
 
-%------------------------------------------------------------------------------%
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-:- instance stringable(string) where [
-	(to_string(S) = S)
-].
+bound_subtract(Dec, Bound) = NewBound :-
+	P = math.exp(-Bound) - Dec,
+	P =< 1.0, P >= 0.0,
+	NewBound = -math.ln(P).
 
-:- instance parsable(string) where [
-	(from_string(S) = S)
-].
+bound_divide(Arg, Bound) = Bound + math.ln(Arg).

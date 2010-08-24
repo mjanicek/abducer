@@ -22,8 +22,9 @@
 
 :- interface.
 
-:- import_module term, varset, pair, list, map, set, string.
-:- import_module costs.
+:- import_module list, map, set, pair.
+:- import_module term, varset.
+:- import_module assumability.
 :- import_module modality.
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
@@ -106,14 +107,14 @@
 		p :: T
 	).
 
-:- type with_cost_function(T)
-	--->	cf(T, cost_function).
+:- type with_assumability_function(T)
+	--->	cf(T, assumability_function).
 
 :- type tested(T)
 	--->	test(T).
 
 :- type rule_antecedent(M)
-	--->	std(with_cost_function(mprop(M)))
+	--->	std(with_assumability_function(mprop(M)))
 	;	test(mtest(M))
 	.
 
@@ -136,7 +137,7 @@
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
 :- type disjoint(M) == set(mgprop(M)).
-:- type assumable_function_def(M) == pair(cost_function_name, map(mgprop(M), float)).
+:- type assumable_function_def(M) == pair(string, map(mgprop(M), float)).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
@@ -150,7 +151,7 @@
 :- func rename_vars_in_term(map(var, var), formula.term) = formula.term.
 :- func rename_vars_in_formula(map(var, var), atomic_formula) = atomic_formula.
 :- func rename_vars_in_mprop(map(var, var), mprop(M)) = mprop(M) <= modality(M).
-:- func rename_vars_in_annot_mprop(map(var, var), with_cost_function(mprop(M))) = with_cost_function(mprop(M))
+:- func rename_vars_in_annot_mprop(map(var, var), with_assumability_function(mprop(M))) = with_assumability_function(mprop(M))
 		<= modality(M).
 :- func rename_vars_in_rule_antecedent(map(var, var), rule_antecedent(M)) = rule_antecedent(M) <= modality(M).
 :- func rename_vars_in_rule_head(map(var, var), rule_head(M)) = rule_head(M) <= modality(M).
@@ -180,8 +181,7 @@
 :- implementation.
 
 :- import_module require.
-:- import_module int.
-:- import_module term_io, parser, formula_io.
+:- import_module string.
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 

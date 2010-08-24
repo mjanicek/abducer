@@ -22,11 +22,10 @@
 
 :- interface.
 
-:- import_module set, map, pair.
+:- import_module set, map.
 :- import_module formula.
 :- import_module context.
 :- import_module ctx_modality.
-:- import_module costs.
 
 :- type ctx.
 :- instance context(ctx, ctx_modality).
@@ -40,24 +39,22 @@
 
 :- pred set_facts(set(vscope(mprop(ctx_modality)))::in, ctx::in, ctx::out) is det.
 :- pred set_rules(set(vscope(mrule(ctx_modality)))::in, ctx::in, ctx::out) is det.
-:- pred set_assumables(map(cost_function_name, map(mgprop(ctx_modality), float))::in, ctx::in, ctx::out)
+:- pred set_assumables(map(string, map(mgprop(ctx_modality), float))::in, ctx::in, ctx::out)
 		is det.
 :- pred set_disjoints(set(disjoint(ctx_modality))::in, ctx::in, ctx::out) is det.
 
 	% for debugging purposes only!
 :- func facts(ctx) = set(vscope(mprop(ctx_modality))).
 :- func rules(ctx) = set(vscope(mrule(ctx_modality))).
-:- func assumables(ctx) = map(cost_function_name, map(mgprop(ctx_modality), float)).
+:- func assumables(ctx) = map(string, map(mgprop(ctx_modality), float)).
 :- func disjoints(ctx) = set(disjoint(ctx_modality)).
 
 %------------------------------------------------------------------------------%
 
 :- implementation.
 
-:- import_module require, solutions.
-:- import_module list, pair, map, float, multi_map.
-:- import_module costs.
-:- import_module varset.
+:- import_module solutions.
+:- import_module list, pair, map, multi_map.
 
 :- import_module io.  % for debugging
 
@@ -67,7 +64,7 @@
 	--->	ctx(
 		ctx_facts :: multi_map(pair(list(ctx_modality), string), vscope(mprop(ctx_modality))),
 		ctx_rules :: multi_map(pair(list(ctx_modality), string), vscope(mrule(ctx_modality))),
-		ctx_assumables :: map(cost_function_name, map(mgprop(ctx_modality), float)),
+		ctx_assumables :: map(string, map(mgprop(ctx_modality), float)),
 		ctx_disjoints :: set(set(mgprop(ctx_modality)))
 	).
 
@@ -156,7 +153,7 @@ find_ctx_rule(Ctx, Ms, PredSym, Rule) :-
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-:- pred ctx_assumable_func(ctx::in, cost_function_name::in, mgprop(ctx_modality)::out, float::out) is nondet.
+:- pred ctx_assumable_func(ctx::in, string::in, mgprop(ctx_modality)::out, float::out) is nondet.
 
 ctx_assumable_func(Ctx, FuncName, GProp, Cost) :-
 	map.search(Ctx^ctx_assumables, FuncName, MapCosts),

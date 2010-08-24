@@ -22,29 +22,20 @@
 
 :- interface.
 
-:- import_module list, set, bag.
+:- import_module list, set.
 :- import_module varset.
 
 :- import_module modality.
-:- import_module formula, costs, context.
+:- import_module formula, assumability, context.
 :- import_module blacklist.
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
 :- type query(M)
 	--->	proved(mprop(M))
-	;	assumed(mprop(M), cost_function)
-	;	unsolved(mprop(M), cost_function)
+	;	assumed(mprop(M), assumability_function)
+	;	unsolved(mprop(M), assumability_function)
 	;	asserted(mtest(M))
-	.
-
-%:- type marked(T) == pair(T, marking).
-
-:- type step(M)
-	--->	assume(vscope(mprop(M)), subst, cost_function)
-	;	resolve_rule(vscope(mrule(M)), subst)
-	;	use_fact(vscope(mprop(M)), subst)
-	;	factor(subst, varset)
 	.
 
 :- type goal(M) == vscope(list(query(M))).
@@ -55,90 +46,80 @@
 		blacklist :: blacklist(M)
 	).
 
-:- type costs
-	--->	costs(
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
+:- type structure_costs
+	--->	structure_costs(
 		fact_cost :: float,
 		assertion_cost :: float
 	).
 
-%:- type goal(M) == vscope(list(query(M))).
+:- func minimal_structure_costs = structure_costs.
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
+:- type proof_search_method
+	--->	unbounded_dfs
+	;	bounded_dfs(float)
+	;	iddfs(float, bound_transform)
+	.
+
+:- inst proof_search_method_inst
+	--->	unbounded_dfs
+	;	bounded_dfs(ground)
+	;	iddfs(ground, bound_transform)
+	.
+
+:- type bound_transform == (func(float) = float).
+:- inst bound_transform == (func(in) = out is semidet).
+
+:- func add_cost(float::in) `with_type` bound_transform `with_inst` bound_transform.
+:- func multiply_cost(float::in) `with_type` bound_transform `with_inst` bound_transform.
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
 :- func new_proof(C, list(query(M)), varset) = proof(M) <= (context(C, M), modality(M)).
 
-:- type proof_search_method
-	--->	unbounded_dfs
-	;	bounded_dfs(float)
-	;	iddfs(float, iddfs_increment)
-	.
+:- pred prove(proof_search_method::in(proof_search_method_inst), proof(M)::in, set(proof(M))::out, structure_costs::in, C::in) is det <= (modality(M), context(C, M)).
 
-:- type iddfs_increment
-	--->	absolute(float)
-%	;	logarithmic(float)
-	.
-
-:- pred prove(proof_search_method::in, proof(M)::in, set(proof(M))::out, costs::in, C::in) is det <= (modality(M), context(C, M)).
-
-%:- func last_goal(proof(M)) = vscope(list(query(M))) <= modality(M).
-
-:- func goal_assumptions(goal(M)) = bag(with_cost_function(mgprop(M))) <= modality(M).
-:- func goal_assertions(goal(M)) = bag(vscope(mtest(M))) <= modality(M).
-
-:- func query_cost(C, varset, query(M), costs) = float <= (context(C, M), modality(M)).
-:- func cost(C, proof(M), costs) = float <= (context(C, M), modality(M)).
-%:- func goal_cost(C, goal(M), float) = float <= (context(C, M), modality(M)).
+:- func proof_cost(C, proof(M), structure_costs) = float <= (context(C, M), modality(M)).
 
 %------------------------------------------------------------------------------%
 
 :- implementation.
 
-:- import_module require, solutions.
-:- import_module map, assoc_list, pair, maybe.
+:- import_module solutions.
+:- import_module map, pair, maybe.
 :- import_module string, float, bool.
 :- import_module modality.
 
 :- import_module anytime.
 
+:- import_module io.  % for debugging purposes
+
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
+minimal_structure_costs = structure_costs(1.0, 1.0).
+
+%------------------------------------------------------------------------------%
 
 new_proof(Ctx, Goal, Varset) = proof(vs(Goal, Varset), blacklist.init(Ctx)).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-goal_assumptions(vs(Qs, _VS)) = As :-
-	As = bag.from_list(list.filter_map((func(assumed(MProp, Func)) = AnnotMGProp is semidet :-
-		MProp = m(Mod, Prop),
-		AnnotMGProp = cf(m(Mod, det_formula_to_ground_formula(Prop)), Func)
-			), Qs)).
+:- func query_cost(C, query(M), structure_costs) = float <= (context(C, M), modality(M)).
+
+query_cost(_Ctx, unsolved(_, _), _) = 0.0.
+query_cost(Ctx, assumed(MProp, CostFunction), _Costs) = assumption_cost(Ctx, CostFunction, MProp).
+query_cost(_Ctx, proved(_), Costs) = Costs^fact_cost.
+query_cost(_Ctx, asserted(_), Costs) = Costs^assertion_cost.
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-goal_assertions(vs(Qs, VS)) = As :-
-	As = bag.from_list(list.filter_map((func(asserted(MProp)) = vs(MProp, VS) is semidet), Qs)).
-
-% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
-
-query_cost(_Ctx, _VS, unsolved(_, _), _) = 0.0.
-query_cost(Ctx, VS, assumed(MProp, CostFunction), _Costs) = context.cost(Ctx, CostFunction, vs(MProp, VS)).
-query_cost(_Ctx, _VS, proved(_), Costs) = Costs^fact_cost.
-query_cost(_Ctx, _VS, asserted(_), Costs) = Costs^assertion_cost.
-
-cost(Ctx, proof(vs(Qs, VS), _), Costs) = Cost :-
+proof_cost(Ctx, proof(vs(Qs, _VS), _), Costs) = Cost :-
 	list.foldl((pred(Q::in, C0::in, C::out) is det :-
-		C = C0 + query_cost(Ctx, VS, Q, Costs)
+		C = C0 + query_cost(Ctx, Q, Costs)
 			), Qs, 0.0, Cost).
-
-/*
-goal_cost(Ctx, vs(Qs, VS), Costs) = Cost :-
-	list.foldl((pred(MProp-Marking::in, C0::in, C::out) is det :-
-		( Marking = unsolved(_), C = C0
-		; Marking = resolved, C = C0 + CostForUsingFacts
-		; Marking = assumed(CostFunction), C = C0 + context.cost(Ctx, CostFunction, vs(MProp, VS))
-		; Marking = asserted, C = C0
-		)
-			), Qs, 0.0, Cost).
-*/
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
@@ -148,6 +129,12 @@ goal_solved(L) :-
 	list.all_true((pred(Q::in) is semidet :-
 		Q \= unsolved(_, _)
 			), L).
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
+add_cost(Inc, Bound) = Bound + Inc.
+
+multiply_cost(Arg, Bound) = Bound * Arg.
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
@@ -161,24 +148,27 @@ prove(bounded_dfs(Bound), P0, Ps, Costs, Ctx) :-
 		prove_bound(yes(Bound), P0, P, Costs, Ctx)
 			)).
 
-prove(iddfs(Bound, Increment), P0, Ps, Costs, Ctx) :-
+prove(iddfs(Bound, BoundTransform), P0, Ps, Costs, Ctx) :-
 	prove(bounded_dfs(Bound), P0, Ps0, Costs, Ctx), 
 	(if
 		anytime.pure_signalled(no)
 	then
-		(
-			Increment = absolute(AbsValue),
-			NewBound = Bound + AbsValue
-		),
-		prove(iddfs(NewBound, Increment), P0, Ps1, Costs, Ctx),
-		Ps = set.union(Ps0, Ps1)
+		(if
+			NewBound0 = BoundTransform(Bound)
+		then
+			NewBound = NewBound0,
+			prove(iddfs(NewBound, BoundTransform), P0, Ps1, Costs, Ctx),
+			Ps = set.union(Ps0, Ps1)
+		else
+			Ps = Ps0
+		)
 	else
 		Ps = Ps0
 	).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-:- pred prove_bound(maybe(float)::in, proof(M)::in, proof(M)::out, costs::in, C::in) is nondet <= (modality(M), context(C, M)).
+:- pred prove_bound(maybe(float)::in, proof(M)::in, proof(M)::out, structure_costs::in, C::in) is nondet <= (modality(M), context(C, M)).
 
 prove_bound(MayBound, P0, P, Costs, Ctx) :-
 	anytime.pure_signalled(no),
@@ -204,7 +194,7 @@ prove_bound(MayBound, P0, P, Costs, Ctx) :-
 
 		(
 			MayBound = yes(Bound),
-			cost(Ctx, P1, Costs) < Bound
+			proof_cost(Ctx, P1, Costs) < Bound
 		;
 			MayBound = no
 		),
@@ -214,7 +204,7 @@ prove_bound(MayBound, P0, P, Costs, Ctx) :-
 %------------------------------------------------------------------------------%
 
 :- pred segment_proof_state(list(query(M))::in,
-		{list(query(M)), with_cost_function(mprop(M)), list(query(M))}::out) is semidet
+		{list(query(M)), with_assumability_function(mprop(M)), list(query(M))}::out) is semidet
 		<= modality(M).
 
 segment_proof_state(Qs, {QsL, cf(QUnsolved, F), QsR} ) :-
@@ -224,22 +214,16 @@ segment_proof_state(Qs, {QsL, cf(QUnsolved, F), QsR} ) :-
 
 %------------------------------------------------------------------------------%
 
-:- import_module io, formula_io.
-
-%------------------------------------------------------------------------------%
-
-:- pragma promise_pure(transform/7).
-
 :- pred transform(
 		list(query(M))::in, varset::in, blacklist(M)::in,
 		list(query(M))::out, varset::out, blacklist(M)::out,
 		C::in) is nondet <= (modality(M), context(C, M)).
 
 transform(L0, VS0, BL0, L, VS, BL, Ctx) :-
-	impure anytime.signalled(no),
+	anytime.pure_signalled(no),
 	segment_proof_state(L0, SegL0),
 
-	step(_Step, SegL0, VS0, BL0, L1, VS1, BL1, Ctx),
+	proof_step(SegL0, VS0, BL0, L1, VS1, BL1, Ctx),
 	(if
 		factor_proof_state([], L1, VS1, BL1, L2, [], VS2, BL2, Ctx)
 	then
@@ -253,48 +237,13 @@ transform(L0, VS0, BL0, L, VS, BL, Ctx) :-
 	),
 	check_disjoints(L, BL3, BL).
 
-/*
-	(if
-	 	% try to factor
-%		do_factoring(SegL0, VS0, BL0, L1, VS1, BL1, Ctx)
-		fail
-	then
-		% if it succeeds
-		(if
-			goal_solved(L1)
-		then
-			% we're done! the factoring was the last step
-			L = L1,
-			VS = VS1,
-			BL = BL1
-		else
-			% make the step on the factored proof
-			segment_proof_state(L1, SegL1),
-			step(_Step, SegL1, VS1, BL1, L, VS, BL, Ctx)
-		)
-	else
-		% if not, continue as before
-		step(_Step, SegL0, VS0, BL0, L, VS, BL, Ctx)
-	).
-*/
-		
-
-%	segment_proof_state(L0, SegL0),
-%	trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "[", !IO) ),
-%	step(_Step, SegL0, VS0, L, VS, Ctx),
-%	trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "]", !IO) ).
-
 %------------------------------------------------------------------------------%
 
-%:- pragma promise_pure(step/8).
-
-:- pred step(
-		step(M)::out, 
-
+:- pred proof_step(
 			% input
 		{
 			list(query(M)),  % unsolved (preceding propositions)
-			with_cost_function(mprop(M)),  % proposition under examination + its assump.cost
+			with_assumability_function(mprop(M)),  % proposition under examination + its assump.cost
 			list(query(M))  % following propositions
 		}::in,
 		varset::in,  % variables used in the proof
@@ -308,15 +257,16 @@ transform(L0, VS0, BL0, L, VS, BL, Ctx) :-
 		C::in  % knowledge base
 	) is nondet <= (modality(M), context(C, M)).
 
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-step(assume(vs(m(MQ, PQ), VS), map.init, const(Cost)),
-		{QsL, cf(m(MQ, PQ), const(Cost)), QsR}, VS, BL,
+	% Assumption
+
+proof_step({QsL, cf(m(MQ, PQ), const(Cost)), QsR}, VS, BL,
 		QsL ++ [assumed(m(MQ, PQ), const(Cost))] ++ QsR, VS, BL,
 		_Ctx) :-
 	anytime.pure_signalled(no).
 
-step(assume(vs(m(MQ, PQ), VS), Uni, f(Func)),
-		{QsL0, cf(m(MQ, PQ0), f(Func)), QsR0}, VS, BL0,
+proof_step({QsL0, cf(m(MQ, PQ0), f(Func)), QsR0}, VS, BL0,
 		QsL ++ [assumed(m(MQ, PQ), f(Func))] ++ QsR, VS, BL,
 		Ctx) :-
 
@@ -332,42 +282,11 @@ step(assume(vs(m(MQ, PQ), VS), Uni, f(Func)),
 	list.map_foldl(apply_subst_to_query_blacklist(Uni, Ctx), QsL0, QsL, BL0, BL1),
 	list.map_foldl(apply_subst_to_query_blacklist(Uni, Ctx), QsR0, QsR, BL1, BL).
 
-/*
-	% assumption
-step(assume(vs(m(MQ, PQ), VS), Uni, F),
-		{QsL0, cf(m(MQ, PQ0), F), QsR0}, VS0,
-		QsL ++ [assumed(m(MQ, PQ), F)] ++ QsR, VS,
-		Ctx) :-
-
-
-	assumable(Ctx, vs(m(MQ, PQ0), VS0), F, vs(m(MA, PA0), VSA), _Cost),
-
-	trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "a{(" ++ atomic_formula_to_string(VSA, PA0), !IO) ),
-	match(compose_list(MQ), compose_list(MA)),
-	trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "~", !IO) ),
-
-	varset.merge_renaming(VS0, VSA, VS, Renaming),
-	trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "!", !IO) ),
-	PA = rename_vars_in_formula(Renaming, PA0),
-
-	trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "@", !IO) ),
-	unify_formulas(PQ0, PA, Uni),
-
-	trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "#", !IO) ),
-	PQ = apply_subst_to_formula(Uni, PQ0),
-	trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "$", !IO) ),
-	QsL = list.map(apply_subst_to_query(Uni), QsL0),
-	trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "%", !IO) ),
-	QsR = list.map(apply_subst_to_query(Uni), QsR0),
-	trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "}", !IO) ).
-*/
-%	formula.is_ground(Q^p).
-
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-	% resolution with a fact
-step(use_fact(vs(m(MF, PF), VS), Uni),
-		{QsL0, cf(m(MQ, PQ0), not_assumable), QsR0}, VS0, BL0,
+	% Resolution with a fact
+
+proof_step({QsL0, cf(m(MQ, PQ0), not_assumable), QsR0}, VS0, BL0,
 		QsL ++ [proved(m(MQ, PQ))] ++ QsR, VS, BL,
 		Ctx) :-
 
@@ -393,8 +312,11 @@ step(use_fact(vs(m(MF, PF), VS), Uni),
 	list.map_foldl(apply_subst_to_query_blacklist(Uni, Ctx), QsR0, QsR, BL1, BL),
 	trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "}", !IO) ).
 
-step(use_fact(vs(m(MQ, PQ), VS), map.init),
-		{QsL0, cf(m(MQ, PQ0), _F), QsR0}, VS, BL0,
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
+	% Equality
+
+proof_step({QsL0, cf(m(MQ, PQ0), _F), QsR0}, VS, BL0,
 		QsL ++ [proved(m(MQ, PQ))] ++ QsR, VS, BL,
 		Ctx) :-
 
@@ -408,9 +330,11 @@ step(use_fact(vs(m(MQ, PQ), VS), map.init),
 	list.map_foldl(apply_subst_to_query_blacklist(Uni, Ctx), QsL0, QsL, BL0, BL1),
 	list.map_foldl(apply_subst_to_query_blacklist(Uni, Ctx), QsR0, QsR, BL1, BL).
 
-	% built-in (isn't it actually a rule?)
-step(use_fact(vs(m(MQ, PQ), VS), map.init),
-		{QsL, cf(m(MQ, PQ), _F), QsR}, VS, BL,
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
+	% Non-equality
+
+proof_step({QsL, cf(m(MQ, PQ), _F), QsR}, VS, BL,
 		QsL ++ [proved(m(MQ, PQ))] ++ QsR, VS, BL,
 		_Ctx) :-
 
@@ -423,8 +347,7 @@ step(use_fact(vs(m(MQ, PQ), VS), map.init),
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
 	% resolution with a rule
-step(resolve_rule(vs(m(MR, Ante-RHead), VS), Uni),
-		{QsL0, cf(m(MQ, PQ), not_assumable), QsR0}, VS0, BL0,
+proof_step({QsL0, cf(m(MQ, PQ), not_assumable), QsR0}, VS0, BL0,
 		QsL ++ QsInsert ++ QsR, VS, BL,
 		Ctx) :-
 
@@ -477,83 +400,7 @@ step(resolve_rule(vs(m(MR, Ante-RHead), VS), Uni),
 	list.map_foldl(apply_subst_to_query_blacklist(Uni, Ctx), QsR0, QsR, BL1, BL),
 	trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "}", !IO) ).
 
-% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
-
-:- func head_mprop(query(M)) = mprop(M) is det <= modality(M).
-
-head_mprop(proved(MProp)) = MProp.
-head_mprop(unsolved(MProp, _)) = MProp.
-head_mprop(assumed(MProp, _)) = MProp.
-head_mprop(asserted(prop(MProp))) = MProp.
-head_mprop(asserted(impl(_, MProp))) = MProp.
-
-:- pred leftmost_unifiable(mprop(M)::in, list(mprop(M))::in, subst::out) is semidet.
-
-leftmost_unifiable(m(Mod, Pred), [m(ModH, PredH) | T], Subst) :-
-	(if
-		Mod = ModH,
-		unify_formulas(PredH, Pred, Subst0)
-	then
-		Subst = Subst0
-	else
-		leftmost_unifiable(m(Mod, Pred), T, Subst)
-	).
-
-% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
-
-:- pred do_factoring(
-			% input
-		{
-			list(query(M)),  % unsolved (preceding propositions)
-			with_cost_function(mprop(M)),  % proposition under examination + its assump.cost
-			list(query(M))  % following propositions
-		}::in,
-		varset::in,  % variables used in the proof
-		blacklist(M)::in,  % blacklisted formulas
-
-			% output
-		list(query(M))::out,  % resulting goal after performing the step
-		varset::out,  % variables used in the goal
-		blacklist(M)::out,  % blacklisted formulas
-
-		C::in  % knowledge base
-	) is semidet <= (modality(M), context(C, M)).
-
-	% factoring
-do_factoring(
-		{QsL0, cf(m(MQ, PQ), _F), QsR0}, VS, BL0,
-		QsL ++ QsR, VS, BL,
-		Ctx) :-
-
-	anytime.pure_signalled(no),
-
-	% find leftmost modalised formula that might be unified with Q
-	leftmost_unifiable(m(MQ, PQ), list.map(head_mprop, QsR0), Uni),
-
-	trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "t{", !IO) ),
-
-/*
-	member(Prev, QsL0),
-	( Prev = proved(MProp)
-	; Prev = unsolved(MProp, _)
-	; Prev = assumed(MProp, _)
-	; Prev = asserted(prop(MProp))
-	; Prev = asserted(impl(_, MProp))
-	),
-
-	MProp = m(MP, PP),
-	match(compose_list(MP), compose_list(MQ)),
-
-	unify_formulas(PP, PQ, Uni),
-*/
-
-%	QsL = list.map(apply_subst_to_query(Uni), QsL0),
-%	QsR = list.map(apply_subst_to_query(Uni), QsR0),
-	list.map_foldl(apply_subst_to_query_blacklist(Uni, Ctx), QsL0, QsL, BL0, BL1),
-	list.map_foldl(apply_subst_to_query_blacklist(Uni, Ctx), QsR0, QsR, BL1, BL),
-	trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "}", !IO) ).
-
-% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+%------------------------------------------------------------------------------%
 
 :- pred factor_proof_state(
 			% input
@@ -617,6 +464,28 @@ check_disjoints(Qs, BL0, BL) :-
 		then check_mgprop(G, BL1, BL2)
 		else BL2 = BL1
 			)), Qs, BL0, BL).
+
+%------------------------------------------------------------------------------%
+
+:- func head_mprop(query(M)) = mprop(M) is det <= modality(M).
+
+head_mprop(proved(MProp)) = MProp.
+head_mprop(unsolved(MProp, _)) = MProp.
+head_mprop(assumed(MProp, _)) = MProp.
+head_mprop(asserted(prop(MProp))) = MProp.
+head_mprop(asserted(impl(_, MProp))) = MProp.
+
+:- pred leftmost_unifiable(mprop(M)::in, list(mprop(M))::in, subst::out) is semidet.
+
+leftmost_unifiable(m(Mod, Pred), [m(ModH, PredH) | T], Subst) :-
+	(if
+		Mod = ModH,
+		unify_formulas(PredH, Pred, Subst0)
+	then
+		Subst = Subst0
+	else
+		leftmost_unifiable(m(Mod, Pred), T, Subst)
+	).
 
 %------------------------------------------------------------------------------%
 

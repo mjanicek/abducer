@@ -19,14 +19,7 @@ MCFLAGS?=--search-lib-files-dir ../lib \
 #------------------------------------------------------------------------------#
 # You shouldn't need to edit anything below.
 
-#ifeq ($(shell uname -s), Darwin)
-# on Darwin, Mercury doesn't support asm_fast (although it should for
-# Intel-based systems?)
-GRADE?=hlc.gc
-#else
-# try asm_fast.gc otherwise
-#GRADE?=asm_fast.gc
-#endif
+GRADE?=$(shell mmc --output-grade-string)
 
 ifeq ($(origin PROF), undefined)
 else

@@ -77,9 +77,10 @@
 :- implementation.
 
 :- import_module require.
-:- import_module list, pair, string, map, set.
-:- import_module float, math.
-:- import_module costs.
+:- import_module list, pair, map, set.
+:- import_module string.
+:- import_module assumability.
+:- import_module prob.
 :- import_module formula_ops.
 :- import_module parser, term_io.
 
@@ -101,11 +102,11 @@ mprop_to_string(Varset, MP) = vsmprop_to_string(vs(MP, Varset)).
 vsmprop_to_string(vs(m(K, P), Varset)) = Str :-
 	Str = modality_to_string(K) ++ atomic_formula_to_string(Varset, P).
 
-:- func annot_vsmprop_to_string(vscope(with_cost_function(mprop(M)))) = string
+:- func annot_vsmprop_to_string(vscope(with_assumability_function(mprop(M)))) = string
 		<= (modality(M), stringable(M)).
 
 annot_vsmprop_to_string(vs(cf(MP, F), Varset)) = vsmprop_to_string(vs(MP, Varset))
-		++ "/" ++ cost_function_to_string(F).
+		++ "/" ++ assumability_function_to_string(F).
 
 :- func test_vsmprop_to_string(vscope(mprop(M))) = string <= (modality(M), stringable(M)).
 
@@ -280,7 +281,7 @@ term_to_rule_antecedent(MainT, Antecedent) :-
 	then
 		% it's an annotated mprop
 		term_to_mprop(T, MP),
-		term_to_cost_function(AnnotT, Func),
+		term_to_assumability_function(AnnotT, Func),
 		Antecedent = std(cf(MP, Func))
 	else
 		(if
@@ -298,11 +299,11 @@ term_to_rule_antecedent(MainT, Antecedent) :-
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-:- pred term_to_cost_function(term.term::in, cost_function::out) is semidet.
+:- pred term_to_assumability_function(term.term::in, assumability_function::out) is semidet.
 
-term_to_cost_function(functor(atom(FName), [], _), f(FName)).
-term_to_cost_function(functor(float(FValue), [], _), const(FValue)).
-term_to_cost_function(functor(atom("p"), [functor(float(Prob), [], _)], _), const(-math.ln(Prob))).
+term_to_assumability_function(functor(atom(FName), [], _), f(FName)).
+term_to_assumability_function(functor(float(FValue), [], _), const(FValue)).
+term_to_assumability_function(functor(atom("p"), [functor(float(Prob), [], _)], _), const(prob.to_cost(Prob))).
 
 %------------------------------------------------------------------------------%
 
@@ -322,7 +323,7 @@ parse_list(functor(atom("[|]"), [TermH, TermT], _), [TermH|T]) :-
 %------------------------------------------------------------------------------%
 
 string_to_disjoint(Str) = DD :-
-	read_term_from_string_with_op_table(init_wabd_op_table, "", Str, _, term(Varset, T)),
+	read_term_from_string_with_op_table(init_wabd_op_table, "", Str, _, term(_Varset, T)),
 	generic_term(T),
 	term_to_disjoint(T, DD).
 
@@ -356,4 +357,4 @@ term_to_assumable_function_def(functor(atom("="), [FuncNameTerm, DefTerms], _), 
 :- pred term_to_cost(term.term::in, float::out) is semidet.
 
 term_to_cost(functor(float(Cost), [], _), Cost).
-term_to_cost(functor(atom("p"), [functor(float(Prob), [], _)], _), -math.ln(Prob)).
+term_to_cost(functor(atom("p"), [functor(float(Prob), [], _)], _), prob.to_cost(Prob)).

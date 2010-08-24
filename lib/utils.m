@@ -21,8 +21,9 @@
 :- module utils.
 
 :- interface.
+
 :- import_module map, list.
-:- import_module float, bool, string.
+:- import_module bool.
 :- import_module io.
 
 :- pred map_merge_op(pred(V, V, V), map(K, V), map(K, V), map(K, V)).
@@ -46,7 +47,9 @@
 %------------------------------------------------------------------------------%
 
 :- implementation.
+
 :- import_module pair.
+:- import_module string, float.
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 

@@ -18,19 +18,17 @@
 % 02111-1307, USA.
 %------------------------------------------------------------------------------%
 
-:- module costs.
+:- module assumability.
 
 :- interface.
 
-:- type cost_function_name == string.
-
-:- type cost_function
-	--->	f(cost_function_name)  % named cost function
+:- type assumability_function
+	--->	f(string)  % named cost function
 	;	const(float)  % constant cost function
 	;	not_assumable  % not an assumable predicate
 	.
 
-:- func cost_function_to_string(cost_function) = string.
+:- func assumability_function_to_string(assumability_function) = string.
 
 %------------------------------------------------------------------------------%
 
@@ -38,6 +36,6 @@
 
 :- import_module string.
 
-cost_function_to_string(f(S)) = S.
-cost_function_to_string(const(Float)) = string.float_to_string(Float).
-cost_function_to_string(not_assumable) = "T".
+assumability_function_to_string(f(S)) = S.
+assumability_function_to_string(const(Float)) = string.float_to_string(Float).
+assumability_function_to_string(not_assumable) = "T".

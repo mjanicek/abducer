@@ -31,9 +31,10 @@
 :- import_module modality.
 :- import_module stringable.
 :- import_module enumerable.
-:- import_module costs.
+:- import_module assumability.
 :- import_module utils.
 :- import_module abduction.
+:- import_module prob.
 :- import_module ctx_io.
 :- import_module ctx_loadable.
 :- import_module ctx_loadable_io.

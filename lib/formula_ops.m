@@ -34,7 +34,7 @@
 
 :- implementation.
 
-:- import_module int, list.
+:- import_module list.
 
 :- type wabd_op_table
     --->    wabd_op_table.

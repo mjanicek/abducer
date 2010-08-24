@@ -38,11 +38,10 @@
 :- implementation.
 :- import_module bool.
 :- import_module utils.
-:- import_module term, varset.
+:- import_module term.
 :- import_module formula, formula_io, formula_ops.
 :- import_module term_io.
 :- import_module ctx_modality, ctx_io.
-:- import_module stringable.
 
 load_stdin(Result, !Ctx, !IO) :-
 	do_while_result((pred(Continue::out, LoopResult::out, !.Ctx::in, !:Ctx::out, !.IO::di, !:IO::uo) is det :-

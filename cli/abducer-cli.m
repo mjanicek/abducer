@@ -32,16 +32,16 @@
 
 :- import_module require, solutions.
 :- import_module map, set, list, pair, assoc_list, string, float, int, bag, bool.
-:- import_module math.
 :- import_module utils.
-:- import_module abduction, formula, context, costs.
+:- import_module abduction, formula, context, assumability.
 :- import_module loading.
+:- import_module prob.
 :- import_module anytime.
 
 :- import_module ctx_modality, ctx_loadable, ctx_io, ctx_loadable_io.
 :- import_module modality, stringable.
 
-:- import_module parser, term_io, term, varset, formula_io, formula_ops, costs.
+:- import_module parser, term_io, term, varset, formula_io, formula_ops.
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
@@ -62,48 +62,15 @@ main(!IO) :-
 			vs(InitMProp, InitVarset) = det_string_to_vsmprop(Goal),
 
 			P0 = new_proof(!.Ctx, [unsolved(InitMProp, not_assumable)], InitVarset),
-%			P0 = vs([unsolved(InitMProp, const(InitAssumeCost))], InitVarset),
+			P0 = proof(InitGoal, _InitBL),
+			format("goal:\n  %s\n\n", [s(goal_to_string(InitGoal))], !IO),
 
-			P0 = proof(XG, _XBL),
-			format("goal:\n  %s\n\n", [s(goal_to_string(XG))], !IO),
+%			Method = unbounded_dfs,
+%			Method = bounded_dfs(-math.ln(0.2)),
+			Method = iddfs(prob.to_cost(0.5), multiply_cost(2.0)),
 
-%			print_ctx(!.Ctx, !IO),
-%			nl(!IO),
-
-%			DC0 = new_d_ctx,
-
-			prove(iddfs(1.0, absolute(0.2)), P0, Ps, default_costs, !.Ctx),
-			Proofs0 = list.map((func(P) = Cost-P :- Cost = cost(!.Ctx, P, default_costs)), set.to_sorted_list(Ps)),
-
-%			Proofs0 = set.to_sorted_list(solutions_set((pred((Cost-P)::out) is nondet :-
-%%				Costs = costs(1.0, 1.0),
-%%				prove(0.0, InitAssumeCost, P0, P, Costs, !.Ctx),
-%%				G = last_goal(P),
-%%				Cost = cost(!.Ctx, P, Costs)
-%
-%				prove(100.0, P0, P, default_costs, !.Ctx),
-%				Cost = cost(!.Ctx, P, default_costs)
-%					))),
-
-/*
-			% TODO: derivations
-			% deriv: map(proved_goal, set(list(steps)))
-
-			list.foldl((pred((Cost-G)-P::in, M0::in, M::out) is det :-
-				(if map.search(M0, Cost-G, D0)
-				then D1 = D0
-				else D1 = set.init
-				),
-				set.insert(D1, P, D2),
-				map.set(M0, Cost-G, D2, M)
-					), Proofs0, map.init, DerivsMap),
-
-			list.sort((pred((CA-_)-_::in, (CB-_)-_::in, Comp::out) is det :-
-				float_compare(CA, CB, Comp)
-					), map.to_assoc_list(DerivsMap), DerivsSorted),
-
-			format("found %d proofs.\n", [i(length(DerivsSorted))], !IO),
-*/
+			prove(Method, P0, Ps, probabilistic_costs, !.Ctx),
+			Proofs0 = list.map((func(P) = Cost-P :- Cost = proof_cost(!.Ctx, P, probabilistic_costs)), set.to_sorted_list(Ps)),
 
 			list.sort((pred((CA-_)::in, (CB-_)::in, Comp::out) is det :-
 				float_compare(CA, CB, Comp)
@@ -111,64 +78,17 @@ main(!IO) :-
 
 			format("\n  %d proof(s) found.\n", [i(list.length(Proofs))], !IO),
 
-			list.foldl2((pred((Cost-proof(Gz, BL))::in, Idx0::in, Idx::out, !.IO::di, !:IO::uo) is det :-
+			list.foldl2((pred((Cost-proof(Gz, _BL))::in, Idx0::in, Idx::out, !.IO::di, !:IO::uo) is det :-
 				print("---------------------------------------------------------------------\n", !IO),
-				format("#%d, cost = %f (p=%f)\n\n", [i(Idx0), f(Cost), f(math.exp(-Cost))], !IO),
-%				print("blacklist:\n", !IO),
-%				print(blacklist_to_string(BL), !IO),
-%				nl(!IO),
+				format("#%d, cost = %f (p=%f)\n\n", [i(Idx0), f(Cost), f(prob.from_cost(Cost))], !IO),
 				print("proven goal:\n  " ++ goal_to_string(Gz) ++ "\n", !IO),
 				nl(!IO),
 				Idx = Idx0 + 1
 					), Proofs, 1, _, !IO)
-
-/*
-			list.foldl((pred((Cost-G)-Ds::in, !.IO::di, !:IO::uo) is det :-
-				print("---------------------------------------------------------------------\n", !IO),
-				format("proof cost = %f\n\n", [f(Cost)], !IO),
-				print("proven goal:\n  " ++ goal_to_string(G) ++ "\n", !IO),
-				nl(!IO),
-
-				print("assumptions:\n", !IO),
-				print("  " ++ assumptions_to_string(!.Ctx, goal_assumptions(G)) ++ "\n", !IO),
-				nl(!IO),
-
-				print("assertions:\n", !IO),
-				print("  " ++ assertions_to_string(!.Ctx, goal_assertions(G)) ++ "\n", !IO),
-				nl(!IO),
-
-				print(string.from_int(set.count(Ds)) ++ " derivation" ++ plural_s(count(Ds)) ++ ".\n", !IO),
-
-				print("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n", !IO),
-
-				set.fold((pred(Proof::in, !.IO::di, !:IO::uo) is det :-
-					is_ctx_proof(Proof),
-					print_proof_trace(!.Ctx, Proof, !IO),
-					nl(!IO)
-						), Ds, !IO)
-
-					), DerivsSorted, !IO)
-*/
 		)
 	else
 		io.progname("?", ProgName, !IO),
 		format(stderr_stream, "Usage: %s GOAL < FILE\n", [s(ProgName)], !IO)
-	).
-
-%------------------------------------------------------------------------------%
-
-:- func default_costs = costs.
-
-default_costs = costs(0.0, 0.0).
-
-%------------------------------------------------------------------------------%
-
-:- func plural_s(int) = string.
-
-plural_s(N) = S :-
-	(if N > 1
-	then S = "s"
-	else S = ""
 	).
 
 %------------------------------------------------------------------------------%
