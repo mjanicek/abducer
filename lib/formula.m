@@ -29,37 +29,6 @@
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-:- type atomic_formula
-	--->	p(
-		string,  % predicate symbol
-		list(formula.term)
-	).
-
-:- type ground_atomic_formula
-	--->	p(
-		string,  % predicate symbol
-		list(ground_term)
-	).
-
-	% prolog term <--> formula.atomic_formula
-:- func atomic_formula_to_term(atomic_formula) = term.term.
-
-:- pred term_to_atomic_formula(term.term::in, atomic_formula::out) is semidet.
-:- func term_to_atomic_formula(term.term) = atomic_formula is semidet.
-:- func det_term_to_atomic_formula(term.term) = atomic_formula.
-
-	% formula <--> ground formula
-:- func ground_formula_to_formula(ground_atomic_formula) = atomic_formula.
-:- func formula_to_ground_formula(atomic_formula) = ground_atomic_formula is semidet.
-:- func det_formula_to_ground_formula(atomic_formula) = ground_atomic_formula.
-
-	% predicate version of the above
-:- pred ground_formula(atomic_formula, ground_atomic_formula).
-:- mode ground_formula(in, out) is semidet.
-:- mode ground_formula(out, in) is det.
-
-% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
-
 :- type term
 	--->	v(var)
 	;	t(string, list(formula.term))
@@ -93,6 +62,38 @@
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
+:- type atom
+	--->	p(
+		string,  % predicate symbol
+		list(formula.term)
+	).
+
+:- type ground_atom
+	--->	p(
+		string,  % predicate symbol
+		list(ground_term)
+	).
+
+	% prolog term <--> formula.atom
+:- func atom_to_term(atom) = term.term.
+
+:- pred term_to_atom(term.term::in, atom::out) is semidet.
+:- func term_to_atom(term.term) = atom is semidet.
+:- func det_term_to_atom(term.term) = atom.
+
+	% formula <--> ground formula
+:- func ground_formula_to_formula(ground_atom) = atom.
+:- func formula_to_ground_formula(atom) = ground_atom is semidet.
+:- func det_formula_to_ground_formula(atom) = ground_atom.
+
+	% predicate version of the above
+:- pred ground_formula(atom, ground_atom).
+:- mode ground_formula(in, out) is semidet.
+:- mode ground_formula(out, in) is det.
+
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
 :- type vscope(T)
 	--->	vs(
 		body :: T,
@@ -101,11 +102,8 @@
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-:- type modalized(M, T)
-	--->	m(
-		m :: M,
-		p :: T
-	).
+:- type modalised(M, T)
+	--->	m(M, T).
 
 :- type with_assumability_function(T)
 	--->	cf(T, assumability_function).
@@ -114,44 +112,43 @@
 	--->	test(T).
 
 :- type rule_antecedent(M)
-	--->	std(with_assumability_function(mprop(M)))
+	--->	std(with_assumability_function(matom(M)))
 	;	test(mtest(M))
 	.
 
 :- type rule_head(M)
-	--->	std(mprop(M))
+	--->	std(matom(M))
 	;	test(mtest(M))
 	.
 
-:- type mprop(M) == modalized(list(M), atomic_formula).
-:- type mrule(M) == modalized(list(M), pair(list(rule_antecedent(M)), rule_head(M))).
-%:- type mrule(M) == modalized(list(M), pair(list(with_cost_function(mprop(M))), mprop(M))).
+:- type matom(M) == modalised(list(M), atom).
+:- type mrule(M) == modalised(list(M), pair(list(rule_antecedent(M)), rule_head(M))).
 
 :- type mtest(M)
-	--->	prop(mprop(M))
-	;	impl(list(mprop(M)), mprop(M))  % embedded implication
+	--->	prop(matom(M))
+	;	impl(list(matom(M)), matom(M))  % embedded implication
 	.
 
-:- type mgprop(M) == modalized(list(M), ground_atomic_formula).
+:- type mgatom(M) == modalised(list(M), ground_atom).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-:- type disjoint(M) == set(mgprop(M)).
-:- type assumable_function_def(M) == pair(string, map(mgprop(M), float)).
+:- type disjoint(M) == set(mgatom(M)).
+:- type assumable_function_def(M) == pair(string, map(mgatom(M), float)).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
 :- type subst == map(var, formula.term).
 
 :- func apply_subst_to_term(subst, formula.term) = formula.term.
-:- func apply_subst_to_formula(subst, atomic_formula) = atomic_formula.
-:- func apply_subst_to_mprop(subst, mprop(M)) = mprop(M) <= modality(M).
+:- func apply_subst_to_formula(subst, atom) = atom.
+:- func apply_subst_to_matom(subst, matom(M)) = matom(M) <= modality(M).
 :- func apply_subst_to_mtest(subst, mtest(M)) = mtest(M) <= modality(M).
 
 :- func rename_vars_in_term(map(var, var), formula.term) = formula.term.
-:- func rename_vars_in_formula(map(var, var), atomic_formula) = atomic_formula.
-:- func rename_vars_in_mprop(map(var, var), mprop(M)) = mprop(M) <= modality(M).
-:- func rename_vars_in_annot_mprop(map(var, var), with_assumability_function(mprop(M))) = with_assumability_function(mprop(M))
+:- func rename_vars_in_formula(map(var, var), atom) = atom.
+:- func rename_vars_in_matom(map(var, var), matom(M)) = matom(M) <= modality(M).
+:- func rename_vars_in_annot_matom(map(var, var), with_assumability_function(matom(M))) = with_assumability_function(matom(M))
 		<= modality(M).
 :- func rename_vars_in_rule_antecedent(map(var, var), rule_antecedent(M)) = rule_antecedent(M) <= modality(M).
 :- func rename_vars_in_rule_head(map(var, var), rule_head(M)) = rule_head(M) <= modality(M).
@@ -160,21 +157,21 @@
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-:- pred ground_mprop(mprop(M), mgprop(M)) <= modality(M).
-:- mode ground_mprop(in, out) is semidet.
-:- mode ground_mprop(out, in) is det.
+:- pred ground_matom(matom(M), mgatom(M)) <= modality(M).
+:- mode ground_matom(in, out) is semidet.
+:- mode ground_matom(out, in) is det.
 
-:- func ground_mprop_to_mprop(mgprop(M)) = mprop(M) <= modality(M).
-:- func mprop_to_ground_mprop(mprop(M)) = mgprop(M) is semidet <= modality(M).
+:- func ground_matom_to_matom(mgatom(M)) = matom(M) <= modality(M).
+:- func matom_to_ground_matom(matom(M)) = mgatom(M) is semidet <= modality(M).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-:- pred unify_formulas(atomic_formula::in, atomic_formula::in, subst::out) is semidet.
+:- pred unify_formulas(atom::in, atom::in, subst::out) is semidet.
 :- pred unify_terms(formula.term::in, formula.term::in, subst::out) is semidet.
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-:- func rule_head_mprop(rule_head(M)) = mprop(M) is det <= modality(M).
+:- func rule_head_matom(rule_head(M)) = matom(M) is det <= modality(M).
 
 %------------------------------------------------------------------------------%
 
@@ -185,20 +182,20 @@
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-atomic_formula_to_term(p(PredSym, Args))
+atom_to_term(p(PredSym, Args))
 		= functor(atom(PredSym), list.map(formula_term_to_term, Args), context("", 0)).
 
-term_to_atomic_formula(T, AF) :-
-	AF = term_to_atomic_formula(T).
+term_to_atom(T, AF) :-
+	AF = term_to_atom(T).
 
-term_to_atomic_formula(functor(atom(PredSym), TermArgs, _))
+term_to_atom(functor(atom(PredSym), TermArgs, _))
 		= p(PredSym, Args) :-
 	list.map(term_to_formula_term, TermArgs, Args).
 
-det_term_to_atomic_formula(T) = AF :-
-	(if AF0 = term_to_atomic_formula(T)
+det_term_to_atom(T) = AF :-
+	(if AF0 = term_to_atom(T)
 	then AF = AF0
-	else error("error in func det_term_to_atomic_formula/1 for \"" ++ string(T) ++ "\"")
+	else error("error in func det_term_to_atom/1 for \"" ++ string(T) ++ "\"")
 	).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
@@ -223,11 +220,11 @@ det_term_to_formula_term(T) = FT :-
 
 %------------------------------------------------------------------------------%
 
-apply_subst_to_mtest(Subst, prop(MProp)) = prop(apply_subst_to_mprop(Subst, MProp)).
-apply_subst_to_mtest(Subst, impl(MPs, HMP)) = impl(list.map(apply_subst_to_mprop(Subst), MPs),
-		apply_subst_to_mprop(Subst, HMP)).
+apply_subst_to_mtest(Subst, prop(MProp)) = prop(apply_subst_to_matom(Subst, MProp)).
+apply_subst_to_mtest(Subst, impl(MPs, HMP)) = impl(list.map(apply_subst_to_matom(Subst), MPs),
+		apply_subst_to_matom(Subst, HMP)).
 
-apply_subst_to_mprop(Subst, m(M, Prop)) = m(M, apply_subst_to_formula(Subst, Prop)).
+apply_subst_to_matom(Subst, m(M, Prop)) = m(M, apply_subst_to_formula(Subst, Prop)).
 
 apply_subst_to_formula(Subst, p(PropSym, Args)) = p(PropSym, SubstArgs) :-
 	SubstArgs0 = list.map(apply_subst_to_term(Subst), Args),
@@ -263,39 +260,39 @@ rename_vars_in_term(Renaming, t(F, Args)) = t(F, SubstArgs) :-
 rename_vars_in_formula(Renaming, p(PS, Args)) = p(PS, SubstArgs) :-
 	SubstArgs = list.map(rename_vars_in_term(Renaming), Args).
 
-rename_vars_in_mprop(Renaming, m(M, Prop)) = m(M, rename_vars_in_formula(Renaming, Prop)).
+rename_vars_in_matom(Renaming, m(M, Prop)) = m(M, rename_vars_in_formula(Renaming, Prop)).
 
-rename_vars_in_annot_mprop(Renaming, cf(MProp, F)) = cf(rename_vars_in_mprop(Renaming, MProp), F).
+rename_vars_in_annot_matom(Renaming, cf(MProp, F)) = cf(rename_vars_in_matom(Renaming, MProp), F).
 
-rename_vars_in_mtest(Renaming, prop(MProp)) = prop(rename_vars_in_mprop(Renaming, MProp)).
-rename_vars_in_mtest(Renaming, impl(MPs, HMP)) = impl(list.map(rename_vars_in_mprop(Renaming), MPs),
-		rename_vars_in_mprop(Renaming, HMP)).
+rename_vars_in_mtest(Renaming, prop(MProp)) = prop(rename_vars_in_matom(Renaming, MProp)).
+rename_vars_in_mtest(Renaming, impl(MPs, HMP)) = impl(list.map(rename_vars_in_matom(Renaming), MPs),
+		rename_vars_in_matom(Renaming, HMP)).
 
 rename_vars_in_rule_antecedent(Renaming, test(MTest)) = test(rename_vars_in_mtest(Renaming, MTest)).
 rename_vars_in_rule_antecedent(Renaming, std(AnnotMProp))
-		= std(rename_vars_in_annot_mprop(Renaming, AnnotMProp)).
+		= std(rename_vars_in_annot_matom(Renaming, AnnotMProp)).
 
 rename_vars_in_rule_head(Renaming, test(MTest)) = test(rename_vars_in_mtest(Renaming, MTest)).
-rename_vars_in_rule_head(Renaming, std(MProp)) = std(rename_vars_in_mprop(Renaming, MProp)).
+rename_vars_in_rule_head(Renaming, std(MProp)) = std(rename_vars_in_matom(Renaming, MProp)).
 
 rename_vars_in_mrule(Renaming, m(M, Ante-Succ)) =
 		m(M, list.map(rename_vars_in_rule_antecedent(Renaming), Ante)-rename_vars_in_rule_head(Renaming, Succ)).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-ground_mprop(m(M, F), m(M, GF)) :-
+ground_matom(m(M, F), m(M, GF)) :-
 	ground_formula(F, GF).
 
-ground_mprop_to_mprop(GM) = M :-
-	ground_mprop(M, GM).
+ground_matom_to_matom(GM) = M :-
+	ground_matom(M, GM).
 
-mprop_to_ground_mprop(M) = GM :-
-	ground_mprop(M, GM).
+matom_to_ground_matom(M) = GM :-
+	ground_matom(M, GM).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
 unify_formulas(A, B, U) :-
-	unify_term(atomic_formula_to_term(A), atomic_formula_to_term(B), init, TermU),
+	unify_term(atom_to_term(A), atom_to_term(B), init, TermU),
 	U = map.map_values((func(_, TermTgt) = det_term_to_formula_term(TermTgt)), TermU).
 
 unify_terms(TA, TB, U) :-
@@ -338,6 +335,6 @@ ground_term(Term::in, term_to_ground_term(Term)::out).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-rule_head_mprop(std(MProp)) = MProp.
-rule_head_mprop(test(prop(MProp))) = MProp.
-rule_head_mprop(test(impl(_, MProp))) = MProp.
+rule_head_matom(std(MProp)) = MProp.
+rule_head_matom(test(prop(MProp))) = MProp.
+rule_head_matom(test(impl(_, MProp))) = MProp.

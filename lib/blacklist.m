@@ -30,16 +30,16 @@
 
 :- type blacklist(M)
 	--->	bl(
-		bl_map :: map(mgprop(M), disjoint(M)),
-		used :: set(mgprop(M)),
-		forbidden :: set(mgprop(M))
+		bl_map :: map(mgatom(M), disjoint(M)),
+		used :: set(mgatom(M)),
+		forbidden :: set(mgatom(M))
 	).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
 :- func init(C) = blacklist(M) <= (context(C, M), modality(M)).
 
-:- pred check_mgprop(mgprop(M)::in, blacklist(M)::in, blacklist(M)::out) is semidet
+:- pred check_mgatom(mgatom(M)::in, blacklist(M)::in, blacklist(M)::out) is semidet
 		<= modality(M).
 
 %------------------------------------------------------------------------------%
@@ -67,7 +67,7 @@ init(Ctx) = bl(BLMap, set.init, set.init) :-
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-check_mgprop(MGF, BL0, BL) :-
+check_mgatom(MGF, BL0, BL) :-
 	not set.member(MGF, BL0^forbidden),
 	BL1 = BL0^used := set.insert(BL0^used, MGF),
 	(if map.search(BL1^bl_map, MGF, NewForbidden)

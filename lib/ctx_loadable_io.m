@@ -67,7 +67,7 @@
 print_facts(Stream, Ctx, Indent, !IO) :-
 	set.fold((pred(Fact::in, !.IO::di, !:IO::uo) is det :-
 		print(Stream, Indent, !IO),
-		print(Stream, tty_vsmprop_to_string(Fact), !IO),
+		print(Stream, tty_vsmatom_to_string(Fact), !IO),
 		nl(Stream, !IO)
 			), facts(Ctx), !IO).
 
@@ -95,7 +95,7 @@ print_assumables(Stream, Ctx, Indent, !IO) :-
 		print(Stream, FuncName ++ " = ", !IO),
 
 		CostStrs = list.map((func(m(Mod, GProp)-Cost) = S :-
-			S = vsmprop_to_string(vs(m(Mod, ground_formula_to_formula(GProp)), varset.init))
+			S = vsmatom_to_string(vs(m(Mod, ground_formula_to_formula(GProp)), varset.init))
 					++ " = " ++ float_to_string(Cost)
 				), map.to_assoc_list(Costs)),
 
@@ -176,11 +176,11 @@ protect(S0) = S :-
 	else S = S0
 	).
 
-:- func tty_atomic_formula_to_string(varset, atomic_formula) = string.
+:- func tty_atom_to_string(varset, atom) = string.
 :- func tty_formula_term_to_string(varset, formula.term) = string.
 
-tty_atomic_formula_to_string(_Varset, p(PredSym, [])) = totty(bold) ++ protect(PredSym) ++ totty(reset).
-tty_atomic_formula_to_string(Varset, p(PredSym, [H|T])) = totty(bold) ++ protect(PredSym) ++ totty(reset) ++ "(" ++ ArgStr ++ ")" :-
+tty_atom_to_string(_Varset, p(PredSym, [])) = totty(bold) ++ protect(PredSym) ++ totty(reset).
+tty_atom_to_string(Varset, p(PredSym, [H|T])) = totty(bold) ++ protect(PredSym) ++ totty(reset) ++ "(" ++ ArgStr ++ ")" :-
 	ArgStr = string.join_list(", ", list.map(tty_formula_term_to_string(Varset), [H|T])).
 
 tty_formula_term_to_string(Varset, Arg) = S :-
@@ -195,20 +195,20 @@ tty_formula_term_to_string(Varset, Arg) = S :-
 		S = totty(cyan) ++ varset.lookup_name(Varset, Var) ++ totty(reset)
 	).
 
-:- func tty_vsmprop_to_string(vscope(mprop(M))) = string <= (modality(M), stringable(M)).
+:- func tty_vsmatom_to_string(vscope(matom(M))) = string <= (modality(M), stringable(M)).
 
-tty_vsmprop_to_string(vs(m(K, P), Varset)) = Str :-
-	Str = tty_modality_to_string(K) ++ tty_atomic_formula_to_string(Varset, P).
+tty_vsmatom_to_string(vs(m(K, P), Varset)) = Str :-
+	Str = tty_modality_to_string(K) ++ tty_atom_to_string(Varset, P).
 
-:- func tty_mprop_to_string(varset, mprop(M)) = string <= (modality(M), stringable(M)).
+:- func tty_matom_to_string(varset, matom(M)) = string <= (modality(M), stringable(M)).
 
-tty_mprop_to_string(Varset, MP) = tty_vsmprop_to_string(vs(MP, Varset)).
+tty_matom_to_string(Varset, MP) = tty_vsmatom_to_string(vs(MP, Varset)).
 
 :- func tty_mtest_to_string(varset, mtest(M)) = string <= (modality(M), stringable(M)).
 
-tty_mtest_to_string(Varset, prop(MProp)) = mprop_to_string(Varset, MProp).
-tty_mtest_to_string(Varset, impl(MPs, HMP)) = string.join_list(", ", list.map(mprop_to_string(Varset), MPs))
-		++ " -> " ++ mprop_to_string(Varset, HMP).
+tty_mtest_to_string(Varset, prop(MProp)) = matom_to_string(Varset, MProp).
+tty_mtest_to_string(Varset, impl(MPs, HMP)) = string.join_list(", ", list.map(matom_to_string(Varset), MPs))
+		++ " -> " ++ matom_to_string(Varset, HMP).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
@@ -219,10 +219,10 @@ tty_modality_to_string([H|T]) = totty(green) ++ string.join_list(" : ", list.map
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-query_to_string(VS, unsolved(MProp, F)) = tty_mprop_to_string(VS, MProp)
+query_to_string(VS, unsolved(MProp, F)) = tty_matom_to_string(VS, MProp)
 		++ "[unsolved / " ++ assumability_function_to_string(F) ++ "]".
-query_to_string(VS, proved(MProp)) = tty_mprop_to_string(VS, MProp) ++ totty(yellow) ++ "[proved]" ++ totty(reset).
-query_to_string(VS, assumed(MProp, F)) = tty_mprop_to_string(VS, MProp)
+query_to_string(VS, proved(MProp)) = tty_matom_to_string(VS, MProp) ++ totty(yellow) ++ "[proved]" ++ totty(reset).
+query_to_string(VS, assumed(MProp, F)) = tty_matom_to_string(VS, MProp)
 		++ totty(red) ++ "[assumed / " ++ assumability_function_to_string(F) ++ "]" ++ totty(reset).
 query_to_string(VS, asserted(MTest)) = tty_mtest_to_string(VS, MTest) ++ totty(magenta) ++ "[asserted]" ++ totty(reset).
 
@@ -238,18 +238,18 @@ proof_state_to_string(Varset, L) = S :-
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
 blacklist_to_string(BL) = S :-
-	S = "map:\n" ++ map.foldl((func(K, V, S0) = S0 ++ tty_mgprop_to_string(K) ++ " --> " ++ set_of_mgprop_to_string(V) ++ "\n"), BL^bl_map, "")
-			++ "used: " ++ set_of_mgprop_to_string(BL^used) ++ "\n"
-			++ "forbidden: " ++ set_of_mgprop_to_string(BL^forbidden) ++ "\n".
+	S = "map:\n" ++ map.foldl((func(K, V, S0) = S0 ++ tty_mgatom_to_string(K) ++ " --> " ++ set_of_mgatom_to_string(V) ++ "\n"), BL^bl_map, "")
+			++ "used: " ++ set_of_mgatom_to_string(BL^used) ++ "\n"
+			++ "forbidden: " ++ set_of_mgatom_to_string(BL^forbidden) ++ "\n".
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-:- func tty_mgprop_to_string(mgprop(ctx_modality)) = string.
+:- func tty_mgatom_to_string(mgatom(ctx_modality)) = string.
 
-tty_mgprop_to_string(MGP) = tty_mprop_to_string(varset.init, ground_mprop_to_mprop(MGP)).
+tty_mgatom_to_string(MGP) = tty_matom_to_string(varset.init, ground_matom_to_matom(MGP)).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-:- func set_of_mgprop_to_string(set(mgprop(ctx_modality))) = string.
+:- func set_of_mgatom_to_string(set(mgatom(ctx_modality))) = string.
 
-set_of_mgprop_to_string(Set) = "[" ++ string.join_list(", ", list.map(tty_mgprop_to_string, set.to_sorted_list(Set))) ++ "]".
+set_of_mgatom_to_string(Set) = "[" ++ string.join_list(", ", list.map(tty_mgatom_to_string, set.to_sorted_list(Set))) ++ "]".

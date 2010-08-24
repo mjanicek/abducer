@@ -29,17 +29,17 @@
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-	% mprop
+	% matom
 
 	% parsing
-:- func string_to_vsmprop(string) = vscope(mprop(M)) is semidet <= (modality(M), term_parsable(M)).
-:- func det_string_to_vsmprop(string) = vscope(mprop(M)) <= (modality(M), term_parsable(M)).
+:- func string_to_vsmatom(string) = vscope(matom(M)) is semidet <= (modality(M), term_parsable(M)).
+:- func det_string_to_vsmatom(string) = vscope(matom(M)) <= (modality(M), term_parsable(M)).
 
 	% generation
-:- func mprop_to_string(varset, mprop(M)) = string <= (modality(M), stringable(M)).
-:- func vsmprop_to_string(vscope(mprop(M))) = string <= (modality(M), stringable(M)).
+:- func matom_to_string(varset, matom(M)) = string <= (modality(M), stringable(M)).
+:- func vsmatom_to_string(vscope(matom(M))) = string <= (modality(M), stringable(M)).
 
-:- func atomic_formula_to_string(varset, atomic_formula) = string.
+:- func atom_to_string(varset, atom) = string.
 :- func formula_term_to_string(varset, formula.term) = string.
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
@@ -62,7 +62,7 @@
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-:- pred term_to_mprop(term.term::in, mprop(M)::out) is semidet <= (modality(M), term_parsable(M)).
+:- pred term_to_matom(term.term::in, matom(M)::out) is semidet <= (modality(M), term_parsable(M)).
 :- pred term_to_mrule(term.term::in, mrule(M)::out) is semidet <= (modality(M), term_parsable(M)).
 :- pred term_to_disjoint(term.term::in, disjoint(M)::out) is semidet <= (modality(M), term_parsable(M)).
 :- pred term_to_assumable_function_def(term.term::in, assumable_function_def(M)::out) is semidet
@@ -86,44 +86,44 @@
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-string_to_vsmprop(Str) = vs(P, Varset) :-
+string_to_vsmatom(Str) = vs(P, Varset) :-
 	read_term_from_string_with_op_table(init_wabd_op_table, "", Str, _, term(Varset, T)),
 	generic_term(T),
-	term_to_mprop(T, P).
+	term_to_matom(T, P).
 
-det_string_to_vsmprop(S) = P :-
-	(if P0 = string_to_vsmprop(S)
+det_string_to_vsmatom(S) = P :-
+	(if P0 = string_to_vsmatom(S)
 	then P = P0
-	else error("Can't convert string \"" ++ S ++ "\" to a proposition.")
+	else error("Can't convert string \"" ++ S ++ "\" to a modalised atom.")
 	).
 
-mprop_to_string(Varset, MP) = vsmprop_to_string(vs(MP, Varset)).
+matom_to_string(Varset, MP) = vsmatom_to_string(vs(MP, Varset)).
 
-vsmprop_to_string(vs(m(K, P), Varset)) = Str :-
-	Str = modality_to_string(K) ++ atomic_formula_to_string(Varset, P).
+vsmatom_to_string(vs(m(K, P), Varset)) = Str :-
+	Str = modality_to_string(K) ++ atom_to_string(Varset, P).
 
-:- func annot_vsmprop_to_string(vscope(with_assumability_function(mprop(M)))) = string
+:- func annot_vsmatom_to_string(vscope(with_assumability_function(matom(M)))) = string
 		<= (modality(M), stringable(M)).
 
-annot_vsmprop_to_string(vs(cf(MP, F), Varset)) = vsmprop_to_string(vs(MP, Varset))
+annot_vsmatom_to_string(vs(cf(MP, F), Varset)) = vsmatom_to_string(vs(MP, Varset))
 		++ "/" ++ assumability_function_to_string(F).
 
-:- func test_vsmprop_to_string(vscope(mprop(M))) = string <= (modality(M), stringable(M)).
+:- func test_vsmatom_to_string(vscope(matom(M))) = string <= (modality(M), stringable(M)).
 
-test_vsmprop_to_string(vs(MP, Varset)) = "?" ++ vsmprop_to_string(vs(MP, Varset)).
+test_vsmatom_to_string(vs(MP, Varset)) = "?" ++ vsmatom_to_string(vs(MP, Varset)).
 
-mtest_to_string(Varset, prop(MProp)) = mprop_to_string(Varset, MProp).
-mtest_to_string(Varset, impl(MPs, HMP)) = string.join_list(", ", list.map(mprop_to_string(Varset), MPs))
-		++ " -> " ++ mprop_to_string(Varset, HMP).
+mtest_to_string(Varset, prop(MProp)) = matom_to_string(Varset, MProp).
+mtest_to_string(Varset, impl(MPs, HMP)) = string.join_list(", ", list.map(matom_to_string(Varset), MPs))
+		++ " -> " ++ matom_to_string(Varset, HMP).
 
 :- func rule_antecedent_to_string(varset, rule_antecedent(M)) = string <= (modality(M), stringable(M)).
 
-rule_antecedent_to_string(Varset, std(AnnotMProp)) = annot_vsmprop_to_string(vs(AnnotMProp, Varset)).
+rule_antecedent_to_string(Varset, std(AnnotMProp)) = annot_vsmatom_to_string(vs(AnnotMProp, Varset)).
 rule_antecedent_to_string(Varset, test(MTest)) = "<" ++ mtest_to_string(Varset, MTest) ++ ">?".
 
 :- func rule_head_to_string(varset, rule_head(M)) = string <= (modality(M), stringable(M)).
 
-rule_head_to_string(Varset, std(MProp)) = mprop_to_string(Varset, MProp).
+rule_head_to_string(Varset, std(MProp)) = matom_to_string(Varset, MProp).
 rule_head_to_string(Varset, test(MTest)) = "<" ++ mtest_to_string(Varset, MTest) ++ ">?".
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
@@ -151,14 +151,14 @@ vsmrule_to_string(vs(m(K, As-H), Varset)) = Str :-
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-term_to_mprop(T, m(Mod, P)) :-
+term_to_matom(T, m(Mod, P)) :-
 	(if T = functor(atom(":"), [TM, TP], _)
 	then 
 		term_to_list_of_mods(TM, Mod),
-		term_to_atomic_formula(TP, P)
+		term_to_atom(TP, P)
 	else
 		Mod = [],
-		term_to_atomic_formula(T, P)
+		term_to_atom(T, P)
 	).
 
 term_to_mrule(T, m(Mod, R)) :-
@@ -173,8 +173,8 @@ term_to_mrule(T, m(Mod, R)) :-
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-atomic_formula_to_string(_Varset, p(PredSym, [])) = "'" ++ PredSym ++ "'".
-atomic_formula_to_string(Varset, p(PredSym, [H|T])) = "'" ++ PredSym ++ "'(" ++ ArgStr ++ ")" :-
+atom_to_string(_Varset, p(PredSym, [])) = "'" ++ PredSym ++ "'".
+atom_to_string(Varset, p(PredSym, [H|T])) = "'" ++ PredSym ++ "'(" ++ ArgStr ++ ")" :-
 	ArgStr = string.join_list(", ", list.map(formula_term_to_string(Varset), [H|T])).
 
 formula_term_to_string(Varset, Arg) = S :-
@@ -219,7 +219,7 @@ term_to_nonmod_rule(functor(atom("<-"), [THead, TAnte], _), Ante-Head) :-
 	then
 		Head = test(MTest)
 	else
-		term_to_mprop(THead, MProp),
+		term_to_matom(THead, MProp),
 		Head = std(MProp)
 	),
 	term_to_list_of_rule_antecedents(TAnte, Ante).
@@ -241,17 +241,17 @@ term_to_list_of_rule_antecedents(T, List) :-
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-:- pred term_to_list_of_mprops(term.term::in, list(mprop(M))::out) is semidet <= (modality(M), term_parsable(M)).
+:- pred term_to_list_of_matoms(term.term::in, list(matom(M))::out) is semidet <= (modality(M), term_parsable(M)).
 
-term_to_list_of_mprops(T, List) :-
+term_to_list_of_matoms(T, List) :-
 	(if
 		T = functor(atom(","), [TMP, TMPs], _)
 	then
-		term_to_mprop(TMP, This),
-		term_to_list_of_mprops(TMPs, MPs),
+		term_to_matom(TMP, This),
+		term_to_list_of_matoms(TMPs, MPs),
 		List = [This|MPs]
 	else
-		term_to_mprop(T, This),
+		term_to_matom(T, This),
 		List = [This]
 	).
 
@@ -262,11 +262,11 @@ term_to_list_of_mprops(T, List) :-
 term_to_mtest(functor(atom("?"), [T], _), MTest) :-
 	(if T = functor(atom("->"), [TMPs, THMP], _)
 	then
-		term_to_list_of_mprops(TMPs, MPs),
-		term_to_mprop(THMP, HMP),
+		term_to_list_of_matoms(TMPs, MPs),
+		term_to_matom(THMP, HMP),
 		MTest = impl(MPs, HMP)
 	else
-		term_to_mprop(T, MProp),
+		term_to_matom(T, MProp),
 		MTest = prop(MProp)
 	).
 
@@ -279,8 +279,8 @@ term_to_rule_antecedent(MainT, Antecedent) :-
 	(if
 		MainT = functor(atom("/"), [T, AnnotT], _)
 	then
-		% it's an annotated mprop
-		term_to_mprop(T, MP),
+		% it's an annotated matom
+		term_to_matom(T, MP),
 		term_to_assumability_function(AnnotT, Func),
 		Antecedent = std(cf(MP, Func))
 	else
@@ -291,8 +291,8 @@ term_to_rule_antecedent(MainT, Antecedent) :-
 			term_to_mtest(MainT, MTest),
 			Antecedent = test(MTest)
 		else
-			% it's a non-annotated mprop
-			term_to_mprop(MainT, MP),
+			% it's a non-annotated matom
+			term_to_matom(MainT, MP),
 			Antecedent = std(cf(MP, not_assumable))
 		)
 	).
@@ -309,7 +309,7 @@ term_to_assumability_function(functor(atom("p"), [functor(float(Prob), [], _)], 
 
 term_to_disjoint(functor(atom("disjoint"), [Arg], _), DD) :-
 	parse_list(Arg, Ts),
-	list.map((pred(T::in, MGF::out) is semidet :- term_to_mprop(T, MF), ground_mprop(MF, MGF)), Ts, MGFs),
+	list.map((pred(T::in, MGF::out) is semidet :- term_to_matom(T, MF), ground_matom(MF, MGF)), Ts, MGFs),
 	DD = set.from_list(MGFs).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
@@ -328,7 +328,7 @@ string_to_disjoint(Str) = DD :-
 	term_to_disjoint(T, DD).
 
 disjoint_to_string(DD) = "disjoint([" ++ S ++ "])" :-
-	S = string.join_list(", ", list.map((func(MGF) = S0 :- ground_mprop(MF, MGF), S0 = mprop_to_string(varset.init, MF)), set.to_sorted_list(DD))).
+	S = string.join_list(", ", list.map((func(MGF) = S0 :- ground_matom(MF, MGF), S0 = matom_to_string(varset.init, MF)), set.to_sorted_list(DD))).
 
 %------------------------------------------------------------------------------%
 
@@ -345,7 +345,7 @@ term_to_assumable_function_def(functor(atom("="), [FuncNameTerm, DefTerms], _), 
 	parse_list(DefTerms, ListCostTerms),
 	list.map((pred(AssignTerm::in, MGProp-Cost::out) is semidet :-
 		AssignTerm = functor(atom("="), [MPropTerm, CostTerm], _),
-		term_to_mprop(MPropTerm, m(Mod, Prop)),
+		term_to_matom(MPropTerm, m(Mod, Prop)),
 		ground_formula(Prop, GProp),
 		MGProp = m(Mod, GProp),
 		term_to_cost(CostTerm, Cost)

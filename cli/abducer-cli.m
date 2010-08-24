@@ -59,7 +59,7 @@ main(!IO) :-
 			loading.load_stdin(Result, !Ctx, !IO),
 			format("read result: %s\n", [s(string(Result))], !IO),
 
-			vs(InitMProp, InitVarset) = det_string_to_vsmprop(Goal),
+			vs(InitMProp, InitVarset) = det_string_to_vsmatom(Goal),
 
 			P0 = new_proof(!.Ctx, [unsolved(InitMProp, not_assumable)], InitVarset),
 			P0 = proof(InitGoal, _InitBL),

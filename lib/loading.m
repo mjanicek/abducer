@@ -67,7 +67,7 @@ load_stdin(Result, !Ctx, !IO) :-
 						LoopResult = ok,
 						Continue = yes
 					else
-						(if term_to_mprop(Term, MProp)
+						(if term_to_matom(Term, MProp)
 						then
 							add_fact(vs(MProp, VS), !Ctx),
 							LoopResult = ok,

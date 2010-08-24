@@ -167,7 +167,7 @@ process_request(clear_assumable_function(Func), !SCtx, !IO) :-
 
 process_request(add_fact(FactStr), !SCtx, !IO) :-
 	trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "[REQUEST] add_fact\n", !IO) ),
-	vs(MProp, VS) = det_string_to_vsmprop(FactStr),
+	vs(MProp, VS) = det_string_to_vsmatom(FactStr),
 	add_fact(vs(MProp, VS), !.SCtx^cx, NewCtx),
 	!:SCtx = !.SCtx^cx := NewCtx,
 	trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "[done] add_fact\n", !IO) ).
@@ -176,7 +176,7 @@ process_request(add_fact(FactStr), !SCtx, !IO) :-
 
 process_request(add_assumable(Function, MPropStr, Cost), !SCtx, !IO) :-
 	trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "[REQUEST] add_assumable\n", !IO) ),
-	vs(m(Mod, Prop), _VS) = det_string_to_vsmprop(MPropStr),
+	vs(m(Mod, Prop), _VS) = det_string_to_vsmatom(MPropStr),
 	Ass = !.SCtx^cx^assumables,
 	(if map.search(Ass, Function, Mapping0)
 	then Mapping = Mapping0
@@ -194,7 +194,7 @@ process_request(prove(L), !SCtx, !IO) :-
 	impure reset_signaller,
 	trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "[REQUEST] prove\n", !IO) ),
 	list.map((pred(S::in, Q::out) is det :-
-		vs(MProp, _VS) = det_string_to_vsmprop(S),
+		vs(MProp, _VS) = det_string_to_vsmatom(S),
 		Q = unsolved(MProp, not_assumable)
 			), L, Qs),
 
@@ -298,7 +298,7 @@ process_request(get_best_proof, !SCtx, !IO) :-
 		flush_output(!IO),
 		list.foldl((pred(Q::in, !.IO::di, !:IO::uo) is det :-
 			dissect_query(Q) = Marking-MProp,
-			print(Marking ++ mprop_to_string(VS, MProp) ++ ".\n", !IO)
+			print(Marking ++ matom_to_string(VS, MProp) ++ ".\n", !IO)
 				), Qs, !IO),
 		flush_output(!IO)
 	;
@@ -310,7 +310,7 @@ process_request(get_best_proof, !SCtx, !IO) :-
 
 %------------------------------------------------------------------------------%
 
-:- func dissect_query(query(ctx_modality)) = pair(string, mprop(ctx_modality)).
+:- func dissect_query(query(ctx_modality)) = pair(string, matom(ctx_modality)).
 
 dissect_query(proved(MProp)) = "P"-MProp.
 dissect_query(unsolved(MProp, _)) = "U"-MProp.

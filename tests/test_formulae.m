@@ -19,15 +19,15 @@
 :- import_module ctx_modality, ctx_io.
 
 main(!IO) :-
-	test_mprop_parse("p(x).", !IO),
-	test_mprop_parse("p(A).", !IO),
-	test_mprop_parse("a.", !IO),
-	test_mprop_parse("a(b(c)).", !IO),
-	test_mprop_parse("e0:p(x).", !IO),
-	test_mprop_parse("i0:a0:p(x).", !IO),
-	test_mprop_parse("axiom : p(x).", !IO),
-	test_mprop_parse("i : A \\= B.", !IO),
-	test_mprop_parse("i : A = B.", !IO),
+	test_matom_parse("p(x).", !IO),
+	test_matom_parse("p(A).", !IO),
+	test_matom_parse("a.", !IO),
+	test_matom_parse("a(b(c)).", !IO),
+	test_matom_parse("e0:p(x).", !IO),
+	test_matom_parse("i0:a0:p(x).", !IO),
+	test_matom_parse("axiom : p(x).", !IO),
+	test_matom_parse("i : A \\= B.", !IO),
+	test_matom_parse("i : A = B.", !IO),
 
 	nl(!IO),
 
@@ -83,13 +83,13 @@ test_term_parse(S, !IO) :-
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-:- pred test_mprop_parse(string::in, io::di, io::uo) is det.
+:- pred test_matom_parse(string::in, io::di, io::uo) is det.
 
-test_mprop_parse(S, !IO) :-
-	format("(mprop) \"%s\" ... ", [s(S)], !IO),
-	(if string_to_vsmprop(S) = P, P = vs(m(M, _), _), is_list_ctx_modality(M)
+test_matom_parse(S, !IO) :-
+	format("(matom) \"%s\" ... ", [s(S)], !IO),
+	(if string_to_vsmatom(S) = P, P = vs(m(M, _), _), is_list_ctx_modality(M)
 	then print(P, !IO), nl(!IO),
-			format("        \"%s\"\n", [s(vsmprop_to_string(P))], !IO)
+			format("        \"%s\"\n", [s(vsmatom_to_string(P))], !IO)
 	else print("fail", !IO), nl(!IO)
 	).
 
@@ -99,9 +99,9 @@ test_mprop_parse(S, !IO) :-
 
 is_list_ctx_modality(_).
 
-:- pred is_ctx_mprop(mprop(ctx_modality)::in) is det.
+:- pred is_ctx_matom(matom(ctx_modality)::in) is det.
 
-is_ctx_mprop(_).
+is_ctx_matom(_).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
@@ -120,17 +120,17 @@ test_mrule_parse(S, !IO) :-
 :- pred test_unify(string::in, string::in, io::di, io::uo) is det.
 
 test_unify(A, B, !IO) :-
-	vs(MPA, VSA) = det_string_to_vsmprop(A),
-	vs(MPB0, VSB) = det_string_to_vsmprop(B),
+	vs(MPA, VSA) = det_string_to_vsmatom(A),
+	vs(MPB0, VSB) = det_string_to_vsmatom(B),
 
-	is_ctx_mprop(MPA),
-	is_ctx_mprop(MPB0),
+	is_ctx_matom(MPA),
+	is_ctx_matom(MPB0),
 
 	varset.merge_renaming(VSA, VSB, VS, Renaming),
-	MPB = rename_vars_in_mprop(Renaming, MPB0),
+	MPB = rename_vars_in_matom(Renaming, MPB0),
 
-	format("(unify) \"%s\" == \"%s\": ", [s(vsmprop_to_string(vs(MPA, VS))),
-			s(vsmprop_to_string(vs(MPB, VS)))], !IO),
+	format("(unify) \"%s\" == \"%s\": ", [s(vsmatom_to_string(vs(MPA, VS))),
+			s(vsmatom_to_string(vs(MPB, VS)))], !IO),
 
 	MPA = m(_, PA),
 	MPB = m(_, PB),
@@ -141,8 +141,8 @@ test_unify(A, B, !IO) :-
 		print(test_formulae.subst_to_string(VS, Unifier), !IO),
 		print(" --> ", !IO),
 		format("\"%s\", \"%s\"\n",
-			[s(vsmprop_to_string(vs(apply_subst_to_mprop(Unifier, MPA), VS))),
-			s(vsmprop_to_string(vs(apply_subst_to_mprop(Unifier, MPB), VS)))], !IO)
+			[s(vsmatom_to_string(vs(apply_subst_to_matom(Unifier, MPA), VS))),
+			s(vsmatom_to_string(vs(apply_subst_to_matom(Unifier, MPB), VS)))], !IO)
 	else
 		print("not unifiable.\n", !IO)
 	).

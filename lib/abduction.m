@@ -32,9 +32,9 @@
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
 :- type query(M)
-	--->	proved(mprop(M))
-	;	assumed(mprop(M), assumability_function)
-	;	unsolved(mprop(M), assumability_function)
+	--->	proved(matom(M))
+	;	assumed(matom(M), assumability_function)
+	;	unsolved(matom(M), assumability_function)
 	;	asserted(mtest(M))
 	.
 
@@ -184,8 +184,8 @@ prove_bound(MayBound, P0, P, Costs, Ctx) :-
 		LAss = list.filter_map((func(Q) = MPr is semidet :-
 			Q = assumed(MPr, _)
 				), L0),
-		all_true((pred(MProp::in) is semidet :-
-			ground_formula(MProp^p, _)
+		all_true((pred(m(_M, F)::in) is semidet :-
+			ground_formula(F, _)
 				), LAss),
 		P = P0
 	else
@@ -204,7 +204,7 @@ prove_bound(MayBound, P0, P, Costs, Ctx) :-
 %------------------------------------------------------------------------------%
 
 :- pred segment_proof_state(list(query(M))::in,
-		{list(query(M)), with_assumability_function(mprop(M)), list(query(M))}::out) is semidet
+		{list(query(M)), with_assumability_function(matom(M)), list(query(M))}::out) is semidet
 		<= modality(M).
 
 segment_proof_state(Qs, {QsL, cf(QUnsolved, F), QsR} ) :-
@@ -243,7 +243,7 @@ transform(L0, VS0, BL0, L, VS, BL, Ctx) :-
 			% input
 		{
 			list(query(M)),  % unsolved (preceding propositions)
-			with_assumability_function(mprop(M)),  % proposition under examination + its assump.cost
+			with_assumability_function(matom(M)),  % proposition under examination + its assump.cost
 			list(query(M))  % following propositions
 		}::in,
 		varset::in,  % variables used in the proof
@@ -385,13 +385,13 @@ proof_step({QsL0, cf(m(MQ, PQ), not_assumable), QsR0}, VS0, BL0,
 
 		% XXX have assertion in another rule?
 	QsInsert = list.map((func(A) = UniA :-
-		( A = std(cf(P, F)), UniA = unsolved(apply_subst_to_mprop(Uni, P), F)
+		( A = std(cf(P, F)), UniA = unsolved(apply_subst_to_matom(Uni, P), F)
 		; A = test(T), UniA = asserted(apply_subst_to_mtest(Uni, T))
 		)
 			), Ante)
 			++ [QHead],
 
-%	QsInsert = list.map((func(cf(P, F)) = apply_subst_to_mprop(Uni, P)-unsolved(F)), Ante)
+%	QsInsert = list.map((func(cf(P, F)) = apply_subst_to_matom(Uni, P)-unsolved(F)), Ante)
 %			++ [m(MQ, apply_subst_to_formula(Uni, PQ))-resolved],
 
 %	QsL = list.map(apply_subst_to_query(Uni), QsL0),
@@ -445,8 +445,8 @@ factor_proof_state(
 solved_unifiable(Q, [QH|_T], Uni) :-
 	not Q = unsolved(_, _),
 	not QH = unsolved(_, _),
-	m(HM, HF) = head_mprop(QH),
-	m(M, F) = head_mprop(Q),
+	m(HM, HF) = head_matom(QH),
+	m(M, F) = head_matom(Q),
 	match(compose_list(HM), compose_list(M)),
 	unify_formulas(HF, F, Uni).
 
@@ -460,22 +460,22 @@ solved_unifiable(Q, [_QH|T], Uni) :-
 check_disjoints(Qs, BL0, BL) :-
 	anytime.pure_signalled(no),
 	list.foldl((pred(Q::in, BL1::in, BL2::out) is semidet :-
-		(if ground_mprop(head_mprop(Q), G)
-		then check_mgprop(G, BL1, BL2)
+		(if ground_matom(head_matom(Q), G)
+		then check_mgatom(G, BL1, BL2)
 		else BL2 = BL1
 			)), Qs, BL0, BL).
 
 %------------------------------------------------------------------------------%
 
-:- func head_mprop(query(M)) = mprop(M) is det <= modality(M).
+:- func head_matom(query(M)) = matom(M) is det <= modality(M).
 
-head_mprop(proved(MProp)) = MProp.
-head_mprop(unsolved(MProp, _)) = MProp.
-head_mprop(assumed(MProp, _)) = MProp.
-head_mprop(asserted(prop(MProp))) = MProp.
-head_mprop(asserted(impl(_, MProp))) = MProp.
+head_matom(proved(MProp)) = MProp.
+head_matom(unsolved(MProp, _)) = MProp.
+head_matom(assumed(MProp, _)) = MProp.
+head_matom(asserted(prop(MProp))) = MProp.
+head_matom(asserted(impl(_, MProp))) = MProp.
 
-:- pred leftmost_unifiable(mprop(M)::in, list(mprop(M))::in, subst::out) is semidet.
+:- pred leftmost_unifiable(matom(M)::in, list(matom(M))::in, subst::out) is semidet.
 
 leftmost_unifiable(m(Mod, Pred), [m(ModH, PredH) | T], Subst) :-
 	(if
@@ -498,9 +498,9 @@ map_fst(Func, LIn) = LOut :-
 
 :- func apply_subst_to_query(subst, query(M)) = query(M) <= modality(M).
 
-apply_subst_to_query(Subst, unsolved(MProp, F)) = unsolved(apply_subst_to_mprop(Subst, MProp), F).
-apply_subst_to_query(Subst, proved(MProp)) = proved(apply_subst_to_mprop(Subst, MProp)).
-apply_subst_to_query(Subst, assumed(MProp, F)) = assumed(apply_subst_to_mprop(Subst, MProp), F).
+apply_subst_to_query(Subst, unsolved(MProp, F)) = unsolved(apply_subst_to_matom(Subst, MProp), F).
+apply_subst_to_query(Subst, proved(MProp)) = proved(apply_subst_to_matom(Subst, MProp)).
+apply_subst_to_query(Subst, assumed(MProp, F)) = assumed(apply_subst_to_matom(Subst, MProp), F).
 apply_subst_to_query(Subst, asserted(MTest)) = asserted(apply_subst_to_mtest(Subst, MTest)).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
@@ -514,7 +514,7 @@ apply_subst_to_query_blacklist(Subst, _Ctx, QIn, QOut, BL, BL) :-
 
 %apply_subst_to_query_blacklist(Subst, Ctx, QIn, QOut, BLIn, BLOut) :-
 %	QOut = apply_subst_to_query(Subst, QIn),
-%	(if ground_mprop(head_mprop(QOut), G)
-%	then check_mgprop(G, BLIn, BLOut)
+%	(if ground_matom(head_matom(QOut), G)
+%	then check_mgatom(G, BLIn, BLOut)
 %	else BLOut = BLIn
 %	).

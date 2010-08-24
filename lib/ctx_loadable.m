@@ -32,21 +32,21 @@
 
 :- func new_ctx = ctx.
 
-:- pred add_fact(vscope(mprop(ctx_modality))::in, ctx::in, ctx::out) is det.
+:- pred add_fact(vscope(matom(ctx_modality))::in, ctx::in, ctx::out) is det.
 :- pred add_rule(vscope(mrule(ctx_modality))::in, ctx::in, ctx::out) is det.
 :- pred add_assumable(assumable_function_def(ctx_modality)::in, ctx::in, ctx::out) is det.
 :- pred add_disjoint(disjoint(ctx_modality)::in, ctx::in, ctx::out) is det.
 
-:- pred set_facts(set(vscope(mprop(ctx_modality)))::in, ctx::in, ctx::out) is det.
+:- pred set_facts(set(vscope(matom(ctx_modality)))::in, ctx::in, ctx::out) is det.
 :- pred set_rules(set(vscope(mrule(ctx_modality)))::in, ctx::in, ctx::out) is det.
-:- pred set_assumables(map(string, map(mgprop(ctx_modality), float))::in, ctx::in, ctx::out)
+:- pred set_assumables(map(string, map(mgatom(ctx_modality), float))::in, ctx::in, ctx::out)
 		is det.
 :- pred set_disjoints(set(disjoint(ctx_modality))::in, ctx::in, ctx::out) is det.
 
 	% for debugging purposes only!
-:- func facts(ctx) = set(vscope(mprop(ctx_modality))).
+:- func facts(ctx) = set(vscope(matom(ctx_modality))).
 :- func rules(ctx) = set(vscope(mrule(ctx_modality))).
-:- func assumables(ctx) = map(string, map(mgprop(ctx_modality), float)).
+:- func assumables(ctx) = map(string, map(mgatom(ctx_modality), float)).
 :- func disjoints(ctx) = set(disjoint(ctx_modality)).
 
 %------------------------------------------------------------------------------%
@@ -62,10 +62,10 @@
 
 :- type ctx
 	--->	ctx(
-		ctx_facts :: multi_map(pair(list(ctx_modality), string), vscope(mprop(ctx_modality))),
+		ctx_facts :: multi_map(pair(list(ctx_modality), string), vscope(matom(ctx_modality))),
 		ctx_rules :: multi_map(pair(list(ctx_modality), string), vscope(mrule(ctx_modality))),
-		ctx_assumables :: map(string, map(mgprop(ctx_modality), float)),
-		ctx_disjoints :: set(set(mgprop(ctx_modality)))
+		ctx_assumables :: map(string, map(mgatom(ctx_modality), float)),
+		ctx_disjoints :: set(set(mgatom(ctx_modality)))
 	).
 
 :- instance context(ctx, ctx_modality) where [
@@ -88,7 +88,7 @@ add_fact(Prop, Ctx0, Ctx) :-
 add_rule(Rule, Ctx0, Ctx) :-
 	Rules = Ctx0^ctx_rules,
 	Rule = vs(m(Mod, _-Head), _VS),
-	m(ModH, p(PredSym, _)) = rule_head_mprop(Head),
+	m(ModH, p(PredSym, _)) = rule_head_matom(Head),
 	Ctx = Ctx0^ctx_rules := multi_map.add(Rules, (Mod++ModH)-PredSym, Rule).
 
 add_assumable(FuncName-Costs, Ctx0, Ctx) :-
@@ -134,7 +134,7 @@ disjoints(Ctx) = Ctx^ctx_disjoints.
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-:- pred find_ctx_fact(ctx::in, list(ctx_modality)::in, string::in, vscope(mprop(ctx_modality))::out) is nondet.
+:- pred find_ctx_fact(ctx::in, list(ctx_modality)::in, string::in, vscope(matom(ctx_modality))::out) is nondet.
 
 find_ctx_fact(Ctx, Ms, PredSym, Fact) :-
 	multi_map.nondet_search(Ctx^ctx_facts, Ms-PredSym, Fact).
@@ -153,7 +153,7 @@ find_ctx_rule(Ctx, Ms, PredSym, Rule) :-
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-:- pred ctx_assumable_func(ctx::in, string::in, mgprop(ctx_modality)::out, float::out) is nondet.
+:- pred ctx_assumable_func(ctx::in, string::in, mgatom(ctx_modality)::out, float::out) is nondet.
 
 ctx_assumable_func(Ctx, FuncName, GProp, Cost) :-
 	map.search(Ctx^ctx_assumables, FuncName, MapCosts),
@@ -162,7 +162,7 @@ ctx_assumable_func(Ctx, FuncName, GProp, Cost) :-
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-:- pred ctx_disjoint_decl(ctx::in, set(mgprop(ctx_modality))::out) is nondet.
+:- pred ctx_disjoint_decl(ctx::in, set(mgatom(ctx_modality))::out) is nondet.
 
 ctx_disjoint_decl(Ctx, DD) :-
 	set.member(DD, Ctx^ctx_disjoints).

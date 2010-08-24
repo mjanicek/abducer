@@ -30,22 +30,22 @@
 
 :- typeclass context(C, M) <= modality(M) where [
 
-	pred find_fact(C, list(M), string, vscope(mprop(M))),
+	pred find_fact(C, list(M), string, vscope(matom(M))),
 	mode find_fact(in, in, in, out) is nondet,
 
 	pred find_rule(C, list(M), string, vscope(mrule(M))),
 	mode find_rule(in, in, in, out) is nondet,
 
-	pred assumable_func(C, string, mgprop(M), float),
+	pred assumable_func(C, string, mgatom(M), float),
 	mode assumable_func(in, in, out, out) is nondet,
 
 	func min_assumption_cost(C, M) = float,
 
-	pred disjoint_decl(C, set(mgprop(M))),
+	pred disjoint_decl(C, set(mgatom(M))),
 	mode disjoint_decl(in, out) is nondet
 ].
 
-:- func assumption_cost(C, assumability_function, mprop(M)) = float <= (context(C, M), modality(M)).
+:- func assumption_cost(C, assumability_function, matom(M)) = float <= (context(C, M), modality(M)).
 
 %------------------------------------------------------------------------------%
 
@@ -59,7 +59,7 @@
 assumption_cost(_Ctx, const(Cost), _MF) = Cost.
 
 assumption_cost(Ctx, f(Name), MF) = Cost :-
-	solutions_set((pred(C::out) is nondet :- assumable_func(Ctx, Name, mprop_to_ground_mprop(MF), C)), Costs),
+	solutions_set((pred(C::out) is nondet :- assumable_func(Ctx, Name, matom_to_ground_matom(MF), C)), Costs),
 	(if set.singleton_set(Costs, Cost0)
 	then Cost = Cost0
 	else error("error in assumption_cost/3: " ++ string(MF)
