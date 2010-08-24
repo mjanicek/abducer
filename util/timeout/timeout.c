@@ -71,7 +71,7 @@ static pid_t wrkpid = 0;
 
 struct signaller {
 	int signal;
-	useconds_t usec;
+	unsigned int usec;
 } signallers[MAX_SIGNALLERS];
 
 int num_signallers = 0;
@@ -79,7 +79,7 @@ int num_signallers = 0;
 void
 ignore_signals(void);
 
-useconds_t
+unsigned int
 string_to_useconds(const char * str);
 
 void *
@@ -100,7 +100,7 @@ main(int argc, char ** argv)
 		char * s = argv[argi];
 
 		if (last_sig) {
-			useconds_t t = string_to_useconds(s);
+			unsigned int t = string_to_useconds(s);
 			if (t) {
 
 				if (num_signallers < MAX_SIGNALLERS) {
@@ -270,7 +270,7 @@ main(int argc, char ** argv)
  * Return 0 if the string is not a valid number, i.e. a positive
  * integer.
  */
-useconds_t
+unsigned int
 string_to_useconds(const char * str)
 {
 	int s = atoi(str);
@@ -307,7 +307,7 @@ void *
 usleep_and_kill(void * arg)
 {
 	int signal = signallers[(int)arg].signal;
-	useconds_t usec = signallers[(int)arg].usec;
+	unsigned int usec = signallers[(int)arg].usec;
 	usleep(usec);
 	kill(wrkpid, signal);
 	pthread_exit(NULL);
