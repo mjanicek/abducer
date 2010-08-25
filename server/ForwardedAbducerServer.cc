@@ -121,10 +121,10 @@ ForwardedAbducerServer::clearAssumableFunction(const string & function, const Ic
 }
 
 void
-ForwardedAbducerServer::addFact(const ModalisedFormulaPtr & fact, const Ice::Current&)
+ForwardedAbducerServer::addFact(const ModalisedAtomPtr & fact, const Ice::Current&)
 {
-	cerr << REQUEST_MSG("adding fact [" << modalisedFormulaToString(fact) << "]") << endl;
-	cout << "add_fact(\"" << modalisedFormulaToString(fact) << ".\")." << endl;
+	cerr << REQUEST_MSG("adding fact [" << modalisedAtomToString(fact) << "]") << endl;
+	cout << "add_fact(\"" << modalisedAtomToString(fact) << ".\")." << endl;
 }
 
 string
@@ -141,11 +141,11 @@ ensureFloatPortrayal(double n)
 
 
 void
-ForwardedAbducerServer::addAssumable(const string & function, const ModalisedFormulaPtr & f, float cost, const Ice::Current&)
+ForwardedAbducerServer::addAssumable(const string & function, const ModalisedAtomPtr & a, float cost, const Ice::Current&)
 {
-	cerr << REQUEST_MSG("adding assumable [" << modalisedFormulaToString(f) << " / " << function << "]") << endl;
+	cerr << REQUEST_MSG("adding assumable [" << modalisedAtomToString(a) << " / " << function << "]") << endl;
 	stringstream ss;
-	ss << "add_assumable(\"" << function << "\", \"" << modalisedFormulaToString(f) << ".\", " << ensureFloatPortrayal(cost) << ")." << endl;
+	ss << "add_assumable(\"" << function << "\", \"" << modalisedAtomToString(a) << ".\", " << ensureFloatPortrayal(cost) << ")." << endl;
 
 	debug(cerr << "  the request: " << ss.str());
 
@@ -161,7 +161,7 @@ ForwardedAbducerServer::startProving(const vector<MarkedQueryPtr> & goals, const
 
 	vector<MarkedQueryPtr>::const_iterator it = goals.begin();
 	while (it != goals.end()) {
-		s += "\"" + modalisedFormulaToString((*it)->formula) + ".\"";
+		s += "\"" + modalisedAtomToString((*it)->atom) + ".\"";
 		it++;
 		if (it != goals.end()) {
 			s += ", ";
@@ -338,19 +338,19 @@ ForwardedAbducerServer::prove(const vector<MarkedQueryPtr> & goals, const Ice::C
 //}
 
 MarkedQueryPtr
-markModalisedFormula(Marking mark, ModalisedFormulaPtr mf)
+markModalisedAtom(Marking mark, ModalisedAtomPtr ma)
 {
 	switch (mark) {
 		case Proved: {
 				ProvedQueryPtr q = new ProvedQuery();
-				q->formula = mf;
+				q->atom = ma;
 				return q;
 			}
 			break;
 
 		case Unsolved: {
 				UnsolvedQueryPtr q = new UnsolvedQuery();
-				q->formula = mf;
+				q->atom = ma;
 				ConstAssumabilityFunctionPtr af = new ConstAssumabilityFunction();
 				af->cost = 1.0;
 				q->f = af;
@@ -360,7 +360,7 @@ markModalisedFormula(Marking mark, ModalisedFormulaPtr mf)
 
 		case Assumed: {
 				AssumedQueryPtr q = new AssumedQuery();
-				q->formula = mf;
+				q->atom = ma;
 				ConstAssumabilityFunctionPtr af = new ConstAssumabilityFunction();
 				af->cost = 1.0;
 				q->f = af;
@@ -370,7 +370,7 @@ markModalisedFormula(Marking mark, ModalisedFormulaPtr mf)
 
 		case Asserted: {
 				AssertedQueryPtr q = new AssertedQuery();
-				q->formula = mf;
+				q->atom = ma;
 				return q;
 			}
 			break;
@@ -416,12 +416,12 @@ ForwardedAbducerServer::getBestProof()
 		string mfStr(buf+1);
 		debug(cerr << mfStr << endl);
 
-		vector<Token *> toks = tokenise(mfStr);
-		vector<Token *>::iterator it = toks.begin();
-		ModalisedFormulaPtr mf = parseModalisedFormula(it);
+		vector<Tokens::Token *> toks = tokenise(mfStr);
+		vector<Tokens::Token *>::iterator it = toks.begin();
+		ModalisedAtomPtr mf = parseModalisedAtom(it);
 
 		if (mf) {
-			MarkedQueryPtr q = markModalisedFormula(mark, mf);
+			MarkedQueryPtr q = markModalisedAtom(mark, mf);
 			if (q) {
 				vect.push_back(q);
 			}
@@ -430,7 +430,7 @@ ForwardedAbducerServer::getBestProof()
 			}
 		}
 		else {
-			cerr << tty::red << "  NULL in parsing modalised formula (in \"" << mfStr << "\")" << tty::dcol << endl;
+			cerr << tty::red << "  NULL in parsing modalised atom (in \"" << mfStr << "\")" << tty::dcol << endl;
 		}
 
 		num--;

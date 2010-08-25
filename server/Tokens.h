@@ -23,6 +23,8 @@
 
 #include <string>
 
+namespace Tokens {
+
 enum TokenType {
 	Comma,
 	Dot,
@@ -155,5 +157,7 @@ public:
 protected:
 	std::string stringValue;
 };
+
+}
 
 #endif

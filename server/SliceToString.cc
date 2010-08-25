@@ -62,18 +62,18 @@ termToString(const TermPtr & t)
 }
 
 string
-predicateToString(const PredicatePtr & p)
+atomToString(const AtomPtr & a)
 {
 	string s("");
 
-	s = quoteGuard(p->predSym);
-	if (!p->args.empty()) {
+	s = quoteGuard(a->predSym);
+	if (!a->args.empty()) {
 		s += "(";
-		vector<TermPtr>::iterator it = p->args.begin();
-		while (it != p->args.end()) {
+		vector<TermPtr>::iterator it = a->args.begin();
+		while (it != a->args.end()) {
 			s += termToString(*it);
 			it++;
-			if (it != p->args.end()) {
+			if (it != a->args.end()) {
 				s += ", ";
 			}
 		}
@@ -106,15 +106,15 @@ modalityToString(const Modality m)
 }
 
 string
-modalisedFormulaToString(const ModalisedFormulaPtr & mf)
+modalisedAtomToString(const ModalisedAtomPtr & ma)
 {
 	string s("");
-	if (!mf->m.empty()) {
-		vector<Modality>::iterator it = mf->m.begin();
-		for ( ; it != mf->m.end() ; it++) {
+	if (!ma->m.empty()) {
+		vector<Modality>::iterator it = ma->m.begin();
+		for ( ; it != ma->m.end() ; it++) {
 			s += modalityToString(*it) + ": ";
 		}
 	}
-	s += predicateToString(mf->p);
+	s += atomToString(ma->a);
 	return s;
 }

@@ -25,6 +25,7 @@
 #include <cctype>
 
 using namespace std;
+using namespace Tokens;
 
 enum TokeniserState {
 	TSUndecided,

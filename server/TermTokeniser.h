@@ -6,7 +6,7 @@
 
 #include "Tokens.h"
 
-std::vector<Token *>
+std::vector<Tokens::Token *>
 tokenise(const std::string & s);
 
 #endif

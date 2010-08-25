@@ -24,6 +24,7 @@
 
 using namespace std;
 using namespace Abducer;
+using namespace Tokens;
 
 void
 parseAndAddTermSeq(vector<Token *>::iterator & it, vector<TermPtr> & args)
@@ -78,7 +79,7 @@ parseTerm(vector<Token *>::iterator & it)
 		return vt;
 	}
 
-	if ((*it)->type() == Atom) {
+	if ((*it)->type() == Tokens::Atom) {
 		AtomToken * atomTok = (AtomToken *) *it;
 		FunctionTerm * ft = new FunctionTerm();
 		ft->functor = atomTok->value();
@@ -108,28 +109,28 @@ parseTerm(vector<Token *>::iterator & it)
 	return NULL;
 }
 
-Abducer::PredicatePtr
-parsePredicate(vector<Token *>::iterator & it)
+Abducer::AtomPtr
+parseAtom(vector<Token *>::iterator & it)
 {
 	vector<Token *>::iterator orig = it;
-	PredicatePtr p = new Predicate();
+	AtomPtr a = new Abducer::Atom();
 
-	if ((*it)->type() == Atom) {
+	if ((*it)->type() == Tokens::Atom) {
 		AtomToken * psymTok = (AtomToken *) *it;
-		p->predSym = psymTok->value();
+		a->predSym = psymTok->value();
 
 		it++;
 		if ((*it)->type() == OpenParenthesis) {
 			it++;
 
-			parseAndAddTermSeq(it, p->args);
+			parseAndAddTermSeq(it, a->args);
 
 			if ((*it)->type() == CloseParenthesis) {
 				it++;
 				if ((*it)->type() == Dot) {
 					// ok
 					it++;
-					return p;
+					return a;
 				}
 				else {
 					// syntax error, dot expected
@@ -146,7 +147,7 @@ parsePredicate(vector<Token *>::iterator & it)
 		else if ((*it)->type() == Dot) {
 			// ok
 			it++;
-			return p;
+			return a;
 		}
 		else {
 			// syntax error, dot expected
@@ -161,12 +162,12 @@ parsePredicate(vector<Token *>::iterator & it)
 	}
 }
 
-ModalisedFormulaPtr
-parseModalisedFormula(vector<Token *>::iterator & it)
+ModalisedAtomPtr
+parseModalisedAtom(vector<Token *>::iterator & it)
 {
 	vector<Token *>::iterator orig = it;
 
-	ModalisedFormulaPtr mf = new ModalisedFormula();
+	ModalisedAtomPtr ma = new ModalisedAtom();
 	vector<Modality> mod;
 
 	if ((*it)->type() == OpenCurlyBracket) {
@@ -177,7 +178,7 @@ parseModalisedFormula(vector<Token *>::iterator & it)
 		if ((*it)->type() == CloseCurlyBracket) {
 			// ok
 			it++;
-			mf->m = mod;
+			ma->m = mod;
 		}
 		else {
 			it = orig;
@@ -186,11 +187,11 @@ parseModalisedFormula(vector<Token *>::iterator & it)
 	}
 
 
-	PredicatePtr p = parsePredicate(it);
+	AtomPtr a = parseAtom(it);
 
-	if (p) {
-		mf->p = p;
-		return mf;
+	if (a) {
+		ma->a = a;
+		return ma;
 	}
 	else {
 		it = orig;
@@ -203,7 +204,7 @@ parseModality(std::vector<Token *>::iterator & it, Abducer::Modality & mod)
 {
 	vector<Token *>::iterator orig = it;
 
-	if ((*it)->type() == Atom) {
+	if ((*it)->type() == Tokens::Atom) {
 		AtomToken * atomTok = (AtomToken *) *it;
 		if (atomTok->value() == string(TRUTH_STR)) {
 			it++;

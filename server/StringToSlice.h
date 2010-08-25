@@ -30,15 +30,15 @@
 namespace Abducer = ::de::dfki::lt::tr::infer::weigabd::slice;
 
 Abducer::TermPtr
-parseTerm(std::vector<Token *>::iterator & it);
+parseTerm(std::vector<Tokens::Token *>::iterator & it);
 
-Abducer::PredicatePtr
-parsePredicate(std::vector<Token *>::iterator & it);
+Abducer::AtomPtr
+parseAtom(std::vector<Tokens::Token *>::iterator & it);
 
-Abducer::ModalisedFormulaPtr
-parseModalisedFormula(std::vector<Token *>::iterator & it);
+Abducer::ModalisedAtomPtr
+parseModalisedAtom(std::vector<Tokens::Token *>::iterator & it);
 
 bool
-parseModality(std::vector<Token *>::iterator & it, Abducer::Modality & mod);
+parseModality(std::vector<Tokens::Token *>::iterator & it, Abducer::Modality & mod);
 
 #endif
