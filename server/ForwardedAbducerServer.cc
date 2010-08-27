@@ -114,7 +114,7 @@ ForwardedAbducerServer::clearAssumables(const Ice::Current&)
 }
 
 void
-ForwardedAbducerServer::clearAssumableFunction(const string & function, const Ice::Current&)
+ForwardedAbducerServer::clearAssumabilityFunction(const string & function, const Ice::Current&)
 {
 	cerr << REQUEST_MSG("clearing assumable function [" << function << "]") << endl;
 	cout << "clear_assumable_function(\"" << function << "\")." << endl;
