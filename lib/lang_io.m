@@ -236,7 +236,8 @@ term_to_list_of_rule_antecedents(T, List) :-
 	then
 		term_to_rule_antecedent(TMP, This),
 		term_to_list_of_rule_antecedents(TMPs, MPs),
-		List = MPs ++ [This]
+		List = [This|MPs]
+%		List = MPs ++ [This]
 	else
 		term_to_rule_antecedent(T, This),
 		List = [This]
