@@ -48,6 +48,14 @@
 
 %------------------------------------------------------------------------------%
 
+:- typeclass convertible(T1, T2) where [
+	func convert_from(T1::in) = (T2::out) is semidet
+].
+
+:- func det_convert_from(T1) = T2 <= convertible(T1, T2).
+
+%------------------------------------------------------------------------------%
+
 :- implementation.
 
 :- import_module require.
@@ -67,6 +75,14 @@ det_from_term(Rep) = Val :-
 	(if Val0 = from_term(Rep)
 	then Val = Val0
 	else error("failed to parse `" ++ string(Rep) ++ "' in func det_parse/1.")
+	).
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
+det_convert_from(From) = To :-
+	(if To0 = convert_from(From)
+	then To = To0
+	else error("failed to convert `" ++ string(From) ++ "' in func det_convert_from/1.")
 	).
 
 %------------------------------------------------------------------------------%

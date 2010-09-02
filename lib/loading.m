@@ -40,6 +40,7 @@
 :- import_module utils.
 :- import_module term.
 :- import_module lang, lang_io, lang_ops.
+:- import_module context.
 :- import_module term_io.
 :- import_module ctx_modality, ctx_io.
 
@@ -49,9 +50,9 @@ load_stdin(Result, !Ctx, !IO) :-
 		(
 			ReadResult = term(VS, Term),
 			generic_term(Term),
-			(if term_to_assumable_function_def(Term, AssumFuncDef)
+			(if term_to_assumable_function_def(Term, FunctionName, FunctionValues)
 			then
-				add_assumable(AssumFuncDef, !Ctx),
+				set_assumability_function(FunctionName, FunctionValues, !Ctx),
 				LoopResult = ok,
 				Continue = yes
 			else

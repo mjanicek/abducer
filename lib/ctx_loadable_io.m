@@ -55,6 +55,7 @@
 :- import_module map, set, list, pair, string.
 :- import_module abduction, assumability, blacklist.
 
+:- import_module context.
 :- import_module ctx_modality, ctx_loadable, ctx_io.
 :- import_module modality, stringable.
 

@@ -38,8 +38,6 @@
 :- pragma foreign_decl("C", "extern MR_Bool anytime_sig;").
 :- pragma foreign_code("C", "MR_Bool anytime_sig;").
 
-:- import_module io.
-
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
 :- initialise register_handler/0.

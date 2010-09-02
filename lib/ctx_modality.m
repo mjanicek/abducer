@@ -45,9 +45,6 @@
 
 :- implementation.
 
-:- import_module require.
-:- import_module set, pair.
-
 %------------------------------------------------------------------------------%
 
 :- instance modality(ctx_modality) where [

@@ -22,7 +22,7 @@
 
 :- interface.
 
-:- import_module map, pair.
+:- import_module map.
 :- import_module lang, modality.
 :- import_module stringable.
 
@@ -63,12 +63,10 @@
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-:- type assumable_function_def(M) == pair(string, map(mgatom(M), float)).
-
 :- pred term_to_matom(term.term::in, matom(M)::out) is semidet <= (modality(M), term_parsable(M)).
 :- pred term_to_mrule(term.term::in, mrule(M)::out) is semidet <= (modality(M), term_parsable(M)).
 :- pred term_to_disjoint_decl(term.term::in, disjoint_decl(M)::out) is semidet <= (modality(M), term_parsable(M)).
-:- pred term_to_assumable_function_def(term.term::in, assumable_function_def(M)::out) is semidet
+:- pred term_to_assumable_function_def(term.term::in, string::out, map(mgatom(M), float)::out) is semidet
 		<= (modality(M), term_parsable(M)).
 
 %------------------------------------------------------------------------------%
@@ -344,7 +342,7 @@ subst_to_string(Varset, Subst) = "{" ++ Str ++ "}" :-
 
 %------------------------------------------------------------------------------%
 
-term_to_assumable_function_def(functor(atom("="), [FuncNameTerm, DefTerms], _), FuncDef) :-
+term_to_assumable_function_def(functor(atom("="), [FuncNameTerm, DefTerms], _), FuncName, FuncValues) :-
 	FuncNameTerm = functor(atom(FuncName), [], _),
 	parse_list(DefTerms, ListCostTerms),
 	list.map((pred(AssignTerm::in, MGAtom-Cost::out) is semidet :-
@@ -353,7 +351,7 @@ term_to_assumable_function_def(functor(atom("="), [FuncNameTerm, DefTerms], _), 
 		ground_matom(MAtom, MGAtom),
 		term_to_cost(CostTerm, Cost)
 			), ListCostTerms, Costs),
-	FuncDef = FuncName-map.from_assoc_list(Costs).
+	FuncValues = map.from_assoc_list(Costs).
 
 %------------------------------------------------------------------------------%
 

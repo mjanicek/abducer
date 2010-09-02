@@ -219,14 +219,16 @@ process_request(request(request_code_loadfile), Cont, In, Out, !SCtx, !IO) :-
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
 process_request(request(request_code_clearrules), yes, _In, _Out, !SCtx, !IO) :-
-	set_rules(set.init, !.SCtx^cx, NewCtx),
-	!:SCtx = !.SCtx^cx := NewCtx.
+	Ctx0 = !.SCtx^cx,
+	Ctx = Ctx0^rules := set.init,
+	!:SCtx = !.SCtx^cx := Ctx.
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
 process_request(request(request_code_clearfacts), yes, _In, _Out, !SCtx, !IO) :-
-	set_facts(set.init, !.SCtx^cx, NewCtx),
-	!:SCtx = !.SCtx^cx := NewCtx.
+	Ctx0 = !.SCtx^cx,
+	Ctx = Ctx0^facts := set.init,
+	!:SCtx = !.SCtx^cx := Ctx.
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
@@ -236,10 +238,11 @@ process_request(request(request_code_clearfactsbymodality), Cont, In, _Out, !SCt
 		MayArg = yes(clear_facts_by_modality(PM)),
 		proto_modality(PM, M)
 	then
-		set_facts(set.filter((pred(vs(m(Ms, _), _)::in) is semidet :-
+		Ctx0 = !.SCtx^cx,
+		Ctx = Ctx0^facts := set.filter((pred(vs(m(Ms, _), _)::in) is semidet :-
 			Ms \= [M|_]
-				), !.SCtx^cx^facts), !.SCtx^cx, NewCtx),
-		!:SCtx = !.SCtx^cx := NewCtx,
+				), !.SCtx^cx^facts),
+		!:SCtx = !.SCtx^cx := Ctx,
 		Cont = yes
 	else
 		Cont = no,
@@ -249,8 +252,9 @@ process_request(request(request_code_clearfactsbymodality), Cont, In, _Out, !SCt
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
 process_request(request(request_code_clearassumables), yes, _In, _Out, !SCtx, !IO) :-
-	set_assumables(map.init, !.SCtx^cx, NewCtx),
-	!:SCtx = !.SCtx^cx := NewCtx.
+	Ctx0 = !.SCtx^cx,
+	Ctx = Ctx0^assumables := map.init,
+	!:SCtx = !.SCtx^cx := Ctx.
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
@@ -259,7 +263,7 @@ process_request(request(request_code_clearassumabilityfunction), Cont, In, _Out,
 	(if
 		MayArg = yes(clear_assumability_function(FunctionName))
 	then
-		set_assumables(map.delete(!.SCtx^cx^assumables, FunctionName), !.SCtx^cx, NewCtx),
+		set_assumability_function(FunctionName, map.init, !.SCtx^cx, NewCtx),
 		!:SCtx = !.SCtx^cx := NewCtx,
 		Cont = yes
 	else
@@ -280,7 +284,7 @@ process_request(request(request_code_addfact), Cont, In, _Out, !SCtx, !IO) :-
 		Cont = yes
 	else
 		Cont = no,
-		throw("protocol error in add fact")  % XXX
+		throw("protocol error in add fact")
 	).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
@@ -301,8 +305,9 @@ process_request(request(request_code_addassumable), Cont, In, _Out, !SCtx, !IO) 
 			),
 			map.set(Mapping, MGAtom, Cost, MappingNew),
 			map.set(Ass, Function, MappingNew, Ass1),
-			set_assumables(Ass1, !.SCtx^cx, NewCtx),
-			!:SCtx = !.SCtx^cx := NewCtx,
+			Ctx0 = !.SCtx^cx,
+			Ctx = Ctx0^assumables := Ass1,
+			!:SCtx = !.SCtx^cx := Ctx,
 			Cont = yes
 		else
 			true,  % TODO report error: not ground

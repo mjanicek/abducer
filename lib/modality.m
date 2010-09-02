@@ -29,9 +29,9 @@
 	func compose(T::in, T::in) = (T::out) is semidet
 ].
 
-:- func compose_list(list(T)) = list(T) <= modality(T).
-
 :- pred match(list(T)::in, list(T)::in) is semidet <= modality(T).
+
+:- func compose_list(list(T)) = list(T) <= modality(T).
 
 %------------------------------------------------------------------------------%
 
@@ -65,3 +65,4 @@ compose_list([H,I|T]) = C :-
 	then C = [J|compose_list(T)]
 	else C = [H, I|compose_list(T)]
 	).
+
