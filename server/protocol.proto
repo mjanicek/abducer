@@ -1,0 +1,180 @@
+// =================================================================
+// Copyright (C) 2010 DFKI GmbH Talking Robots 
+// Miroslav Janicek (miroslav.janicek@dfki.de) 
+//                                                                                                                          
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public License 
+// as published by the Free Software Foundation; either version 2.1 of
+// the License, or (at your option) any later version.
+//                                                                                                                          
+// This library is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+// Lesser General Public License for more details.
+//                                                                                                                          
+// You should have received a copy of the GNU Lesser General Public
+// License along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+// 02111-1307, USA.
+// =================================================================
+
+package protocol;
+
+enum Modality {
+	ANY = 1;
+	TRUTH = 2;
+	EVENT = 3;
+	BELIEF = 4;
+	INTENTION = 5;
+	ATTENTION = 6;
+	UNDERSTANDING = 7;
+	GENERATION = 8;
+};
+
+message Term {
+	enum TermType {
+		VARIABLE = 1;
+		FUNCTION = 2;
+	};
+	required TermType type = 1;
+	optional string functor = 2;
+	repeated Term args = 3;
+	optional string var_name = 4;
+};
+
+message Atom {
+	required string pred_sym = 1;
+	repeated Term args = 2;
+};
+
+message ModalisedAtom {
+	repeated Modality mod = 1;
+	required Atom atom = 2;
+};
+
+message AssumabilityFunction {
+	enum FunctionType {
+		NOTASSUMABLE = 1;
+		CONST = 2;
+		NAMED = 3;
+	};
+	required FunctionType function_type = 1;
+	optional double cost = 2;
+	optional string function_name = 3;
+};
+
+message MarkedQuery {
+	required ModalisedAtom matom = 1;
+
+	enum Marking {
+		PROVED = 1;
+		UNSOLVED = 2;
+		ASSUMED = 3;
+		ASSERTED = 4;
+	};
+	required Marking marking = 2;
+	optional AssumabilityFunction function = 3;
+};
+
+message Proof {
+	repeated MarkedQuery proof = 1;
+	required double cost = 2;
+};
+
+//------------------------------------------------------------------
+
+message Request {
+	enum Code {
+		INITCONTEXT = 1;
+		LOADFILE = 2;
+		CLEARRULES = 3;
+		CLEARFACTS = 4;
+		CLEARFACTSBYMODALITY = 5;
+		CLEARASSUMABLES = 6;
+		CLEARASSUMABILITYFUNCTION = 7;
+		ADDFACT = 8;
+		ADDASSUMABLE = 9;
+		PROVE = 10;
+	};
+	required Code rt = 1;
+};
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+// in reply to Request(...)
+//message RequestReply {
+//	enum ReturnCode {
+//		OK = 1;
+//		PROTOCOLERROR = 2;
+//	};
+//};
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+// preceded by Request(LOADFILE) 
+message LoadFile {
+	required string file_name = 1;
+};
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+// in reply to LoadFile(...)
+message LoadFileReply {
+	enum ReturnCode {
+		OK = 1;
+		IOERROR = 2;
+		SYNTAXERROR = 3;
+	};
+	required ReturnCode rc = 1;
+	optional string error = 2;
+	optional int32 line = 3;
+};
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+// preceded by Request(CLEARFACTSBYMODALITY) 
+message ClearFactsByModality {
+	required Modality mod = 1;
+};
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+// preceded by Request(CLEARASSUMABILITYFUNCTION) 
+message ClearAssumabilityFunction {
+	required string function_name = 1;
+};
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+// preceded by Request(ADDFACT) 
+message AddFact {
+	required ModalisedAtom fact = 1;
+};
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+// preceded by Request(ADDASSUMABLE) 
+message AddAssumable {
+	required string function_name = 1;
+	required ModalisedAtom fact = 2;
+	required double cost = 3;
+};
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+// preceded by Request(PROVE) 
+message Prove {
+	repeated MarkedQuery queries = 1;
+};
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+// in reply to Prove(...)
+message ProveReply {
+	enum ReturnCode {
+		OK = 1;
+		ABDUCERERROR = 2;
+	};
+	required ReturnCode rc = 1;
+	repeated Proof proofs = 2;
+};

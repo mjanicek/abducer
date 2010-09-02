@@ -1,8 +1,8 @@
-#ifndef STRINGTOSLICE_H__
-#define STRINGTOSLICE_H__  1
+#ifndef SLICETOPROTO_H__
+#define SLICETOPROTO_H__  1
 
 // ----------------------------------------------------------------------------
-// Copyright (C) 2009-2010 DFKI GmbH Talking Robots 
+// Copyright (C) 2010 DFKI GmbH Talking Robots 
 // Miroslav Janicek (miroslav.janicek@dfki.de) 
 //
 // This library is free software; you can redistribute it and/or
@@ -21,24 +21,18 @@
 // 02111-1307, USA.
 // ----------------------------------------------------------------------------
 
-#include <vector>
-#include <iterator>
-
 #include "weigabd.h"
-#include "Tokens.h"
+#include "protocol.pb.h"
 
 namespace Abducer = ::de::dfki::lt::tr::infer::weigabd::slice;
 
-Abducer::TermPtr
-parseTerm(std::vector<Tokens::Token *>::iterator & it);
+protocol::Modality
+protoModality(Abducer::Modality m);
 
-Abducer::AtomPtr
-parseAtom(std::vector<Tokens::Token *>::iterator & it);
+protocol::ModalisedAtom
+protoModalisedAtom(const Abducer::ModalisedAtomPtr & a_ma);
 
-Abducer::ModalisedAtomPtr
-parseModalisedAtom(std::vector<Tokens::Token *>::iterator & it);
-
-bool
-parseModality(std::vector<Tokens::Token *>::iterator & it, Abducer::Modality & mod);
+protocol::MarkedQuery
+protoMarkedQuery(const Abducer::MarkedQueryPtr & a_q);
 
 #endif

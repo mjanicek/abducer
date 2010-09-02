@@ -1,5 +1,5 @@
-#ifndef VERSION_H__
-#define VERSION_H__  1
+#ifndef PROTOTOSLICE_H__
+#define PROTOTOSLICE_H__  1
 
 // ----------------------------------------------------------------------------
 // Copyright (C) 2010 DFKI GmbH Talking Robots 
@@ -21,6 +21,27 @@
 // 02111-1307, USA.
 // ----------------------------------------------------------------------------
 
-#define ABDUCER_VERSION  "1.2-pre"
+#include "weigabd.h"
+#include "protocol.pb.h"
+
+namespace Abducer = ::de::dfki::lt::tr::infer::weigabd::slice;
+
+Abducer::MarkedQueryPtr
+markedQueryFromProto(const protocol::MarkedQuery & p_q);
+
+Abducer::AssumabilityFunctionPtr
+assumabilityFunctionFromProto(const protocol::AssumabilityFunction & p_af);
+
+Abducer::ModalisedAtomPtr
+modalisedAtomFromProto(const protocol::ModalisedAtom & p_ma);
+
+Abducer::Modality
+modalityFromProto(protocol::Modality p_m);
+
+Abducer::AtomPtr
+atomFromProto(const protocol::Atom & p_a);
+
+Abducer::TermPtr
+termFromProto(const protocol::Term & p_t);
 
 #endif

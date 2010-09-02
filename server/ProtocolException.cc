@@ -1,6 +1,3 @@
-#ifndef VERSION_H__
-#define VERSION_H__  1
-
 // ----------------------------------------------------------------------------
 // Copyright (C) 2010 DFKI GmbH Talking Robots 
 // Miroslav Janicek (miroslav.janicek@dfki.de) 
@@ -21,6 +18,15 @@
 // 02111-1307, USA.
 // ----------------------------------------------------------------------------
 
-#define ABDUCER_VERSION  "1.2-pre"
+#include "ProtocolException.h"
 
-#endif
+// XXX for debugging only!
+#include <iostream>
+#include "Logging.h"
+using namespace std;
+
+ProtocolException::ProtocolException(const std::string & message_)
+: ServerException(message_)
+{
+	cerr << ERROR_MSG("protocol exception: " << message_) << endl;  // XXX for debugging only!
+}

@@ -1,9 +1,5 @@
 #------------------------------------------------------------------------------#
 
-#ARCHFLAG=-arch i386
-
-#------------------------------------------------------------------------------#
-
 # ICE
 
 SLICE_PATH?=../slice
@@ -14,28 +10,36 @@ SLICE_PATH?=../slice
 
 BIN=abducer-server
 
-CXX_HEADERS=Tokens.h TermTokeniser.h Terms.h TtyUtils.h ForwardedAbducerServer.h SliceToString.h StringToSlice.h Logging.h Version.h
-CXX_HEADERS+=CLI.h
+CXX_HEADERS=CLI.h
+CXX_HEADERS+=SliceToString.h TtyUtils.h ForwardedAbducerServer.h Logging.h Version.h common.h
+CXX_HEADERS+=Constants.h
 CXX_HEADERS+=weigabd.h
+CXX_SOURCES+=SliceToProto.h ProtoToSlice.h ProtoUtil.h ProtocolException.h
+CXX_HEADERS+=protocol.pb.h
 
-CXX_SOURCES=Tokens.cc TermTokeniser.cc ServerMain.cc Terms.cc TtyUtils.cc ForwardedAbducerServer.cc SliceToString.cc StringToSlice.cc
-CXX_SOURCES+=CLI.cc
+CXX_SOURCES=ServerMain.cc CLI.cc
+CXX_SOURCES+=SliceToString.cc TtyUtils.cc ForwardedAbducerServer.cc
 CXX_SOURCES+=weigabd.cc
+CXX_SOURCES+=SliceToProto.cc ProtoToSlice.cc ProtoUtil.h ProtocolException.cc
+CXX_SOURCES+=protocol.pb.cc
 
 CXXFLAGS=-Wall
 CXXFLAGS+=-I. -I$(ICE_HOME)/include
-CXXFLAGS+=-DABDUCER_ICE_VERSION=\"$(ABDUCER_ICE_VERSION)\"
+CXXFLAGS+=-I/opt/local/include
 CXXFLAGS+=-g
-CXXFLAGS+=$(ARCHFLAG)
+CXXFLAGS+=-DABDUCER_ICE_VERSION=\"$(ABDUCER_ICE_VERSION)\"
 
 LDFLAGS=-L$(ICE_HOME)/lib -lIce -lIceUtil $(ARCHFLAG)
+LDFLAGS+=-L/opt/local/lib -lprotobuf
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -#
 
 # Mercury
 
-MBIN=abducer-lfd
-M_SOURCES=abducer-lfd.m protocol.m
+MBIN=abducer-pb
+M_SOURCES=abducer-pb.m protobuf_runtime.m protocol_loading.m
+M_SOURCES+=unix_socket.m
+M_SOURCES+=protocol.m
 
 LIBABDUCER=../lib/libabducer.a
 
@@ -83,6 +87,14 @@ compile: $(BIN) $(MBIN)
 weigabd.h weigabd.cc: $(SLICE_PATH)/weigabd.ice
 	$(ICE_HOME)/bin/slice2cpp -I$(SLICE_PATH) --source-ext cc $(SLICE_PATH)/weigabd.ice
 
+%.pb.cc %.pb.h: %.proto
+	protoc --cpp_out . $*.proto
+
+%.m: %.proto
+	mprotoc --out . $*.proto
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -#
+
 %.o: %.cc $(CXX_HEADERS)
 	$(CXX) $(CXXFLAGS) -c $*.cc
 
@@ -104,6 +116,8 @@ $(MBIN): $(M_SOURCES) $(LIBABDUCER)
 .PHONY: clean
 clean:
 	rm -rf $(OBJS) weigabd.cc weigabd.h \
+		protocol.pb.cc protocol.pb.h \
+		protocol.m \
 		Mercury \
 		$(addsuffix .err, $(basename $(M_SOURCES))) \
 		$(addsuffix .mh, $(basename $(M_SOURCES))) \

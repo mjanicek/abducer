@@ -1,6 +1,3 @@
-#ifndef VERSION_H__
-#define VERSION_H__  1
-
 // ----------------------------------------------------------------------------
 // Copyright (C) 2010 DFKI GmbH Talking Robots 
 // Miroslav Janicek (miroslav.janicek@dfki.de) 
@@ -21,6 +18,15 @@
 // 02111-1307, USA.
 // ----------------------------------------------------------------------------
 
-#define ABDUCER_VERSION  "1.2-pre"
+#ifndef PROTOUTIL_H__
+#define PROTOUTIL_H__  1
+
+#include <string>
+
+std::string
+readMessageFromFileDescriptor(int fd);
+
+void
+writeMessageToFileDescriptor(int fd, const std::string & msg);
 
 #endif

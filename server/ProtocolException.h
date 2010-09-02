@@ -1,8 +1,5 @@
-#ifndef TERMPARSING_H__
-#define TERMPARSING_H__  1
-
 // ----------------------------------------------------------------------------
-// Copyright (C) 2009-2010 DFKI GmbH Talking Robots 
+// Copyright (C) 2010 DFKI GmbH Talking Robots 
 // Miroslav Janicek (miroslav.janicek@dfki.de) 
 //
 // This library is free software; you can redistribute it and/or
@@ -21,37 +18,17 @@
 // 02111-1307, USA.
 // ----------------------------------------------------------------------------
 
-/*
-SYNTAX
-------
+#ifndef PROTOCOLEXCEPTION_H__
+#define PROTOCOLEXCEPTION_H__  1
 
-argument
-	:= atom open_parenthesis arguments close_parenthesis
-	:= atom
-	:= var
-	:= string
-	:= float
-
-arguments
-	:= argument
-	:= argument comma arguments
-
-predicate
-	:= atom open_parenthesis arguments close_parenthesis dot
-	:= atom dot
-*/
-
+#include "weigabd.h"
 #include <string>
-#include <vector>
-#include <iterator>
 
-#include "Tokens.h"
-#include "Terms.h"
+namespace Abducer = ::de::dfki::lt::tr::infer::weigabd::slice;
 
-Argument *
-parseArgument(std::vector<Token *>::iterator & it);
-
-Predicate *
-parsePredicate(std::vector<Token *>::iterator & it);
+class ProtocolException : public Abducer::ServerException {
+public:
+	ProtocolException(const std::string & message);
+};
 
 #endif

@@ -25,12 +25,14 @@
 #include <vector>
 #include <unistd.h>
 
+#include <iostream>
+
 namespace Abducer = ::de::dfki::lt::tr::infer::weigabd::slice;
 
 class ForwardedAbducerServer : public Abducer::AbducerServer {
 
 public:
-	ForwardedAbducerServer(pid_t abducer_pid);
+	ForwardedAbducerServer(pid_t abducer_pid, int fd_out, int fd_in);
 
 	virtual void loadFile(const std::string& filename, const Ice::Current&);
 
@@ -47,10 +49,13 @@ public:
 
 	virtual void startProving(const std::vector<Abducer::MarkedQueryPtr> & g, const Ice::Current&);
 	virtual std::vector<Abducer::MarkedQueryPtr> getBestProof(int timeout, const Ice::Current&);
-	virtual std::vector<Abducer::MarkedQueryPtr> getBestProof();
+	virtual std::vector< std::vector<Abducer::MarkedQueryPtr> > getProofs();
 
 protected:
 	pid_t abducer_pid;
+
+	int fd_in;
+	int fd_out;
 };
 
 #endif

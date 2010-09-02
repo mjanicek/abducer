@@ -11,7 +11,7 @@ lib:
 server: lib
 	make -C server
 	[ -e abducer-server-bin ] || ln -s server/abducer-server abducer-server-bin
-	[ -e abducer-server-core ] || ln -s server/abducer-lfd abducer-server-core
+	[ -e abducer-server-core ] || ln -s server/abducer-pb abducer-server-core
 
 .PHONY: cli
 cli: lib
@@ -34,6 +34,7 @@ util:
 clean:
 	make -C lib clean
 	make -C server clean
+	make -C cli clean
 	make -C tests clean
 	make -C util clean
 	rm -f abducer-server-bin abducer-server-core

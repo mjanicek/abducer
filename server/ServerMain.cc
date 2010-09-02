@@ -21,6 +21,8 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/un.h>
 
 #include <Ice/Ice.h>
 #include <IceUtil/CtrlCHandler.h>
@@ -43,14 +45,13 @@ using namespace std;
 const string DEFAULT_SERVER_NAME = "AbducerServer";
 const string DEFAULT_SERVER_ENDPOINTS = "default -p 10000";
 const string DEFAULT_ABDUCER_PATH = "/usr/bin/false";
+const string DEFAULT_SOCKET_PATH = "./unsock-abducer";
 
 // this probably shouldn't be static
 static Ice::CommunicatorPtr ic;
-static int pipe_to_child[2];
-static int pipe_from_child[2];
 
 int
-runServer(pid_t abducer_pid, const Settings & s);
+runServer(pid_t abducer_pid, const Settings & s, int fd);
 
 void
 shutdownServer(int);
@@ -64,8 +65,11 @@ printUsage();
 void
 printVersion();
 
-void
-preparePlumbing(bool child);
+string
+getSocketName();
+
+int
+prepareSocket(const string & address);
 
 int
 main(int argc, char ** argv)
@@ -80,22 +84,38 @@ main(int argc, char ** argv)
 		{
 			printVersion();
 
-			pipe(pipe_to_child);
-			pipe(pipe_from_child);
+			string socketPath = getSocketName();
+			int socketFd;
+
+			if ((socketFd = prepareSocket(socketPath)) == -1) {
+				return EXIT_FAILURE;
+			}
 
 			pid_t pchild;
 
 			if ((pchild = fork()) == 0) {
-				preparePlumbing(true);
+//				preparePlumbing(true);
 
-				execlp(s.abducerPath.c_str(), s.abducerPath.c_str(), NULL);
+				execlp(s.abducerPath.c_str(), s.abducerPath.c_str(), socketPath.c_str(), NULL);
 				perror("Exec failed");
 			}
 			else {
-				preparePlumbing(false);
-				runServer(pchild, s);
+//				preparePlumbing(false);
+
+				int connectionFd;
+				struct sockaddr_un address;
+				socklen_t address_length;
+
+				cerr << NOTIFY_MSG("waiting for connections at \"" << socketPath << "\"") << endl;
+				if ((connectionFd = accept(socketFd, (struct sockaddr *) &address, &address_length)) == -1) {
+					cerr << NOTIFY_MSG("accept() failed") << endl;
+				}
+				
+				runServer(pchild, s, connectionFd);
 
 				wait(0);
+				cerr << NOTIFY_MSG("unlinking the socket") << endl;
+				unlink(socketPath.c_str());
 			}
 
 			return EXIT_SUCCESS;
@@ -121,7 +141,7 @@ main(int argc, char ** argv)
 }
 
 int
-runServer(pid_t abducer_pid, const Settings & s)
+runServer(pid_t abducer_pid, const Settings & s, int fd)
 {
 	printStatus(abducer_pid, s);
 	IceUtil::CtrlCHandler ctrlCHandler(shutdownServer);
@@ -134,11 +154,14 @@ runServer(pid_t abducer_pid, const Settings & s)
 		Ice::ObjectAdapterPtr adapter
 				= ic->createObjectAdapterWithEndpoints("AbducerAdapter", s.serverEndpoints);
 
-		Ice::ObjectPtr object = new ForwardedAbducerServer(abducer_pid);
+		Ice::ObjectPtr object = new ForwardedAbducerServer(abducer_pid, fd, fd);
 		adapter->add(object, ic->stringToIdentity(s.serverName));
 		adapter->activate();
 
 		ic->waitForShutdown();
+	}
+	catch (const Abducer::ServerException & e) {
+		cerr << ERROR_MSG("server exception: " << e.message) << endl;
 	}
 	catch (const Ice::Exception& e) {
 		cerr << e << endl;
@@ -175,6 +198,7 @@ shutdownServer(int signum)
 		cerr << e << endl;
 		exit(1);
 	}
+	// TODO: kill the child if it's still alive
 }
 
 void
@@ -215,31 +239,37 @@ printVersion()
 	cerr << "(c) 2009-2010 DFKI GmbH Talking Robots" << endl;
 }
 
-void
-preparePlumbing(bool child)
+string
+getSocketName()
 {
-	if (child) {
-		close(STDOUT_FILENO);
-		dup(pipe_from_child[PIPE_WRITE]);
+	return DEFAULT_SOCKET_PATH;
+}
 
-		close(STDIN_FILENO);
-		dup(pipe_to_child[PIPE_READ]);
+int
+prepareSocket(const string & socketPath)
+{
+	int socket_fd;
 
-		close(pipe_to_child[0]);
-		close(pipe_to_child[1]);
-		close(pipe_from_child[0]);
-		close(pipe_from_child[1]);
+	socket_fd = socket(PF_UNIX, SOCK_STREAM, 0);
+	if (socket_fd < 0) {
+		cerr << ERROR_MSG("socket() failed") << endl;
+		return -1;
+	} 
+
+	struct sockaddr_un address;
+	address.sun_family = AF_UNIX;
+	strcpy(address.sun_path, socketPath.c_str());
+	size_t address_length = sizeof(address.sun_family) + strlen(address.sun_path) + 1;
+
+	if (bind(socket_fd, (struct sockaddr *) &address, address_length) != 0) {
+		cerr << ERROR_MSG("bind() to \"" << socketPath << "\" failed") << endl;
+		return -1;
 	}
-	else {
-		close(STDOUT_FILENO);
-		dup(pipe_to_child[PIPE_WRITE]);
 
-		close(STDIN_FILENO);
-		dup(pipe_from_child[PIPE_READ]);
-
-		close(pipe_to_child[0]);
-		close(pipe_to_child[1]);
-		close(pipe_from_child[0]);
-		close(pipe_from_child[1]);
+	if (listen(socket_fd, 1) != 0) {
+		cerr << ERROR_MSG("listen() failed") << endl;
+		return -1;
 	}
+
+	return socket_fd;
 }
