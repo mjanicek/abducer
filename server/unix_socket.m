@@ -43,13 +43,6 @@
 
 :- pred unix_socket.shutdown(unix_socket::in, io::di, io::uo) is det.
 
-    % Accesses the stream to see if there is data available, waits for a given
-    % period before timing out.  (Use this rather than a failure driven test
-    % and loop on connects.)
-    %
-:- pred unix_socket.data_available(bound_unix_socket::in, int::in, int::out, io::di, io::uo)
-    is det.
-
 :- func socket_fd(unix_socket) = int.
     
     % Sending data to a broken pipe will cause the SIGPIPE signal to be
@@ -350,50 +343,6 @@ socket_fd(UnSock) = socket_fd_c(UnSock ^ handle).
     MR_save_transient_hp();
     MR_make_aligned_string_copy(Msg, strerror(Errno));
     MR_restore_transient_hp();
-").
-
-%-----------------------------------------------------------------------------%
-%-----------------------------------------------------------------------------%
-
-:- pragma foreign_proc("C",
-    unix_socket.data_available(Socket::in, Wait::in, Int::out, IO0::di, IO::uo),
-    [promise_pure, tabled_for_io],
-"
-    ML_unix_socket *sock = (ML_unix_socket *) Socket;
-    int selres = 0;
-    fd_set readfds, writefds, exceptfds;
-        struct timeval *sockets__timeout;
-        struct timeval sockets__timeout_struct;
-
-        if ( Wait > 0 ) {
-           sockets__timeout = &sockets__timeout_struct;
-           sockets__timeout->tv_sec = ((int)Wait * 60);
-           sockets__timeout->tv_usec = 0;
-        } else { 
-           sockets__timeout = NULL;
-        }
-
-        FD_ZERO(&writefds);
-        FD_ZERO(&readfds);
-        FD_ZERO(&exceptfds);
-        FD_SET(sock->socket,&readfds);
-        if ( sockets__timeout != NULL ) {
-            /* Do a select to see if something is available......... */
-            selres = select(0, &readfds, &writefds, &exceptfds, 
-                sockets__timeout);
-            if ( selres == 0 ) {
-                Int = -1;
-            } else { 
-                if ( selres == SOCKET_ERROR ) {
-                    Int = -2;
-                } else {
-                    Int = 0;
-                };
-            };
-        } else {
-            Int = 0;
-        }
-        IO = IO0;
 ").
 
 %-----------------------------------------------------------------------------%
