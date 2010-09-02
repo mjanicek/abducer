@@ -19,6 +19,7 @@
 // ----------------------------------------------------------------------------
 
 #include <unistd.h>
+#include <stdlib.h>
 #include <sys/wait.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -45,7 +46,7 @@ using namespace std;
 const string DEFAULT_SERVER_NAME = "AbducerServer";
 const string DEFAULT_SERVER_ENDPOINTS = "default -p 10000";
 const string DEFAULT_ABDUCER_PATH = "/usr/bin/false";
-const string DEFAULT_SOCKET_PATH = "./unsock-abducer";
+const string SOCKET_FILE_TEMPLATE = "/tmp/abducer-socket.XXXXXX";
 
 // this probably shouldn't be static
 static Ice::CommunicatorPtr ic;
@@ -106,7 +107,7 @@ main(int argc, char ** argv)
 				struct sockaddr_un address;
 				socklen_t address_length;
 
-				cerr << NOTIFY_MSG("waiting for connections at \"" << socketPath << "\"") << endl;
+				cerr << NOTIFY_MSG("waiting for connections at [" << socketPath << "]") << endl;
 				if ((connectionFd = accept(socketFd, (struct sockaddr *) &address, &address_length)) == -1) {
 					cerr << NOTIFY_MSG("accept() failed") << endl;
 				}
@@ -114,7 +115,7 @@ main(int argc, char ** argv)
 				runServer(pchild, s, connectionFd);
 
 				wait(0);
-				cerr << NOTIFY_MSG("unlinking the socket") << endl;
+				cerr << NOTIFY_MSG("unlinking [" << socketPath << "]") << endl;
 				unlink(socketPath.c_str());
 			}
 
@@ -209,12 +210,12 @@ printStatus(pid_t abducerPID, const Settings & s)
 	getcwd(cwd, cwd_length);
 
 	cerr << NOTIFY_MSG("server interface revision " << tty::white << ABDUCER_ICE_VERSION << tty::dcol) << endl;
-	cerr << NOTIFY_MSG("abducer binary: " << s.abducerPath) << endl;
+	cerr << NOTIFY_MSG("abducer binary: [" << s.abducerPath << "]") << endl;
 	if (s.abducerPath == DEFAULT_ABDUCER_PATH) {
 		cerr << WARNING_MSG("abducer binary is set to default") << endl;
 	}
 
-	cerr << NOTIFY_MSG("abducer working directory: " << cwd) << endl;
+	cerr << NOTIFY_MSG("abducer working directory: [" << cwd << "]") << endl;
 	cerr << NOTIFY_MSG("abducer PID: " << abducerPID) << endl;
 
 	delete cwd;
@@ -242,7 +243,12 @@ printVersion()
 string
 getSocketName()
 {
-	return DEFAULT_SOCKET_PATH;
+	char * buf = new char[SOCKET_FILE_TEMPLATE.length() + 1];
+	strcpy(buf, SOCKET_FILE_TEMPLATE.c_str());
+	buf = mktemp(buf);
+	string name(buf);
+	delete buf;
+	return name;
 }
 
 int

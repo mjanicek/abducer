@@ -1,0 +1,28 @@
+#!/bin/sh
+
+SERVER_BIN=abducer-server-bin
+ENGINE_BIN=abduction-engine
+
+SERVER_NAME="AbducerServer"
+SERVER_ENDPOINTS="default -p 10000"
+
+DIR="`pwd`/`dirname $0`"
+
+PATH_TO_SERVER="$DIR/$SERVER_BIN"
+PATH_TO_ENGINE="$DIR/$ENGINE_BIN"
+
+if [ ! -e "$PATH_TO_SERVER" ]; then
+	echo "Unable to find the server binary \``basename $PATH_TO_SERVER`' in"
+	echo "`dirname $PATH_TO_SERVER`"
+	echo "--> Is the server compiled?"
+	exit 1
+fi
+
+if [ ! -e "$PATH_TO_ENGINE" ]; then
+	echo "Unable to find the engine binary \``basename $PATH_TO_ENGINE`' in"
+	echo "`dirname $PATH_TO_ENGINE`"
+	echo "--> Is the engine compiled?"
+	exit 1
+fi
+
+"$PATH_TO_SERVER" -n "$SERVER_NAME" -e "$SERVER_ENDPOINTS" -a "$DIR/$ENGINE_BIN"

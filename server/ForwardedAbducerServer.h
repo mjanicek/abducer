@@ -34,6 +34,8 @@ class ForwardedAbducerServer : public Abducer::AbducerServer {
 public:
 	ForwardedAbducerServer(pid_t abducer_pid, int fd_out, int fd_in);
 
+	virtual void clearContext(const Ice::Current&);
+
 	virtual void loadFile(const std::string& filename, const Ice::Current&);
 
 	virtual void clearRules(const Ice::Current&);
@@ -52,6 +54,9 @@ public:
 	virtual std::vector< std::vector<Abducer::MarkedQueryPtr> > getProofs();
 
 protected:
+	void checkOkReply();
+	void clearContext();
+
 	pid_t abducer_pid;
 
 	int fd_in;

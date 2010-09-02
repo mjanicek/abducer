@@ -153,7 +153,8 @@ read_pb_message(Stream, MayRequest, !IO) :-
 			trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, string(Request) ++ "\n", !IO) )
 		;
 			GetRes = error(_),
-			throw(GetRes)
+			MayRequest = no
+%			throw(GetRes)
 		;
 			GetRes = eof,
 			MayRequest = no
@@ -188,7 +189,10 @@ inner_loop(In, Out, !SCtx, !IO) :-
 		else true
 		)
 	else
-		throw("protocol error in the main loop")
+		% FIXME there is no guarantee that the client is listening for a RequestReply
+		% at this point!
+		write_pb_message(Out, request_reply(request_reply_return_code_protocolerror,
+				yes("failed to read the request")), !IO)
 	).
 
 %------------------------------------------------------------------------------%
@@ -198,8 +202,9 @@ inner_loop(In, Out, !SCtx, !IO) :-
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-process_request(request(request_code_initcontext), yes, _In, _Out, _SCtxOld, SCtxNew, !IO) :-
-	SCtxNew = srv_ctx(new_ctx, no).
+process_request(request(request_code_clearcontext), yes, _In, Out, _SCtxOld, SCtxNew, !IO) :-
+	SCtxNew = srv_ctx(new_ctx, no),
+	write_pb_message(Out, request_reply(request_reply_return_code_ok, no), !IO).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
@@ -209,30 +214,32 @@ process_request(request(request_code_loadfile), Cont, In, Out, !SCtx, !IO) :-
 	then
 		loading.load_file(Filename, Result, !.SCtx^cx, NewCtx, !IO),
 		!:SCtx = !.SCtx^cx := NewCtx,
-		write_pb_message(Out, load_result_to_proto(Result), !IO),
+		write_pb_message(Out, load_result_to_proto(ok(Result)), !IO),
 		Cont = yes
 	else
-		Cont = no,
-		throw("protocol error in load file")  % XXX
+		write_pb_message(Out, load_result_to_proto(error("failed to read argument in loadFile")), !IO),
+		Cont = no
 	).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-process_request(request(request_code_clearrules), yes, _In, _Out, !SCtx, !IO) :-
+process_request(request(request_code_clearrules), yes, _In, Out, !SCtx, !IO) :-
 	Ctx0 = !.SCtx^cx,
 	Ctx = Ctx0^rules := set.init,
-	!:SCtx = !.SCtx^cx := Ctx.
+	!:SCtx = !.SCtx^cx := Ctx,
+	write_pb_message(Out, request_reply(request_reply_return_code_ok, no), !IO).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-process_request(request(request_code_clearfacts), yes, _In, _Out, !SCtx, !IO) :-
+process_request(request(request_code_clearfacts), yes, _In, Out, !SCtx, !IO) :-
 	Ctx0 = !.SCtx^cx,
 	Ctx = Ctx0^facts := set.init,
-	!:SCtx = !.SCtx^cx := Ctx.
+	!:SCtx = !.SCtx^cx := Ctx,
+	write_pb_message(Out, request_reply(request_reply_return_code_ok, no), !IO).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-process_request(request(request_code_clearfactsbymodality), Cont, In, _Out, !SCtx, !IO) :-
+process_request(request(request_code_clearfactsbymodality), Cont, In, Out, !SCtx, !IO) :-
 	read_pb_message(In, MayArg, !IO),
 	(if
 		MayArg = yes(clear_facts_by_modality(PM)),
@@ -243,37 +250,42 @@ process_request(request(request_code_clearfactsbymodality), Cont, In, _Out, !SCt
 			Ms \= [M|_]
 				), !.SCtx^cx^facts),
 		!:SCtx = !.SCtx^cx := Ctx,
+		write_pb_message(Out, request_reply(request_reply_return_code_ok, no), !IO),
 		Cont = yes
 	else
-		Cont = no,
-		throw("protocol error in clearing facts by modality")  % XXX
+		write_pb_message(Out, request_reply(request_reply_return_code_protocolerror,
+				yes("failed to read argument in clearFactsByModality")), !IO),
+		Cont = no
 	).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-process_request(request(request_code_clearassumables), yes, _In, _Out, !SCtx, !IO) :-
+process_request(request(request_code_clearassumables), yes, _In, Out, !SCtx, !IO) :-
 	Ctx0 = !.SCtx^cx,
 	Ctx = Ctx0^assumables := map.init,
-	!:SCtx = !.SCtx^cx := Ctx.
+	!:SCtx = !.SCtx^cx := Ctx,
+	write_pb_message(Out, request_reply(request_reply_return_code_ok, no), !IO).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-process_request(request(request_code_clearassumabilityfunction), Cont, In, _Out, !SCtx, !IO) :-
+process_request(request(request_code_clearassumabilityfunction), Cont, In, Out, !SCtx, !IO) :-
 	read_pb_message(In, MayArg, !IO),
 	(if
 		MayArg = yes(clear_assumability_function(FunctionName))
 	then
 		set_assumability_function(FunctionName, map.init, !.SCtx^cx, NewCtx),
 		!:SCtx = !.SCtx^cx := NewCtx,
+		write_pb_message(Out, request_reply(request_reply_return_code_ok, no), !IO),
 		Cont = yes
 	else
-		Cont = no,
-		throw("protocol error in clearing assumability function")
+		write_pb_message(Out, request_reply(request_reply_return_code_protocolerror,
+				yes("failed to read argument in clearAssumabilityFunction")), !IO),
+		Cont = no
 	).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-process_request(request(request_code_addfact), Cont, In, _Out, !SCtx, !IO) :-
+process_request(request(request_code_addfact), Cont, In, Out, !SCtx, !IO) :-
 	read_pb_message(In, MayArg, !IO),
 	(if
 		MayArg = yes(add_fact(ProtoFact)),
@@ -281,15 +293,17 @@ process_request(request(request_code_addfact), Cont, In, _Out, !SCtx, !IO) :-
 	then
 		add_fact(vs(Fact, VS), !.SCtx^cx, NewCtx),
 		!:SCtx = !.SCtx^cx := NewCtx,
+		write_pb_message(Out, request_reply(request_reply_return_code_ok, no), !IO),
 		Cont = yes
 	else
-		Cont = no,
-		throw("protocol error in add fact")
+		write_pb_message(Out, request_reply(request_reply_return_code_protocolerror,
+				yes("failed to read argument in addFact")), !IO),
+		Cont = no
 	).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-process_request(request(request_code_addassumable), Cont, In, _Out, !SCtx, !IO) :-
+process_request(request(request_code_addassumable), Cont, In, Out, !SCtx, !IO) :-
 	read_pb_message(In, MayArg, !IO),
 	(if
 		MayArg = yes(add_assumable(Function, ProtoMAtom, Cost)),
@@ -308,14 +322,17 @@ process_request(request(request_code_addassumable), Cont, In, _Out, !SCtx, !IO) 
 			Ctx0 = !.SCtx^cx,
 			Ctx = Ctx0^assumables := Ass1,
 			!:SCtx = !.SCtx^cx := Ctx,
+			write_pb_message(Out, request_reply(request_reply_return_code_ok, no), !IO),
 			Cont = yes
 		else
-			true,  % TODO report error: not ground
+			write_pb_message(Out, request_reply(request_reply_return_code_protocolerror,
+					yes("argument not ground in addAssumable ")), !IO),
 			Cont = yes
 		)
 	else
-		Cont = no,
-		throw("protocol error in add assumable")
+		write_pb_message(Out, request_reply(request_reply_return_code_protocolerror,
+				yes("failed to read argument in addAssumable")), !IO),
+		Cont = no
 	).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
@@ -326,30 +343,33 @@ process_request(request(request_code_prove), Cont, In, Out, !SCtx, !IO) :-
 		MayArg = yes(protocol.prove(PQueries)),
 		list.map_foldl(query_from_protocol, PQueries, Queries, varset.init, VS)
 	then
-		do_prove(Queries, VS, CostProofs, !SCtx, !IO),
+		do_prove(Out, Queries, VS, CostProofs, !SCtx, !IO),
 		write_pb_message(Out, prove_reply(prove_reply_return_code_ok, list.map(cost_goal_to_proto, CostProofs)), !IO),
 		Cont = yes
 	else
-		Cont = no,
-		throw("protocol error in prove")
+		write_pb_message(Out, request_reply(request_reply_return_code_protocolerror,
+				yes("failed to read argument in prove")), !IO),
+		Cont = no
 	).
 
 %------------------------------------------------------------------------------%
 
-:- pragma promise_pure(do_prove/7).
+:- pragma promise_pure(do_prove/8).
 
-:- pred do_prove(list(query(ctx_modality))::in, varset::in, list(pair(float, goal(ctx_modality)))::out,
-			srv_ctx::in, srv_ctx::out, io::di, io::uo) is det.
+:- pred do_prove(SOut::in, list(query(ctx_modality))::in, varset::in,
+		list(pair(float, goal(ctx_modality)))::out, srv_ctx::in, srv_ctx::out, io::di, io::uo) is det
+		<= stream.writer(SOut, byte, io).
 
-do_prove(Qs, VS, CostProofs, !SCtx, !IO) :-
+do_prove(Out, Qs, VS, CostProofs, !SCtx, !IO) :-
 	impure reset_signaller,
 
-	print(stderr_stream, "Proving the following goal:\n  " ++ goal_to_string(vs(Qs, VS)) ++ "\n", !IO),
+	print(stderr_stream, "Will start proving the following goal:\n  " ++ goal_to_string(vs(Qs, VS)) ++ "\n", !IO),
 
 	P0 = new_proof(!.SCtx^cx, Qs, VS),
 	is_ctx_proof(P0),
 
 %	print_ctx(stderr_stream, !.SCtx^cx, !IO),
+	write_pb_message(Out, request_reply(request_reply_return_code_ok, no), !IO),
 
 	prove(unbounded_dfs, P0, Ps, probabilistic_costs, !.SCtx^cx),
 	print(stderr_stream, "Done with proving.\n", !IO),
@@ -373,11 +393,17 @@ do_prove(Qs, VS, CostProofs, !SCtx, !IO) :-
 
 %------------------------------------------------------------------------------%
 
-:- func load_result_to_proto(loading.load_result) = load_file_reply.
+:- type load_result_proto  % TODO: generalise
+	--->	ok(loading.load_result)
+	;	error(string)
+	.
 
-load_result_to_proto(ok) = load_file_reply(load_file_reply_return_code_ok, no, no).
-load_result_to_proto(file_read_error) = load_file_reply(load_file_reply_return_code_ioerror, no, no).
-load_result_to_proto(syntax_error(Message, Line)) = load_file_reply(load_file_reply_return_code_syntaxerror, yes(Message), yes(Line)).
+:- func load_result_to_proto(load_result_proto) = load_file_reply.
+
+load_result_to_proto(ok(ok)) = load_file_reply(load_file_reply_return_code_ok, no, no).
+load_result_to_proto(ok(file_read_error)) = load_file_reply(load_file_reply_return_code_ioerror, no, no).
+load_result_to_proto(ok(syntax_error(Message, Line))) = load_file_reply(load_file_reply_return_code_syntaxerror, yes(Message), yes(Line)).
+load_result_to_proto(error(ProtoError)) = load_file_reply(load_file_reply_return_code_protocolerror, yes(ProtoError), no).
 
 %------------------------------------------------------------------------------%
 

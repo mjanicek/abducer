@@ -50,12 +50,55 @@ ForwardedAbducerServer::ForwardedAbducerServer(pid_t abducer_pid_, int fd_in_, i
 		fd_out(fd_out_)
 {
 	GOOGLE_PROTOBUF_VERIFY_VERSION;
+	cerr << SERVER_MSG("initialising the abducer") << endl;
+	clearContext();
+}
 
-	cerr << SERVER_MSG("initialising abducer context") << endl;
+void
+ForwardedAbducerServer::clearContext()
+{
+	cerr << REQUEST_MSG("clearing context") << endl;
 
 	protocol::Request request;
-	request.set_rt(protocol::Request::INITCONTEXT);
+	request.set_rt(protocol::Request::CLEARCONTEXT);
 	writeMessageToFileDescriptor(fd_out, request.SerializeAsString());
+
+	checkOkReply();
+}
+
+void
+ForwardedAbducerServer::checkOkReply()
+{
+	string s_ack = readMessageFromFileDescriptor(fd_in);
+	if (s_ack == "") {
+		throw ProtocolException("failed to read the reply");
+	}
+
+	protocol::RequestReply ack;
+	if (!ack.ParseFromString(s_ack)) {
+		throw ProtocolException("failed to parse a RequestReply");
+	}
+
+	switch (ack.rc()) {
+		case protocol::RequestReply::OK:
+			return;
+
+		case protocol::RequestReply::PROTOCOLERROR:
+			if (ack.has_error_message()) {
+				throw ProtocolException(ack.error_message());
+			}
+			return;
+
+		default:
+			throw ProtocolException("unknown protocol error");
+			return;
+	}
+}
+
+void
+ForwardedAbducerServer::clearContext(const Ice::Current&)
+{
+	clearContext();
 }
 
 void
@@ -83,6 +126,15 @@ ForwardedAbducerServer::loadFile(const string& filename, const Ice::Current&)
 
 	switch (reply.rc()) {
 		case protocol::LoadFileReply::OK:
+			break;
+
+		case protocol::LoadFileReply::PROTOCOLERROR:
+			if (reply.has_error()) {
+				throw ProtocolException(reply.error());
+			}
+			else {
+				throw ProtocolException("unknown protocol error in loadFile");
+			}
 			break;
 
 		case protocol::LoadFileReply::IOERROR:
@@ -119,6 +171,8 @@ ForwardedAbducerServer::clearRules(const Ice::Current&)
 	protocol::Request request;
 	request.set_rt(protocol::Request::CLEARRULES);
 	writeMessageToFileDescriptor(fd_out, request.SerializeAsString());
+
+	checkOkReply();
 }
 
 void
@@ -129,6 +183,8 @@ ForwardedAbducerServer::clearFacts(const Ice::Current&)
 	protocol::Request request;
 	request.set_rt(protocol::Request::CLEARFACTS);
 	writeMessageToFileDescriptor(fd_out, request.SerializeAsString());
+
+	checkOkReply();
 }
 
 void
@@ -143,6 +199,8 @@ ForwardedAbducerServer::clearFactsByModality(Modality mod, const Ice::Current&)
 	protocol::ClearFactsByModality arg;
 	arg.set_mod(protoModality(mod));
 	writeMessageToFileDescriptor(fd_out, arg.SerializeAsString());
+
+	checkOkReply();
 }
 
 void
@@ -153,6 +211,8 @@ ForwardedAbducerServer::clearAssumables(const Ice::Current&)
 	protocol::Request request;
 	request.set_rt(protocol::Request::CLEARASSUMABLES);
 	writeMessageToFileDescriptor(fd_out, request.SerializeAsString());
+
+	checkOkReply();
 }
 
 void
@@ -167,6 +227,8 @@ ForwardedAbducerServer::clearAssumabilityFunction(const string & function, const
 	protocol::ClearAssumabilityFunction arg;
 	arg.set_function_name(function);
 	writeMessageToFileDescriptor(fd_out, arg.SerializeAsString());
+
+	checkOkReply();
 }
 
 void
@@ -181,6 +243,8 @@ ForwardedAbducerServer::addFact(const ModalisedAtomPtr & fact, const Ice::Curren
 	protocol::AddFact arg;
 	arg.mutable_fact()->CopyFrom(protoModalisedAtom(fact));
 	writeMessageToFileDescriptor(fd_out, arg.SerializeAsString());
+
+	checkOkReply();
 }
 
 void
@@ -197,6 +261,8 @@ ForwardedAbducerServer::addAssumable(const string & function, const ModalisedAto
 	arg.mutable_fact()->CopyFrom(protoModalisedAtom(a));
 	arg.set_cost(cost);
 	writeMessageToFileDescriptor(fd_out, arg.SerializeAsString());
+
+	checkOkReply();
 }
 
 void
@@ -214,6 +280,8 @@ ForwardedAbducerServer::startProving(const vector<MarkedQueryPtr> & qs, const Ic
 		arg.add_queries()->CopyFrom(protoMarkedQuery(*i));
 	}
 	writeMessageToFileDescriptor(fd_out, arg.SerializeAsString());
+
+	checkOkReply();
 }
 
 vector<MarkedQueryPtr>

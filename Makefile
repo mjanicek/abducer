@@ -7,11 +7,14 @@ all: server cli tests
 lib:
 	make -C lib
 
+ABDUCTION_ENGINE=abduction-engine
+SERVER_BIN=abducer-server-bin
+
 .PHONY: server
 server: lib
 	make -C server
-	[ -e abducer-server-bin ] || ln -s server/abducer-server abducer-server-bin
-	[ -e abducer-server-core ] || ln -s server/abducer-pb abducer-server-core
+	[ -e $(SERVER_BIN) ] || ln -s server/abducer-server $(SERVER_BIN)
+	[ -e $(ABDUCTION_ENGINE) ] || ln -s server/abducer-pb $(ABDUCTION_ENGINE)
 
 .PHONY: cli
 cli: lib
@@ -37,6 +40,6 @@ clean:
 	make -C cli clean
 	make -C tests clean
 	make -C util clean
-	rm -f abducer-server-bin abducer-server-core
+	rm -f $(SERVER_BIN) $(ABDUCTION_ENGINE)
 	rm -f abducer-cli check-file
 	rm -f timeout
