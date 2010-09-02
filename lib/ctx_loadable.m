@@ -143,7 +143,7 @@ rules(Ctx) = solutions_set(pred(Rule::out) is nondet :-
 	Ctx = Ctx0^ctx_rules := NewRules.
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
-
+/*
 	% incremental adders
 
 :- pred add_fact(vscope(matom(ctx_modality))::in, ctx::in, ctx::out) is det.
@@ -159,7 +159,7 @@ add_rule(MRule, Ctx0, Ctx) :-
 	MRule = vs(m(Mod, _-Head), _VS),
 	m(ModH, p(PredSym, _)) = rule_head_matom(Head),
 	Ctx = Ctx0^ctx_rules := multi_map.add(Rules, (Mod++ModH)-PredSym, MRule).
-
+*/
 %------------------------------------------------------------------------------%
 
 	% utils
