@@ -51,7 +51,11 @@ main(!IO) :-
 	impure reset_signaller,
 	io.command_line_arguments(CmdArgs, !IO),
 	(if
-		CmdArgs = [Goal]
+		CmdArgs = [MethodStr, Goal],
+		( MethodStr = "dfs"
+		; MethodStr = "bdfs"
+		; MethodStr = "iddfs"
+		)
 	then
 		some [!Ctx] (
 			!:Ctx = new_ctx,
@@ -65,9 +69,17 @@ main(!IO) :-
 			P0 = proof(InitGoal, _InitBL),
 			format("goal:\n  %s\n\n", [s(goal_to_string(InitGoal))], !IO),
 
-%			Method = unbounded_dfs,
-%			Method = bounded_dfs(-math.ln(0.2)),
-			Method = iddfs(prob.to_cost(0.5), multiply_cost(2.0)),
+			(
+				MethodStr = "dfs",
+				Method = unbounded_dfs
+			;
+				MethodStr = "bdfs",
+				Method = bounded_dfs(prob.to_cost(0.2))
+			;
+				MethodStr = "iddfs",
+				Method = iddfs(prob.to_cost(0.5), multiply_cost(2.0))
+%				Method = iddfs(prob.to_cost(0.5), prob.bound_subtract(0.1))
+			),
 
 			prove(Method, P0, Ps, probabilistic_costs, !.Ctx),
 			Proofs0 = list.map((func(P) = Cost-P :- Cost = proof_cost(!.Ctx, P, probabilistic_costs)), set.to_sorted_list(Ps)),
@@ -88,7 +100,7 @@ main(!IO) :-
 		)
 	else
 		io.progname("?", ProgName, !IO),
-		format(stderr_stream, "Usage: %s GOAL < FILE\n", [s(ProgName)], !IO)
+		format(stderr_stream, "Usage: %s METHOD GOAL < FILE\n", [s(ProgName)], !IO)
 	).
 
 %------------------------------------------------------------------------------%

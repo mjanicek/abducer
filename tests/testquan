@@ -1,0 +1,15 @@
+#!/bin/sh
+
+METH=iddfs
+
+if [ $# -eq 3 ]; then
+	./generate-example.pl $1 $2 | cat - append.abd >generated.abd
+	../timeout -usr1 $3 -- ../abducer-cli $METH <generated.abd 'test.' >log 2>&1
+else
+	if [ $# -eq 2 ]; then
+		./generate-example.pl $1 $2 | cat - append.abd >generated.abd
+		../abducer-cli $METH 'test.' <generated.abd >log 2>&1
+	else
+		echo "usage error!" >&2
+	fi
+fi

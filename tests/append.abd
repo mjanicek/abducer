@@ -1,0 +1,106 @@
+
+%------------------------------------------------------------------------------%
+
+ling_world_exist = [
+	(bel : w(bl, d1)) = p(0.7), %p(0.8),
+	(bel : w(bl, d2)) = p(0.2),
+	(bel : w(bl, d3)) = p(0.1)
+
+%	(bel : w(bl, d1)) = 0.316, %p(0.8),
+%	(bel : w(bl, d2)) = 2.5133, %p(0.08),
+%	(bel : w(bl, d3)) = 2.5133, %p(0.08),
+%	(bel : w(bl, d4)) = 4.710 %p(0.04)
+].
+
+%ling_belief_exist = [
+%	(bel : b(bl)) = 0.10536297341863046316 %p(0.9)
+%].
+
+disjoint([
+	bel : w(bl, d1),
+	bel : w(bl, d2),
+	bel : w(bl, d3)
+]).
+
+bel : ling_color(bl, red) <- bel : w(bl, d1) / ling_world_exist.
+bel : ling_shape(bl, compact) <- bel : w(bl, d1) / ling_world_exist.
+
+bel : ling_color(bl, red) <- bel : w(bl, d2) / ling_world_exist.
+bel : ling_shape(bl, elongated) <- bel : w(bl, d2) / ling_world_exist.
+
+bel : ling_color(bl, red) <- bel : w(bl, d3) / ling_world_exist.
+bel : ling_shape(bl, round) <- bel : w(bl, d3) / ling_world_exist.
+
+%bel : ling_color(bl, red) <- bel : w(bl, d1) / ling_world_exist.
+%bel : ling_shape(bl, compact) <- bel : w(bl, d1) / ling_world_exist.
+%
+%bel : ling_color(bl, unknown) <- bel : w(bl, d2) / ling_world_exist.
+%bel : ling_shape(bl, compact) <- bel : w(bl, d2) / ling_world_exist.
+%
+%bel : ling_color(bl, red) <- bel : w(bl, d3) / ling_world_exist.
+%bel : ling_shape(bl, unknown) <- bel : w(bl, d3) / ling_world_exist.
+%
+%bel : ling_color(bl, unknown) <- bel : w(bl, d3) / ling_world_exist.
+%bel : ling_shape(bl, unknown) <- bel : w(bl, d3) / ling_world_exist.
+
+%------------------------------------------------------------------------------%
+
+correlate = [
+	(color_to_ling_color(red, red)) = p(0.8),
+	(color_to_ling_color(red, green)) = p(0.05),
+	(color_to_ling_color(red, blue)) = p(0.1),
+	(color_to_ling_color(red, yellow)) = p(0.05),
+
+	(color_to_ling_color(green, red)) = p(0.1),
+	(color_to_ling_color(green, green)) = p(0.8),
+	(color_to_ling_color(green, blue)) = p(0.05),
+	(color_to_ling_color(green, yellow)) = p(0.05),
+
+	(color_to_ling_color(blue, red)) = p(0.05),
+	(color_to_ling_color(blue, green)) = p(0.1),
+	(color_to_ling_color(blue, blue)) = p(0.8),
+	(color_to_ling_color(blue, yellow)) = p(0.05),
+
+	(color_to_ling_color(yellow, red)) = p(0.1),
+	(color_to_ling_color(yellow, green)) = p(0.05),
+	(color_to_ling_color(yellow, blue)) = p(0.05),
+	(color_to_ling_color(yellow, yellow)) = p(0.8),
+
+%	(shape_to_ling_shape(elongated, elongated)) = p(0.95),
+%	(shape_to_ling_shape(elongated, compact)) = p(0.05),
+%	(shape_to_ling_shape(compact, compact)) = p(0.95),
+%	(shape_to_ling_shape(compact, elongated)) = p(0.05)
+
+	(shape_to_ling_shape(elongated, elongated)) = p(1.0),
+	(shape_to_ling_shape(compact, compact)) = p(1.0),
+	(shape_to_ling_shape(round, round)) = p(1.0)
+].
+
+%correlate = [
+%	(color_to_ling_color(red, red)) = p(1.0),
+%	(color_to_ling_color(green, green)) = p(1.0),
+%
+%	(shape_to_ling_shape(elongated, elongated)) = p(1.0),
+%	(shape_to_ling_shape(compact, compact)) = p(1.0)
+%].
+
+%------------------------------------------------------------------------------%
+
+resolves_color(LId, Id) <-
+	bel : color(Id, known(Color)),
+	bel : ling_color(LId, LColor),
+	color_to_ling_color(Color, LColor) / correlate.
+
+resolves_shape(LId, Id) <-
+	bel : shape(Id, known(Shape)),
+	bel : ling_shape(LId, LShape),
+	shape_to_ling_shape(Shape, LShape) / correlate.
+
+resolves(LId, Id) <-
+	resolves_color(LId, Id),
+	resolves_shape(LId, Id).
+
+%------------------------------------------------------------------------------%
+
+test <-
+	resolves(bl, Id).

@@ -1,7 +1,10 @@
 #!/bin/sh
 
+METH=dfs
+
 if [ $# -eq 2 ]; then
-	../timeout -usr1 "$2" -- ../abducer-cli test. <"$1" >log && less -R log
+	../timeout -usr1 "$2" -- ../abducer-cli $METH test. <"$1" >log && less -R log
 else
-	../abducer-cli test. <"$1" | less -R
+#	../abducer-cli $METH test. <"$1" | less -R
+	../abducer-cli $METH test. <"$1" >/dev/null 2>&1
 fi
