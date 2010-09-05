@@ -293,6 +293,24 @@ process_request(request(request_code_cleardisjointdecls), yes, _In, Out, !SCtx, 
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
+process_request(request(request_code_addrule), Cont, In, Out, !SCtx, !IO) :-
+	read_pb_message(In, MayArg, !IO),
+	(if
+		MayArg = yes(add_rule(ProtoRule)),
+		mrule_from_protocol(ProtoRule, Rule, varset.init, VS)
+	then
+		add_rule(vs(Rule, VS), !.SCtx^cx, NewCtx),
+		!:SCtx = !.SCtx^cx := NewCtx,
+		write_pb_message(Out, request_reply(request_reply_return_code_ok, no), !IO),
+		Cont = yes
+	else
+		write_pb_message(Out, request_reply(request_reply_return_code_protocolerror,
+				yes("failed to read argument in addFact")), !IO),
+		Cont = no
+	).
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
 process_request(request(request_code_addfact), Cont, In, Out, !SCtx, !IO) :-
 	read_pb_message(In, MayArg, !IO),
 	(if

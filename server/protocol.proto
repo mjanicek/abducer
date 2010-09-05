@@ -63,6 +63,21 @@ message AssumabilityFunction {
 	optional string function_name = 3;
 };
 
+message Antecedent {
+	enum Type {
+		ASSUMABLE = 1;
+		ASSERTED = 2;
+	};
+	required Type type = 1;
+	required ModalisedAtom matom = 2;
+	optional AssumabilityFunction function = 3;
+};
+
+message ModalisedRule {
+	required ModalisedAtom head = 1;
+	repeated Antecedent ante = 2;
+};
+
 message MarkedQuery {
 	required ModalisedAtom matom = 1;
 
@@ -93,10 +108,11 @@ message Request {
 		CLEARASSUMABLES = 6;
 		CLEARASSUMABILITYFUNCTION = 7;
 		CLEARDISJOINTDECLS = 8;
-		ADDFACT = 9;
-		ADDASSUMABLE = 10;
-		ADDDISJOINTDECL = 11;
-		PROVE = 12;
+		ADDRULE = 9;
+		ADDFACT = 10;
+		ADDASSUMABLE = 11;
+		ADDDISJOINTDECL = 12;
+		PROVE = 13;
 	};
 	required Code rt = 1;
 };
@@ -147,6 +163,13 @@ message ClearFactsByModality {
 // preceded by Request(CLEARASSUMABILITYFUNCTION) 
 message ClearAssumabilityFunction {
 	required string function_name = 1;
+};
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+// preceded by Request(ADDRULE) 
+message AddRule {
+	required ModalisedRule rule = 1;
 };
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

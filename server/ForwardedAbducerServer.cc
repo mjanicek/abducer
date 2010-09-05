@@ -240,8 +240,21 @@ ForwardedAbducerServer::clearDisjointDeclarations(const Ice::Current&)
 	request.set_rt(protocol::Request::CLEARDISJOINTDECLS);
 	writeMessageToFileDescriptor(fd_out, request.SerializeAsString());
 
-	// TODO this
-//	protocol::AddDisjointDecl arg;
+	checkOkReply();
+}
+
+void
+ForwardedAbducerServer::addRule(const RulePtr & rule, const Ice::Current&)
+{
+	cerr << REQUEST_MSG("adding a rule") << endl;
+
+	protocol::Request request;
+	request.set_rt(protocol::Request::ADDRULE);
+	writeMessageToFileDescriptor(fd_out, request.SerializeAsString());
+
+	protocol::AddRule arg;
+	arg.mutable_rule()->CopyFrom(protoModalisedRule(rule));
+	writeMessageToFileDescriptor(fd_out, arg.SerializeAsString());
 
 	checkOkReply();
 }

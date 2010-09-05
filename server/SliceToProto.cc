@@ -91,6 +91,41 @@ protoModalisedAtom(const Abducer::ModalisedAtomPtr & a_ma)
 	return p_ma;
 }
 
+protocol::ModalisedRule
+protoModalisedRule(const Abducer::RulePtr & a_r)
+{
+	protocol::ModalisedRule p_r;
+
+	p_r.mutable_head()->CopyFrom(protoModalisedAtom(a_r->head));
+
+	vector<Abducer::AntecedentPtr>::const_iterator i;
+	for (i = a_r->ante.begin(); i != a_r->ante.end(); i++) {
+		p_r.add_ante()->CopyFrom(protoAntecedent(*i));
+	}
+
+	return p_r;
+}
+
+protocol::Antecedent
+protoAntecedent(const Abducer::AntecedentPtr & a_a)
+{
+	protocol::Antecedent p_a;
+	p_a.mutable_matom()->CopyFrom(protoModalisedAtom(a_a->matom));
+
+	if (Abducer::AssumableAntecedentPtr a_aa = Abducer::AssumableAntecedentPtr::dynamicCast(a_a)) {
+		p_a.set_type(protocol::Antecedent::ASSUMABLE);
+		p_a.mutable_function()->CopyFrom(protoAssumabilityFunction(a_aa->f));
+	}
+	else if (Abducer::AssertionAntecedentPtr a_ra = Abducer::AssertionAntecedentPtr::dynamicCast(a_a)) {
+		p_a.set_type(protocol::Antecedent::ASSERTED);
+	}
+	else {
+		throw ProtocolException("unexpected antecedent type");
+	}
+
+	return p_a;
+}
+
 protocol::AssumabilityFunction
 protoAssumabilityFunction(const Abducer::AssumabilityFunctionPtr & a_f)
 {

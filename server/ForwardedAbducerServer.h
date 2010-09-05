@@ -45,6 +45,7 @@ public:
 	virtual void clearAssumabilityFunction(const std::string & function, const Ice::Current&);
 	virtual void clearDisjointDeclarations(const Ice::Current&);
 
+	virtual void addRule(const Abducer::RulePtr & r, const Ice::Current&);
 	virtual void addFact(const Abducer::ModalisedAtomPtr & a, const Ice::Current&);
 	virtual void addAssumable(const std::string& function, const Abducer::ModalisedAtomPtr & a, float cost, const Ice::Current&);
 	virtual void addDisjointDeclaration(const Abducer::DisjointDeclarationPtr & dd, const Ice::Current&);

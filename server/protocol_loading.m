@@ -38,6 +38,7 @@
 :- pred term_from_protocol(protocol.term::in, lang.term::out, varset::in, varset::out) is semidet.
 :- pred atom_from_protocol(protocol.atom::in, lang.atom::out, varset::in, varset::out) is semidet.
 :- pred matom_from_protocol(protocol.modalised_atom::in, matom(ctx_modality)::out, varset::in, varset::out) is semidet.
+:- pred mrule_from_protocol(protocol.modalised_rule::in, mrule(ctx_modality)::out, varset::in, varset::out) is semidet.
 :- pred query_from_protocol(protocol.marked_query::in, query(ctx_modality)::out, varset::in, varset::out) is semidet.
 
 :- pred assumability_function_from_protocol(protocol.assumability_function::in, assumability.assumability_function::out) is semidet.
@@ -92,6 +93,25 @@ atom_from_protocol(atom(PredSym, PArgs), p(PredSym, Args), VS0, VS) :-
 matom_from_protocol(modalised_atom(PM, PA), m(M, A), VS0, VS) :-
 	M = list.map(modality_from_proto, PM),
 	atom_from_protocol(PA, A, VS0, VS).
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
+mrule_from_protocol(modalised_rule(PHead, PAntes), m([], Antes-std(Head)), !VS) :-
+	matom_from_protocol(PHead, Head, !VS),
+	list.map_foldl(antecedent_from_protocol, PAntes, Antes, !VS).
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
+:- pred antecedent_from_protocol(protocol.antecedent::in, rule_antecedent(ctx_modality)::out, varset::in, varset::out) is semidet.
+
+antecedent_from_protocol(protocol.antecedent(antecedent_type_assumable, PMAtom, yes(PAF)),
+		std(cf(MAtom, AF)), !VS) :-
+	matom_from_protocol(PMAtom, MAtom, !VS),
+	assumability_function_from_protocol(PAF, AF).
+
+antecedent_from_protocol(protocol.antecedent(antecedent_type_asserted, PMAtom, no),
+		test(prop(MAtom)), !VS) :-
+	matom_from_protocol(PMAtom, MAtom, !VS).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 

@@ -32,6 +32,15 @@ protoModality(Abducer::Modality m);
 protocol::ModalisedAtom
 protoModalisedAtom(const Abducer::ModalisedAtomPtr & a_ma);
 
+protocol::ModalisedRule
+protoModalisedRule(const Abducer::RulePtr & a_r);
+
+protocol::Antecedent
+protoAntecedent(const Abducer::AntecedentPtr & a_a);
+
+protocol::AssumabilityFunction
+protoAssumabilityFunction(const Abducer::AssumabilityFunctionPtr & a_f);
+
 protocol::MarkedQuery
 protoMarkedQuery(const Abducer::MarkedQueryPtr & a_q);
 
