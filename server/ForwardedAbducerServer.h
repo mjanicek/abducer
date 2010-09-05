@@ -29,7 +29,7 @@
 
 namespace Abducer = ::de::dfki::lt::tr::infer::weigabd::slice;
 
-class ForwardedAbducerServer : public Abducer::AbducerServer {
+class ForwardedAbducerServer : public Abducer::AbductionEngine {
 
 public:
 	ForwardedAbducerServer(pid_t abducer_pid, int fd_out, int fd_in);

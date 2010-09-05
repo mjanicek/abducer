@@ -379,7 +379,7 @@ ForwardedAbducerServer::getProofs()
 	}
 
 	if (reply.rc() == protocol::ProveReply::ABDUCERERROR) {
-		throw ServerException("abducer internal error");
+		throw EngineException("abducer internal error");
 	}
 
 	debug(cerr << NOTIFY_MSG("parsed the message, " << reply.proofs_size() << " proofs total") << endl);

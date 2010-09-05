@@ -26,7 +26,7 @@
 using namespace std;
 
 ProtocolException::ProtocolException(const std::string & message_)
-: ServerException(message_)
+: EngineException(message_)
 {
 	cerr << ERROR_MSG("protocol exception: " << message_) << endl;  // XXX for debugging only!
 }

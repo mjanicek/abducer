@@ -161,7 +161,7 @@ runServer(pid_t abducer_pid, const Settings & s, int fd)
 
 		ic->waitForShutdown();
 	}
-	catch (const Abducer::ServerException & e) {
+	catch (const Abducer::EngineException & e) {
 		cerr << ERROR_MSG("server exception: " << e.message) << endl;
 	}
 	catch (const Ice::Exception& e) {
