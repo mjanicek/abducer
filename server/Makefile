@@ -12,6 +12,7 @@ BIN=abducer-server
 
 CXX_HEADERS=CLI.h
 CXX_HEADERS+=SliceToString.h TtyUtils.h EngineProtobufWrapper.h Logging.h Version.h common.h
+CXX_HEADERS+=ForkingServer.h
 CXX_HEADERS+=Constants.h
 CXX_HEADERS+=weigabd.h
 CXX_SOURCES+=SliceToProto.h ProtoToSlice.h ProtoUtil.h ProtocolException.h
@@ -19,6 +20,7 @@ CXX_HEADERS+=protocol.pb.h
 
 CXX_SOURCES=ServerMain.cc CLI.cc
 CXX_SOURCES+=SliceToString.cc TtyUtils.cc EngineProtobufWrapper.cc
+CXX_SOURCES+=ForkingServer.cc
 CXX_SOURCES+=weigabd.cc
 CXX_SOURCES+=SliceToProto.cc ProtoToSlice.cc ProtoUtil.h ProtocolException.cc
 CXX_SOURCES+=protocol.pb.cc
