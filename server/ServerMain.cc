@@ -31,7 +31,7 @@
 
 #include <iostream>
 
-#include "ForwardedAbducerServer.h"
+#include "EngineProtobufWrapper.h"
 #include "TtyUtils.h"
 
 #include "CLI.h"
@@ -95,14 +95,10 @@ main(int argc, char ** argv)
 			pid_t pchild;
 
 			if ((pchild = fork()) == 0) {
-//				preparePlumbing(true);
-
 				execlp(s.abducerPath.c_str(), s.abducerPath.c_str(), socketPath.c_str(), NULL);
 				perror("Exec failed");
 			}
 			else {
-//				preparePlumbing(false);
-
 				int connectionFd;
 				struct sockaddr_un address;
 				socklen_t address_length;
@@ -155,7 +151,7 @@ runServer(pid_t abducer_pid, const Settings & s, int fd)
 		Ice::ObjectAdapterPtr adapter
 				= ic->createObjectAdapterWithEndpoints("AbducerAdapter", s.serverEndpoints);
 
-		Ice::ObjectPtr object = new ForwardedAbducerServer(abducer_pid, fd, fd);
+		Ice::ObjectPtr object = new EngineProtobufWrapper(abducer_pid, fd, fd);
 		adapter->add(object, ic->stringToIdentity(s.serverName));
 		adapter->activate();
 

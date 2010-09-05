@@ -24,7 +24,7 @@
 #include <signal.h>
 
 #include "common.h"
-#include "ForwardedAbducerServer.h"
+#include "EngineProtobufWrapper.h"
 
 #include "SliceToString.h"
 #include "SliceToProto.h"
@@ -44,7 +44,7 @@ using namespace Abducer;
 
 #include <vector>
 
-ForwardedAbducerServer::ForwardedAbducerServer(pid_t abducer_pid_, int fd_in_, int fd_out_)
+EngineProtobufWrapper::EngineProtobufWrapper(pid_t abducer_pid_, int fd_in_, int fd_out_)
 : abducer_pid(abducer_pid_),
 		fd_in(fd_in_),
 		fd_out(fd_out_)
@@ -55,7 +55,7 @@ ForwardedAbducerServer::ForwardedAbducerServer(pid_t abducer_pid_, int fd_in_, i
 }
 
 void
-ForwardedAbducerServer::clearContext()
+EngineProtobufWrapper::clearContext()
 {
 	cerr << REQUEST_MSG("clearing context") << endl;
 
@@ -67,7 +67,7 @@ ForwardedAbducerServer::clearContext()
 }
 
 void
-ForwardedAbducerServer::checkOkReply()
+EngineProtobufWrapper::checkOkReply()
 {
 	string s_ack = readMessageFromFileDescriptor(fd_in);
 	if (s_ack == "") {
@@ -96,13 +96,13 @@ ForwardedAbducerServer::checkOkReply()
 }
 
 void
-ForwardedAbducerServer::clearContext(const Ice::Current&)
+EngineProtobufWrapper::clearContext(const Ice::Current&)
 {
 	clearContext();
 }
 
 void
-ForwardedAbducerServer::loadFile(const string& filename, const Ice::Current&)
+EngineProtobufWrapper::loadFile(const string& filename, const Ice::Current&)
 {
 	cerr << REQUEST_MSG("loading file [" << filename << "]") << endl;
 
@@ -164,7 +164,7 @@ ForwardedAbducerServer::loadFile(const string& filename, const Ice::Current&)
 }
 
 void
-ForwardedAbducerServer::clearRules(const Ice::Current&)
+EngineProtobufWrapper::clearRules(const Ice::Current&)
 {
 	cerr << REQUEST_MSG("clearing rules") << endl;
 
@@ -176,7 +176,7 @@ ForwardedAbducerServer::clearRules(const Ice::Current&)
 }
 
 void
-ForwardedAbducerServer::clearFacts(const Ice::Current&)
+EngineProtobufWrapper::clearFacts(const Ice::Current&)
 {
 	cerr << REQUEST_MSG("clearing all facts") << endl;
 
@@ -188,7 +188,7 @@ ForwardedAbducerServer::clearFacts(const Ice::Current&)
 }
 
 void
-ForwardedAbducerServer::clearFactsByModality(Modality mod, const Ice::Current&)
+EngineProtobufWrapper::clearFactsByModality(Modality mod, const Ice::Current&)
 {
 	cerr << REQUEST_MSG("clearing [" << modalityToString(mod) << "] facts") << endl;
 
@@ -204,7 +204,7 @@ ForwardedAbducerServer::clearFactsByModality(Modality mod, const Ice::Current&)
 }
 
 void
-ForwardedAbducerServer::clearAssumables(const Ice::Current&)
+EngineProtobufWrapper::clearAssumables(const Ice::Current&)
 {
 	cerr << REQUEST_MSG("clearing assumables") << endl;
 
@@ -216,7 +216,7 @@ ForwardedAbducerServer::clearAssumables(const Ice::Current&)
 }
 
 void
-ForwardedAbducerServer::clearAssumabilityFunction(const string & function, const Ice::Current&)
+EngineProtobufWrapper::clearAssumabilityFunction(const string & function, const Ice::Current&)
 {
 	cerr << REQUEST_MSG("clearing assumable function [" << function << "]") << endl;
 
@@ -232,7 +232,7 @@ ForwardedAbducerServer::clearAssumabilityFunction(const string & function, const
 }
 
 void
-ForwardedAbducerServer::clearDisjointDeclarations(const Ice::Current&)
+EngineProtobufWrapper::clearDisjointDeclarations(const Ice::Current&)
 {
 	cerr << REQUEST_MSG("clearing disjoint declarations") << endl;
 
@@ -244,7 +244,7 @@ ForwardedAbducerServer::clearDisjointDeclarations(const Ice::Current&)
 }
 
 void
-ForwardedAbducerServer::addRule(const RulePtr & rule, const Ice::Current&)
+EngineProtobufWrapper::addRule(const RulePtr & rule, const Ice::Current&)
 {
 	cerr << REQUEST_MSG("adding a rule") << endl;
 
@@ -260,7 +260,7 @@ ForwardedAbducerServer::addRule(const RulePtr & rule, const Ice::Current&)
 }
 
 void
-ForwardedAbducerServer::addFact(const ModalisedAtomPtr & fact, const Ice::Current&)
+EngineProtobufWrapper::addFact(const ModalisedAtomPtr & fact, const Ice::Current&)
 {
 	cerr << REQUEST_MSG("adding fact [" << modalisedAtomToString(fact) << "]") << endl;
 
@@ -276,7 +276,7 @@ ForwardedAbducerServer::addFact(const ModalisedAtomPtr & fact, const Ice::Curren
 }
 
 void
-ForwardedAbducerServer::addAssumable(const string & function, const ModalisedAtomPtr & a, float cost, const Ice::Current&)
+EngineProtobufWrapper::addAssumable(const string & function, const ModalisedAtomPtr & a, float cost, const Ice::Current&)
 {
 	cerr << REQUEST_MSG("adding assumable [" << modalisedAtomToString(a) << " / " << function << "]") << endl;
 
@@ -294,7 +294,7 @@ ForwardedAbducerServer::addAssumable(const string & function, const ModalisedAto
 }
 
 void
-ForwardedAbducerServer::addDisjointDeclaration(const DisjointDeclarationPtr & dd, const Ice::Current&)
+EngineProtobufWrapper::addDisjointDeclaration(const DisjointDeclarationPtr & dd, const Ice::Current&)
 {
 	cerr << REQUEST_MSG("adding a disjoint declaration") << endl;
 
@@ -314,7 +314,7 @@ ForwardedAbducerServer::addDisjointDeclaration(const DisjointDeclarationPtr & dd
 }
 
 void
-ForwardedAbducerServer::startProving(const vector<MarkedQueryPtr> & qs, const Ice::Current&)
+EngineProtobufWrapper::startProving(const vector<MarkedQueryPtr> & qs, const Ice::Current&)
 {
 	cerr << REQUEST_MSG("proving started") << endl;
 
@@ -333,7 +333,7 @@ ForwardedAbducerServer::startProving(const vector<MarkedQueryPtr> & qs, const Ic
 }
 
 vector<ProofWithCostPtr>
-ForwardedAbducerServer::getProofs(int timeout, const Ice::Current&)
+EngineProtobufWrapper::getProofs(int timeout, const Ice::Current&)
 {
 	cerr << REQUEST_MSG("waiting for results, timeout=" << timeout) << endl;
 
@@ -364,7 +364,7 @@ ForwardedAbducerServer::getProofs(int timeout, const Ice::Current&)
 }
 
 vector<ProofWithCostPtr>
-ForwardedAbducerServer::getProofs()
+EngineProtobufWrapper::getProofs()
 {
 	debug(cerr << NOTIFY_MSG("retrieving proofs") << endl);
 

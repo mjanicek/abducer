@@ -1,5 +1,5 @@
-#ifndef FORWARDEDABDUCERSERVER_H__
-#define FORWARDEDABDUCERSERVER_H__  1
+#ifndef ENGINEPROTOBUFWRAPPER_H__
+#define ENGINEPROTOBUFWRAPPER_H__  1
 
 // ----------------------------------------------------------------------------
 // Copyright (C) 2009-2010 DFKI GmbH Talking Robots 
@@ -29,10 +29,10 @@
 
 namespace Abducer = ::de::dfki::lt::tr::infer::weigabd::slice;
 
-class ForwardedAbducerServer : public Abducer::AbductionEngine {
+class EngineProtobufWrapper : public Abducer::AbductionEngine {
 
 public:
-	ForwardedAbducerServer(pid_t abducer_pid, int fd_out, int fd_in);
+	EngineProtobufWrapper(pid_t abducer_pid, int fd_out, int fd_in);
 
 	virtual void clearContext(const Ice::Current&);
 
