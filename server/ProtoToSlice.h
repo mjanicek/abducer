@@ -26,6 +26,9 @@
 
 namespace Abducer = ::de::dfki::lt::tr::infer::weigabd::slice;
 
+Abducer::ProofWithCostPtr
+proofWithCostFromProto(const protocol::Proof & p_p);
+
 Abducer::MarkedQueryPtr
 markedQueryFromProto(const protocol::MarkedQuery & p_q);
 

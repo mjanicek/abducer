@@ -284,8 +284,8 @@ ForwardedAbducerServer::startProving(const vector<MarkedQueryPtr> & qs, const Ic
 	checkOkReply();
 }
 
-vector<MarkedQueryPtr>
-ForwardedAbducerServer::getBestProof(int timeout, const Ice::Current&)
+vector<ProofWithCostPtr>
+ForwardedAbducerServer::getProofs(int timeout, const Ice::Current&)
 {
 	cerr << REQUEST_MSG("waiting for results, timeout=" << timeout) << endl;
 
@@ -306,23 +306,16 @@ ForwardedAbducerServer::getBestProof(int timeout, const Ice::Current&)
 	else {
 		// an error occurred
 		cerr << ERROR_MSG("poll() error") << endl;
-		return vector<MarkedQueryPtr>();
+		return vector<ProofWithCostPtr>();
 	}
 
 	// retrieve all proofs
-	const vector< vector<MarkedQueryPtr> > & proofs = getProofs();
-
+	const vector<ProofWithCostPtr> & proofs = getProofs();
 	cerr << NOTIFY_MSG("got " << proofs.size() << " results") << endl;
-
-	if (proofs.size() > 0) {
-		return proofs[0];  // return just the best one
-	}
-	else {
-		return vector<MarkedQueryPtr>();
-	}
+	return proofs;
 }
 
-vector< vector<MarkedQueryPtr> >
+vector<ProofWithCostPtr>
 ForwardedAbducerServer::getProofs()
 {
 	debug(cerr << NOTIFY_MSG("retrieving proofs") << endl);
@@ -343,18 +336,9 @@ ForwardedAbducerServer::getProofs()
 
 	debug(cerr << NOTIFY_MSG("parsed the message, " << reply.proofs_size() << " proofs total") << endl);
 
-	vector< vector<MarkedQueryPtr> > result;
-
+	vector<ProofWithCostPtr> result;
 	for (int i = 0; i < reply.proofs_size(); i++) {
-		const protocol::Proof & pp = reply.proofs(i);
-
-		vector<MarkedQueryPtr> thisProof;
-		debug(cerr << NOTIFY_MSG("proof #" << i << " contains " << pp.proof_size() << " queries") << endl);
-		for (int j = 0; j < pp.proof_size(); j++) {
-			thisProof.push_back(markedQueryFromProto(pp.proof(j)));
-		}
-		result.push_back(thisProof);
+		result.push_back(proofWithCostFromProto(reply.proofs(i)));
 	}
-
 	return result;
 }

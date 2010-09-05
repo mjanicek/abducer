@@ -50,12 +50,12 @@ public:
 //	virtual Abducer::ProveResult prove(const std::vector<Abducer::MarkedQueryPtr> & g, const Ice::Current&);
 
 	virtual void startProving(const std::vector<Abducer::MarkedQueryPtr> & g, const Ice::Current&);
-	virtual std::vector<Abducer::MarkedQueryPtr> getBestProof(int timeout, const Ice::Current&);
-	virtual std::vector< std::vector<Abducer::MarkedQueryPtr> > getProofs();
+	virtual std::vector<Abducer::ProofWithCostPtr> getProofs(int timeout, const Ice::Current&);
 
 protected:
 	void checkOkReply();
 	void clearContext();
+	std::vector<Abducer::ProofWithCostPtr> getProofs();
 
 	pid_t abducer_pid;
 

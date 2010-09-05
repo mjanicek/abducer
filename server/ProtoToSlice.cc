@@ -23,6 +23,17 @@
 
 #include "ProtocolException.h"
 
+Abducer::ProofWithCostPtr
+proofWithCostFromProto(const protocol::Proof & p_p)
+{
+	Abducer::ProofWithCostPtr a_p = new Abducer::ProofWithCost();
+	a_p->cost = p_p.cost();
+	for (int j = 0; j < p_p.proof_size(); j++) {
+		a_p->proof.push_back(markedQueryFromProto(p_p.proof(j)));
+	}
+	return a_p;
+}
+
 Abducer::MarkedQueryPtr
 markedQueryFromProto(const protocol::MarkedQuery & p_q)
 {
