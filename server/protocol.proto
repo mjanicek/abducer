@@ -92,9 +92,11 @@ message Request {
 		CLEARFACTSBYMODALITY = 5;
 		CLEARASSUMABLES = 6;
 		CLEARASSUMABILITYFUNCTION = 7;
-		ADDFACT = 8;
-		ADDASSUMABLE = 9;
-		PROVE = 10;
+		CLEARDISJOINTDECLS = 8;
+		ADDFACT = 9;
+		ADDASSUMABLE = 10;
+		ADDDISJOINTDECL = 11;
+		PROVE = 12;
 	};
 	required Code rt = 1;
 };
@@ -161,6 +163,13 @@ message AddAssumable {
 	required string function_name = 1;
 	required ModalisedAtom fact = 2;
 	required double cost = 3;
+};
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+// preceded by Request(ADDDISJOINTDECL)
+message AddDisjointDecl {
+	repeated ModalisedAtom dd = 1;
 };
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

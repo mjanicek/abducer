@@ -232,6 +232,21 @@ ForwardedAbducerServer::clearAssumabilityFunction(const string & function, const
 }
 
 void
+ForwardedAbducerServer::clearDisjointDeclarations(const Ice::Current&)
+{
+	cerr << REQUEST_MSG("clearing disjoint declarations") << endl;
+
+	protocol::Request request;
+	request.set_rt(protocol::Request::CLEARDISJOINTDECLS);
+	writeMessageToFileDescriptor(fd_out, request.SerializeAsString());
+
+	// TODO this
+//	protocol::AddDisjointDecl arg;
+
+	checkOkReply();
+}
+
+void
 ForwardedAbducerServer::addFact(const ModalisedAtomPtr & fact, const Ice::Current&)
 {
 	cerr << REQUEST_MSG("adding fact [" << modalisedAtomToString(fact) << "]") << endl;
@@ -260,6 +275,26 @@ ForwardedAbducerServer::addAssumable(const string & function, const ModalisedAto
 	arg.set_function_name(function);
 	arg.mutable_fact()->CopyFrom(protoModalisedAtom(a));
 	arg.set_cost(cost);
+	writeMessageToFileDescriptor(fd_out, arg.SerializeAsString());
+
+	checkOkReply();
+}
+
+void
+ForwardedAbducerServer::addDisjointDeclaration(const DisjointDeclarationPtr & dd, const Ice::Current&)
+{
+	cerr << REQUEST_MSG("adding a disjoint declaration") << endl;
+
+	protocol::Request request;
+	request.set_rt(protocol::Request::ADDDISJOINTDECL);
+	writeMessageToFileDescriptor(fd_out, request.SerializeAsString());
+
+	protocol::AddDisjointDecl arg;
+	vector<ModalisedAtomPtr>::const_iterator i;
+	for (i = dd->atoms.begin(); i != dd->atoms.end(); i++) {
+		arg.add_dd()->CopyFrom(protoModalisedAtom(*i));
+	}
+	// FIXME: check that it's non-empty
 	writeMessageToFileDescriptor(fd_out, arg.SerializeAsString());
 
 	checkOkReply();

@@ -285,6 +285,14 @@ process_request(request(request_code_clearassumabilityfunction), Cont, In, Out, 
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
+process_request(request(request_code_cleardisjointdecls), yes, _In, Out, !SCtx, !IO) :-
+	Ctx0 = !.SCtx^cx,
+	Ctx = Ctx0^disjoint_decls := set.init,
+	!:SCtx = !.SCtx^cx := Ctx,
+	write_pb_message(Out, request_reply(request_reply_return_code_ok, no), !IO).
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
 process_request(request(request_code_addfact), Cont, In, Out, !SCtx, !IO) :-
 	read_pb_message(In, MayArg, !IO),
 	(if
@@ -332,6 +340,36 @@ process_request(request(request_code_addassumable), Cont, In, Out, !SCtx, !IO) :
 	else
 		write_pb_message(Out, request_reply(request_reply_return_code_protocolerror,
 				yes("failed to read argument in addAssumable")), !IO),
+		Cont = no
+	).
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
+process_request(request(request_code_adddisjointdecl), Cont, In, Out, !SCtx, !IO) :-
+	read_pb_message(In, MayArg, !IO),
+	(if
+		MayArg = yes(add_disjoint_decl(PDs)),
+		list.map_foldl(matom_from_protocol, PDs, Ds, varset.init, _VS)
+	then
+		(if
+			list.map((pred(MA::in, GMA::out) is semidet :-
+				GMA = matom_to_ground_matom(MA)
+					), Ds, GroundDs)
+		then
+			DD = set.from_list(GroundDs),
+			Ctx0 = !.SCtx^cx,
+			add_disjoint_decl(DD, Ctx0, Ctx),
+			!:SCtx = !.SCtx^cx := Ctx,
+			write_pb_message(Out, request_reply(request_reply_return_code_ok, no), !IO),
+			Cont = yes
+		else
+			write_pb_message(Out, request_reply(request_reply_return_code_protocolerror,
+					yes("argument not ground in addDisjointDeclaration")), !IO),
+			Cont = yes
+		)
+	else
+		write_pb_message(Out, request_reply(request_reply_return_code_protocolerror,
+				yes("failed to read argument in addDisjointDeclaration")), !IO),
 		Cont = no
 	).
 

@@ -43,9 +43,11 @@ public:
 	virtual void clearFactsByModality(Abducer::Modality mod, const Ice::Current&);
 	virtual void clearAssumables(const Ice::Current&);
 	virtual void clearAssumabilityFunction(const std::string & function, const Ice::Current&);
+	virtual void clearDisjointDeclarations(const Ice::Current&);
 
 	virtual void addFact(const Abducer::ModalisedAtomPtr & a, const Ice::Current&);
 	virtual void addAssumable(const std::string& function, const Abducer::ModalisedAtomPtr & a, float cost, const Ice::Current&);
+	virtual void addDisjointDeclaration(const Abducer::DisjointDeclarationPtr & dd, const Ice::Current&);
 
 //	virtual Abducer::ProveResult prove(const std::vector<Abducer::MarkedQueryPtr> & g, const Ice::Current&);
 
