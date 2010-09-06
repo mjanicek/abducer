@@ -54,6 +54,13 @@ EngineProtobufWrapper::EngineProtobufWrapper(pid_t abducer_pid_, int fd_in_, int
 	clearContext();
 }
 
+EngineProtobufWrapper::~EngineProtobufWrapper()
+{
+//	close(fd_in);
+//	cerr << NOTIFY_MSG("killing process " << abducer_pid) << endl;
+	kill(abducer_pid, SIGKILL);
+}
+
 void
 EngineProtobufWrapper::clearContext()
 {

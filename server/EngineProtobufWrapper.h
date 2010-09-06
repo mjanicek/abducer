@@ -33,6 +33,7 @@ class EngineProtobufWrapper : public Abducer::AbductionEngine {
 
 public:
 	EngineProtobufWrapper(pid_t abducer_pid, int fd_out, int fd_in);
+	virtual ~EngineProtobufWrapper();
 
 	virtual void clearContext(const Ice::Current&);
 

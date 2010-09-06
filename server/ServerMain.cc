@@ -31,6 +31,7 @@
 
 #include <iostream>
 
+#include "ForkingServer.h"
 #include "EngineProtobufWrapper.h"
 #include "TtyUtils.h"
 
@@ -52,13 +53,13 @@ const string SOCKET_FILE_TEMPLATE = "/tmp/abducer-socket.XXXXXX";
 static Ice::CommunicatorPtr ic;
 
 int
-runServer(pid_t abducer_pid, const Settings & s, int fd);
+runServer(const Settings & s, int socketFd, const string & socketPath);
 
 void
 shutdownServer(int);
 
 void
-printStatus(pid_t abducerPID, const Settings & s);
+printStatus(const Settings & s);
 
 void
 printUsage();
@@ -92,28 +93,11 @@ main(int argc, char ** argv)
 				return EXIT_FAILURE;
 			}
 
-			pid_t pchild;
+			runServer(s, socketFd, socketPath);
 
-			if ((pchild = fork()) == 0) {
-				execlp(s.abducerPath.c_str(), s.abducerPath.c_str(), socketPath.c_str(), NULL);
-				perror("Exec failed");
-			}
-			else {
-				int connectionFd;
-				struct sockaddr_un address;
-				socklen_t address_length;
-
-				cerr << NOTIFY_MSG("waiting for connections at [" << socketPath << "]") << endl;
-				if ((connectionFd = accept(socketFd, (struct sockaddr *) &address, &address_length)) == -1) {
-					cerr << NOTIFY_MSG("accept() failed") << endl;
-				}
-				
-				runServer(pchild, s, connectionFd);
-
-				wait(0);
-				cerr << NOTIFY_MSG("unlinking [" << socketPath << "]") << endl;
-				unlink(socketPath.c_str());
-			}
+			wait(0);
+			cerr << NOTIFY_MSG("unlinking [" << socketPath << "]") << endl;
+			unlink(socketPath.c_str());
 
 			return EXIT_SUCCESS;
 		}
@@ -138,9 +122,9 @@ main(int argc, char ** argv)
 }
 
 int
-runServer(pid_t abducer_pid, const Settings & s, int fd)
+runServer(const Settings & s, int socketFd, const string & socketPath)
 {
-	printStatus(abducer_pid, s);
+	printStatus(s);
 	IceUtil::CtrlCHandler ctrlCHandler(shutdownServer);
 	int status = 0;
 	try {
@@ -149,9 +133,9 @@ runServer(pid_t abducer_pid, const Settings & s, int fd)
 		cerr << SERVER_MSG("setting up server at " << tty::white << s.serverName<< ":" << s.serverEndpoints << tty::dcol) << endl;
 
 		Ice::ObjectAdapterPtr adapter
-				= ic->createObjectAdapterWithEndpoints("AbducerAdapter", s.serverEndpoints);
+				= ic->createObjectAdapterWithEndpoints("AbducerServerAdapter", s.serverEndpoints);
 
-		Ice::ObjectPtr object = new EngineProtobufWrapper(abducer_pid, fd, fd);
+		Ice::ObjectPtr object = new ForkingServer(s.abducerPath, socketPath, socketFd);
 		adapter->add(object, ic->stringToIdentity(s.serverName));
 		adapter->activate();
 
@@ -189,17 +173,17 @@ shutdownServer(int signum)
 	cerr << endl;
 	cerr << SERVER_MSG("received signal " << signum) << endl;
 	try {
-		ic->shutdown();
+		ic->destroy();
 	}
 	catch (const Ice::Exception e) {
 		cerr << e << endl;
 		exit(1);
 	}
-	// TODO: kill the child if it's still alive
+	// TODO: kill the children if they're still alive
 }
 
 void
-printStatus(pid_t abducerPID, const Settings & s)
+printStatus(const Settings & s)
 {
 	const size_t cwd_length = 512;
 	char * cwd = new char[512];
@@ -212,7 +196,7 @@ printStatus(pid_t abducerPID, const Settings & s)
 	}
 
 	cerr << NOTIFY_MSG("abducer working directory: [" << cwd << "]") << endl;
-	cerr << NOTIFY_MSG("abducer PID: " << abducerPID) << endl;
+//	cerr << NOTIFY_MSG("abducer PID: " << abducerPID) << endl;
 
 	delete cwd;
 }

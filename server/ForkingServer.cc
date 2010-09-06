@@ -26,7 +26,11 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 
+#include <IceUtil/IceUtil.h>
+
 #include "EngineProtobufWrapper.h"
+
+#include <sstream>
 
 using namespace std;
 using namespace Abducer;
@@ -34,47 +38,92 @@ using namespace Abducer;
 ForkingServer::ForkingServer(const string & enginePath_, const string & socketPath_, int socket_fd_)
 : enginePath(enginePath_),
 		socketPath(socketPath_), socket_fd(socket_fd_),
-		engines()
+		adapters(),
+		identities(),
+		communicators(),
+		base_port(15200)
 {
+}
+
+ForkingServer::~ForkingServer()
+{
+//	cerr << NOTIFY_MSG("shutting down all engines") << endl;
+	map<string, Ice::CommunicatorPtr>::iterator it;
+
+	for (it = communicators.begin(); it != communicators.end(); ++it) {
+//		cerr << NOTIFY_MSG("shutting down " << it->first) << endl;
+		it->second->destroy();
+	}
 }
 
 AbductionEnginePrx
 ForkingServer::getEngineProxy(const string & name, const Ice::Current&)
 {
-	// look up the server name
-	return 0;
+	map<string, Ice::ObjectAdapterPtr>::iterator it = adapters.find(name);
+
+	if (it == adapters.end()) {
+		// not found, start a new server
+		adapters[name] = startNewServer(name);
+	}
+
+	Ice::ObjectPrx oprx = adapters[name]->createProxy(identities[name]);
+
+	if (AbductionEnginePrx eprx = AbductionEnginePrx::checkedCast(oprx)) {
+		return eprx;
+	}
+	else {
+		cerr << ERROR_MSG("cannot cast an ObjectPrx to AbductionEnginePrx") << endl;
+		return 0;
+	}
 }
 
-void
-ForkingServer::startNewServer(const string & name)
+Ice::ObjectAdapterPtr
+ForkingServer::startNewServer(const string & engineName)
 {
 	pid_t pchild;
 
 	if ((pchild = fork()) == 0) {
 		execlp(enginePath.c_str(), enginePath.c_str(), socketPath.c_str(), NULL);
 		perror("exec()");
+		return 0;
 	}
 	else {
+		cerr << NOTIFY_MSG("new abducer engine PID: " << pchild) << endl;
+
 		int connection_fd;
 		struct sockaddr_un address;
 		socklen_t address_length;
 
-		cerr << NOTIFY_MSG("waiting for connections at [" << socketPath << "]") << endl;
+		cerr << NOTIFY_MSG("waiting for a connection at [" << socketPath << "]") << endl;
 		if ((connection_fd = accept(socket_fd, (struct sockaddr *) &address, &address_length)) == -1) {
 			cerr << NOTIFY_MSG("accept() failed") << endl;
+			return 0;
 		}
 
 		Ice::CommunicatorPtr ic = Ice::initialize();
-		string engineEndpoints;  // TODO: use "name" directly?
 
-		cerr << SERVER_MSG("starting up an engine wrapper at " << tty::white << name << ":" << engineEndpoints << tty::dcol) << endl;
+		stringstream ss_endpoints;
+		ss_endpoints << "tcp -p " << base_port++;
+	
+		string engineEndpoints = "tcp -p " + base_port++;
+
+		cerr << SERVER_MSG("starting up an engine wrapper at " << tty::white << engineName << ":" << ss_endpoints.str() << tty::dcol) << endl;
 
 		Ice::ObjectAdapterPtr adapter
-				= ic->createObjectAdapterWithEndpoints("AbducerAdapter", engineEndpoints);
+				= ic->createObjectAdapterWithEndpoints(engineName, ss_endpoints.str());
+
+		Ice::Identity ident;
+		ident.name = IceUtil::generateUUID();
+		ident.category = "";
 
 		Ice::ObjectPtr object = new EngineProtobufWrapper(pchild, connection_fd, connection_fd);
-		adapter->add(object, ic->stringToIdentity(name)); // XXX here
+		adapter->add(object, ident);
 		adapter->activate();
+
+		communicators[engineName] = ic;
+		identities[engineName] = ident;
+
+		return adapter;
 	}
 }
 
