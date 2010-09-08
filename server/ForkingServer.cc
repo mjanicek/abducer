@@ -65,6 +65,9 @@ ForkingServer::getEngineProxy(const string & name, const Ice::Current&)
 		// not found, start a new server
 		adapters[name] = startNewServer(name);
 	}
+//	else {
+//		cerr << NOTIFY_MSG("engine " + name + " already running") << endl;
+//	}
 
 	Ice::ObjectPrx oprx = adapters[name]->createProxy(identities[name]);
 

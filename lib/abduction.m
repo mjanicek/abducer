@@ -181,12 +181,14 @@ prove_bound(MayBound, P0, P, Costs, Ctx) :-
 		% (because we may have constant weight functions)
 		% XXX: check assertions?
 		% XXX: check resolved stuff too?
+/*
 		LAss = list.filter_map((func(Q) = MPr is semidet :-
 			Q = assumed(MPr, _)
 				), L0),
 		all_true((pred(m(_M, F)::in) is semidet :-
 			ground_formula(F, _)
 				), LAss),
+*/
 		P = P0
 	else
 		transform(L0, VS0, BL0, L, VS, BL, Ctx),
