@@ -45,11 +45,7 @@ main(!IO) :-
 			!:Ctx = new_ctx,
 			check_facts_files([F|Fs], !Ctx, !IO),
 			nl(!IO),
-			print("Facts:\n", !IO),
-			print_facts(!.Ctx, "  ", !IO),
-			nl(!IO),
-			print("Rules:\n", !IO),
-			print_rules(!.Ctx, "  ", !IO)
+			print_ctx(!.Ctx, !IO)
 		)
 	else
 		print("Usage: check-file FILENAME[S...]\n", !IO)
