@@ -1,16 +1,17 @@
-Author: Miroslav Janicek <miroslav.janicek@dfki.de>
----
+DEPENDENCIES
+------------
 
-HOW TO INSTALL MERCURY
+You'll need a recent Mercury compiler (preferably release 10.04.1) and
+Google Protocol Buffers (preferabably version 2.3.0).
 
-This file describes the process of installing the Mercury compiler
-in your system.
+
+INSTALLING MERCURY
+------------------
 
 1) Download the latest stable version of the Mercury compiler,
    it's the package "Compiler" at the bottom this page:
 
 	 http://www.mercury.csse.unimelb.edu.au/download/release.html
-
 
 2) Unpack it somewhere and enter that directory.
 
@@ -44,6 +45,33 @@ in your system.
 
 6) Make sure that MERCURY_HOME/bin is in your $PATH environment variable.
 
-
 Voila! Your Mercury is compiled. For the instructions on how to build
-and use the abducer, see the file `README.Abducer.txt' in this directory.
+and use the abducer, see further below.
+
+
+INSTALLING GOOGLE PROTOCOL BUFFERS
+----------------------------------
+
+On MacOS X using ports, execute the following command:
+
+  $ sudo port install protobuf-python
+
+On Ubuntu, use the command
+
+  $ sudo apt-get install libprotobuf-dev
+
+
+COMPILING AND RUNNING THE ABDUCER SERVER
+----------------------------------------
+
+After Mercury is installed, compile the abducer server:
+
+  1) make sure that the variable ICE_HOME is set to the *root* of
+     your Ice installation,
+     e.g. ICE_HOME=/usr/local or ICE_HOME=/opt/local
+
+  2) run
+       $ make
+
+To run the abducer server, run the file `start-abducer-server' in this
+directory.
