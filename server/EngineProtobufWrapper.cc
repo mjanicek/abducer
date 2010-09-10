@@ -44,8 +44,11 @@ using namespace Abducer;
 
 #include <vector>
 
-EngineProtobufWrapper::EngineProtobufWrapper(pid_t abducer_pid_, int fd_in_, int fd_out_)
-: abducer_pid(abducer_pid_),
+#define THIS  (this->name)
+
+EngineProtobufWrapper::EngineProtobufWrapper(const string & name_, pid_t abducer_pid_, int fd_in_, int fd_out_)
+: name(name_),
+		abducer_pid(abducer_pid_),
 		fd_in(fd_in_),
 		fd_out(fd_out_)
 {

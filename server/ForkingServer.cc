@@ -35,6 +35,8 @@
 using namespace std;
 using namespace Abducer;
 
+#define THIS  "Server"
+
 ForkingServer::ForkingServer(const string & enginePath_, const string & socketPath_, int socket_fd_)
 : enginePath(enginePath_),
 		socketPath(socketPath_), socket_fd(socket_fd_),
@@ -119,7 +121,7 @@ ForkingServer::startNewServer(const string & engineName)
 		ident.name = IceUtil::generateUUID();
 		ident.category = "";
 
-		Ice::ObjectPtr object = new EngineProtobufWrapper(pchild, connection_fd, connection_fd);
+		Ice::ObjectPtr object = new EngineProtobufWrapper(engineName, pchild, connection_fd, connection_fd);
 		adapter->add(object, ident);
 		adapter->activate();
 

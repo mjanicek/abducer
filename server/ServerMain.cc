@@ -41,8 +41,7 @@
 
 using namespace std;
 
-#define PIPE_READ   0
-#define PIPE_WRITE  1
+#define THIS  "Server"
 
 const string DEFAULT_SERVER_NAME = "AbducerServer";
 const string DEFAULT_SERVER_ENDPOINTS = "default -p 10000";

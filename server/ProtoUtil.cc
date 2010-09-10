@@ -30,6 +30,8 @@ const size_t MSG_SIZE_LIMIT = (4096 * 1024);  // 4 MiB should be more than enoug
 
 using namespace std;
 
+#define THIS  "Protocol"
+
 ssize_t
 read_all(int fd, char * buf, size_t num)
 {

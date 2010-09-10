@@ -25,6 +25,8 @@
 #include "Logging.h"
 using namespace std;
 
+#define THIS  "Protocol"
+
 ProtocolException::ProtocolException(const std::string & message_)
 : EngineException(message_)
 {

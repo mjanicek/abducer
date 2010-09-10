@@ -32,7 +32,7 @@ namespace Abducer = ::de::dfki::lt::tr::infer::weigabd::slice;
 class EngineProtobufWrapper : public Abducer::AbductionEngine {
 
 public:
-	EngineProtobufWrapper(pid_t abducer_pid, int fd_out, int fd_in);
+	EngineProtobufWrapper(const std::string & name, pid_t abducer_pid, int fd_out, int fd_in);
 	virtual ~EngineProtobufWrapper();
 
 	virtual void clearContext(const Ice::Current&);
@@ -60,6 +60,8 @@ protected:
 	void checkOkReply();
 	void clearContext();
 	std::vector<Abducer::ProofWithCostPtr> getProofs();
+
+	std::string name;
 
 	pid_t abducer_pid;
 
