@@ -21,6 +21,8 @@
 // 02111-1307, USA.
 // ----------------------------------------------------------------------------
 
-#define ABDUCER_VERSION  "2.0.0"
+#include <string>
+
+const std::string ABDUCER_VERSION = "2.0.0";
 
 #endif

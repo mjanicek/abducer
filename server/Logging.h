@@ -24,10 +24,10 @@
 #include <iostream>
 #include "TtyUtils.h"
 
-#define SERVER_MSG(arg)  tty::yellow << "[" << THIS << "]" << tty::dcol << "  " << arg
+#define SERVER_MSG(arg)  tty::yellow << "[" << THIS << "]" << tty::dcol << " " << arg
 #define REQUEST_MSG(arg)  tty::magenta << "[" << THIS << "]" << tty::dcol << " " << arg
 #define WARNING_MSG(arg)  tty::red << "[" << THIS << "]" << tty::dcol << " " << arg
 #define ERROR_MSG(arg)  tty::red << "[" << THIS << "] " << arg << tty::dcol
-#define NOTIFY_MSG(arg)  tty::green << "[" << THIS << "]" << tty::dcol << "    " << arg
+#define NOTIFY_MSG(arg)  tty::green << "[" << THIS << "]" << tty::dcol << " " << arg
 
 #endif

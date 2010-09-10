@@ -29,7 +29,6 @@ CXXFLAGS=-Wall
 CXXFLAGS+=-I. -I$(ICE_HOME)/include
 CXXFLAGS+=-I/opt/local/include
 CXXFLAGS+=-g
-CXXFLAGS+=-DABDUCER_ICE_VERSION=\"$(ABDUCER_ICE_VERSION)\"
 
 LDFLAGS=-L$(ICE_HOME)/lib -lIce -lIceUtil $(ARCHFLAG)
 LDFLAGS+=-L/opt/local/lib -lprotobuf
@@ -70,8 +69,6 @@ endif
 .SUFFIXES:
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -#
-
-ABDUCER_ICE_VERSION:=$(shell ./svn-file-version $(SLICE_PATH)/weigabd.ice)
 
 ifeq ($(origin DEBUG), undefined)
 else
@@ -119,7 +116,6 @@ $(MBIN): $(M_SOURCES) $(LIBABDUCER)
 clean:
 	rm -rf $(OBJS) weigabd.cc weigabd.h \
 		protocol.pb.cc protocol.pb.h \
-		protocol.m \
 		Mercury \
 		$(addsuffix .err, $(basename $(M_SOURCES))) \
 		$(addsuffix .mh, $(basename $(M_SOURCES))) \

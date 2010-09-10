@@ -51,6 +51,9 @@ const string SOCKET_FILE_TEMPLATE = "/tmp/abducer-socket.XXXXXX";
 // this probably shouldn't be static
 static Ice::CommunicatorPtr ic;
 
+bool
+interfaceVersionOk();
+
 int
 runServer(const Settings & s, int socketFd, const string & socketPath);
 
@@ -188,7 +191,10 @@ printStatus(const Settings & s)
 	char * cwd = new char[512];
 	getcwd(cwd, cwd_length);
 
-	cerr << NOTIFY_MSG("server interface revision " << tty::white << ABDUCER_ICE_VERSION << tty::dcol) << endl;
+	if (!interfaceVersionOk()) {
+		cerr << WARNING_MSG("server interface version " << Abducer::RELEASE << " may be incompatible") << endl;
+	}
+
 	cerr << NOTIFY_MSG("abducer binary: [" << s.abducerPath << "]") << endl;
 	if (s.abducerPath == DEFAULT_ABDUCER_PATH) {
 		cerr << WARNING_MSG("abducer binary is set to default") << endl;
@@ -198,6 +204,12 @@ printStatus(const Settings & s)
 //	cerr << NOTIFY_MSG("abducer PID: " << abducerPID) << endl;
 
 	delete cwd;
+}
+
+inline bool
+interfaceVersionOk()
+{
+	return ABDUCER_VERSION.compare(0, Abducer::RELEASE.length(), Abducer::RELEASE) == 0;
 }
 
 void
