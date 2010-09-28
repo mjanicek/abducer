@@ -54,7 +54,7 @@ INSTALLING GOOGLE PROTOCOL BUFFERS
 
 On MacOS X using ports, execute the following command:
 
-  $ sudo port install protobuf-python
+  $ sudo port install protobuf-cpp
 
 On Ubuntu, use the command
 
