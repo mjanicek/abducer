@@ -259,12 +259,12 @@ prepareSocket(const string & socketPath)
 	size_t address_length = sizeof(address.sun_family) + strlen(address.sun_path) + 1;
 
 	if (bind(socket_fd, (struct sockaddr *) &address, address_length) != 0) {
-		cerr << ERROR_MSG("bind() to \"" << socketPath << "\" failed") << endl;
+		cerr << ERROR_MSG("bind() to \"" << socketPath << "\" failed: " << strerror(errno)) << endl;
 		return -1;
 	}
 
 	if (listen(socket_fd, 1) != 0) {
-		cerr << ERROR_MSG("listen() failed") << endl;
+		cerr << ERROR_MSG("listen() failed: " << strerror(errno)) << endl;
 		return -1;
 	}
 

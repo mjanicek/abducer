@@ -97,11 +97,11 @@ ForkingServer::startNewServer(const string & engineName)
 
 		int connection_fd;
 		struct sockaddr_un address;
-		socklen_t address_length;
+		socklen_t address_length = sizeof(address);
 
 		cerr << NOTIFY_MSG("waiting for a connection at [" << socketPath << "]") << endl;
 		if ((connection_fd = accept(socket_fd, (struct sockaddr *) &address, &address_length)) == -1) {
-			cerr << NOTIFY_MSG("accept() failed") << endl;
+			cerr << NOTIFY_MSG("accept() failed: " << strerror(errno)) << endl;
 			return 0;
 		}
 
