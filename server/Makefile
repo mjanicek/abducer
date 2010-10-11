@@ -27,11 +27,12 @@ CXX_SOURCES+=protocol.pb.cc
 
 CXXFLAGS=-Wall
 CXXFLAGS+=-I. -I$(ICE_HOME)/include
-CXXFLAGS+=$(shell pkg-config --cflags protobuf)
+#CXXFLAGS+=$(shell pkg-config --cflags protobuf)
 CXXFLAGS+=-g
 
 LDFLAGS=-L$(ICE_HOME)/lib -lIce -lIceUtil $(ARCHFLAG)
-LDFLAGS+=-$(shell pkg-config --libs protobuf)
+LDFLAGS+=-lprotobuf
+#LDFLAGS+=-$(shell pkg-config --libs protobuf)
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -#
 
