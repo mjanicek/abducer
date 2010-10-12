@@ -96,6 +96,13 @@ writeMessageToFileDescriptor(int fd, const std::string & msg)
 		if ((nw = write(fd, msg.data(), (size_t)msg_len)) != (ssize_t)msg_len) {
 			throw "unable to write the message";
 		}
+		else {
+			debug(cerr << NOTIFY_MSG("wrote " << nw << " bytes") << endl);
+//			for (int i = 0; i < nw; i++) {
+//				cerr << (unsigned int)((unsigned char)msg.data()[i]) << " ";
+//			}
+//			cerr << endl;
+		}
 	}
 	else {
 		throw "unable to write message size";
