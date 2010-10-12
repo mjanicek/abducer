@@ -233,10 +233,10 @@ socket_fd(UnSock) = socket_fd_c(UnSock ^ handle).
 
 :- instance reader(unix_socket, byte, io.state, unix_socket.error) where [
     (get(T, Result, !IO) :-
-        unix_socket.read_char(T ^ handle, Char, !IO),
-        ( Char = -1 ->
+        unix_socket.read_char(T ^ handle, Char, ErrCode, !IO),
+        ( ErrCode = -1 ->
             Result = eof
-        ; Char = -2 ->
+        ; ErrCode = -2 ->
             get_errno(T ^ handle, Errno, !IO),
             Result = error(Errno)
         ;
@@ -273,40 +273,46 @@ socket_fd(UnSock) = socket_fd_c(UnSock ^ handle).
     #define UNSOCK_EOF     -1
     #define UNSOCK_ERROR   -2
 
-    int UNSOCK_get_char(ML_unix_socket *sock);
+    int UNSOCK_get_char(ML_unix_socket *sock, int *ec);
 ").
 
 :- pragma foreign_code("C", "
-    int UNSOCK_get_char(ML_unix_socket *sock)
+    int UNSOCK_get_char(ML_unix_socket *sock, int *ec)
     {
         if (sock->buf_pos >= sock->buf_len) {
             /* Refill buffer. */
-            int nchars = recv(sock->socket,
-                sock->buf, sizeof(sock->buf), 0);
+            ssize_t nchars = read(sock->socket,
+                sock->buf, sizeof(sock->buf));
             if (nchars == SOCKET_ERROR) {
                 sock->error = ML_error();
-                return UNSOCK_ERROR;
+                *ec = UNSOCK_ERROR;
+				return 0;
             } else if (nchars == 0) {
-                return UNSOCK_EOF;
+                *ec = UNSOCK_EOF;
+				return 0;
             } else {
+				*ec = 0;
                 sock->buf_pos = 1;
                 sock->buf_len = nchars;
-                return sock->buf[0];
+                return ((unsigned char)sock->buf[0]);
             }
         } else {
+			*ec = 0;
             return sock->buf[sock->buf_pos++];
         }
     }
 ").
 
-:- pred unix_socket.read_char(unix_socket_handle::in, int::out, io::di, io::uo) is det.
+:- pred unix_socket.read_char(unix_socket_handle::in, int::out, int::out, io::di, io::uo) is det.
 :- pragma foreign_proc("C",
-    unix_socket.read_char(Socket::in, Chr::out, _IO0::di, _IO::uo),
+    unix_socket.read_char(Socket::in, Chr::out, ErrCode::out, _IO0::di, _IO::uo),
     [will_not_call_mercury, thread_safe, promise_pure, tabled_for_io],
 "
     ML_unix_socket *sock = (ML_unix_socket *) Socket;
 /*    fprintf(stderr, \"{\"); */
-    Chr = UNSOCK_get_char(sock);
+	int ec;
+    Chr = UNSOCK_get_char(sock, &ec);
+	ErrCode = ec;
 /*    fprintf(stderr, \"%c,%d}\", (char)Chr, Chr); */
 ").
 

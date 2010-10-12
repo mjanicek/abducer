@@ -152,15 +152,18 @@ read_pb_message(Stream, MayRequest, !IO) :-
 			MayRequest = yes(Request),
 			trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, string(Request) ++ "\n", !IO) )
 		;
-			GetRes = error(_),
-			MayRequest = no
+			GetRes = error(E),
+			MayRequest = no,
+			trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, string(E) ++ "\n", !IO) )
 %			throw(GetRes)
 		;
 			GetRes = eof,
+			trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "eof" ++ "\n", !IO) ),
 			MayRequest = no
 		)
 	;
 		MayMsgSize = no,
+		trace[compile_time(flag("debug")), io(!IO)] ( print(stderr_stream, "failed to read the message length" ++ "\n", !IO) ),
 		MayRequest = no
 	).
 
