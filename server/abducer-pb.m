@@ -215,7 +215,7 @@ process_request(request(request_code_loadfile), Cont, In, Out, !SCtx, !IO) :-
 	read_pb_message(In, MayArg, !IO),
 	(if MayArg = yes(load_file(Filename))
 	then
-		loading.load_file(Filename, Result, !.SCtx^cx, NewCtx, !IO),
+		loading.load_file(Filename, Result, !.SCtx^cx, NewCtx, [], _Warns, !IO),
 		!:SCtx = !.SCtx^cx := NewCtx,
 		write_pb_message(Out, load_result_to_proto(ok(Result)), !IO),
 		Cont = yes

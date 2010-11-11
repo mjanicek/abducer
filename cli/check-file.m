@@ -58,7 +58,8 @@ main(!IO) :-
 check_facts_files([], !Ctx, !IO).
 check_facts_files([F|Fs], !Ctx, !IO) :-
 	print("[" ++ F ++ "] ", !IO),
-	load_file(F, Result, !Ctx, !IO),
+	load_file(F, Result, !Ctx, [], Warns, !IO),
 	print(Result, !IO),
+	print(" " ++ string(Warns), !IO),
 	nl(!IO),
 	check_facts_files(Fs, !Ctx, !IO).

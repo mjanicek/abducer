@@ -60,7 +60,7 @@ main(!IO) :-
 		some [!Ctx] (
 			!:Ctx = new_ctx,
 
-			loading.load_stdin(Result, !Ctx, !IO),
+			loading.load_stdin(Result, !Ctx, [], _Warns, !IO),
 			format("read result: %s\n", [s(string(Result))], !IO),
 
 			vs(InitMProp, InitVarset) = det_string_to_vsmatom(Goal),
