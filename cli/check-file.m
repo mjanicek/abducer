@@ -75,7 +75,12 @@ check_facts_files([F|Fs], !Ctx, !IO) :-
 	print("[" ++ F ++ "] ", !IO),
 	load_file(F, Result, !Ctx, [], Warns, !IO),
 	print(string(Result) ++ "\n", !IO),
-	print(string.join_list("\n", list.map(warning_to_string, Warns)) ++ "\n", !IO),
+	(if Warns = []
+	then
+		true
+	else
+		print(string.join_list("\n", list.map(warning_to_string, Warns)) ++ "\n", !IO)
+	),
 	check_facts_files(Fs, !Ctx, !IO).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
