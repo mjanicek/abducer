@@ -53,7 +53,7 @@ ForkingServer::~ForkingServer()
 	map<string, Ice::CommunicatorPtr>::iterator it;
 
 	for (it = communicators.begin(); it != communicators.end(); ++it) {
-//		cerr << NOTIFY_MSG("shutting down " << it->first) << endl;
+		cerr << NOTIFY_MSG("shutting down " << it->first) << endl;
 		it->second->destroy();
 	}
 }
@@ -68,7 +68,7 @@ ForkingServer::getEngineProxy(const string & name, const Ice::Current&)
 		adapters[name] = startNewServer(name);
 	}
 //	else {
-//		cerr << NOTIFY_MSG("engine " + name + " already running") << endl;
+		cerr << NOTIFY_MSG("engine " + name + " already running") << endl;
 //	}
 
 	Ice::ObjectPrx oprx = adapters[name]->createProxy(identities[name]);
@@ -112,7 +112,7 @@ ForkingServer::startNewServer(const string & engineName)
 	
 		string engineEndpoints = "tcp -p " + base_port++;
 
-		cerr << SERVER_MSG("starting up an engine wrapper at " << tty::white << engineName << ":" << ss_endpoints.str() << tty::dcol) << endl;
+		cerr << SERVER_MSG("starting up an engine wrapper at " << engineName << ":" << ss_endpoints.str()) << endl;
 
 		Ice::ObjectAdapterPtr adapter
 				= ic->createObjectAdapterWithEndpoints(engineName, ss_endpoints.str());
@@ -131,51 +131,3 @@ ForkingServer::startNewServer(const string & engineName)
 		return adapter;
 	}
 }
-
-/*
-int
-runServer(pid_t abducer_pid, const Settings & s, int fd)
-{
-//	printStatus(abducer_pid, s);
-//	IceUtil::CtrlCHandler ctrlCHandler(shutdownServer);
-	int status = 0;
-	try {
-		ic = Ice::initialize();
-
-		cerr << SERVER_MSG("setting up server at " << tty::white << s.serverName<< ":" << s.serverEndpoints << tty::dcol) << endl;
-
-		Ice::ObjectAdapterPtr adapter
-				= ic->createObjectAdapterWithEndpoints("AbducerAdapter", s.serverEndpoints);
-
-		Ice::ObjectPtr object = new EngineProtobufWrapper(abducer_pid, fd, fd);
-		adapter->add(object, ic->stringToIdentity(s.serverName));
-		adapter->activate();
-
-		ic->waitForShutdown();
-	}
-	catch (const Abducer::EngineException & e) {
-		cerr << ERROR_MSG("server exception: " << e.message) << endl;
-	}
-	catch (const Ice::Exception& e) {
-		cerr << e << endl;
-		status = 1;
-	}
-	catch (const char* msg) {
-		cerr << msg << endl;
-		status = 1;
-	}
-
-	cerr << SERVER_MSG("server shut down") << endl;
-
-	if (ic) {
-		try {
-			ic->destroy();
-		}
-		catch (const Ice::Exception& e) {
-			cerr << e << endl;
-			status = 1;
-		}
-	}
-	return status;
-}
-*/

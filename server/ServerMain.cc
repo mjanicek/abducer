@@ -132,7 +132,7 @@ runServer(const Settings & s, int socketFd, const string & socketPath)
 	try {
 		ic = Ice::initialize();
 
-		cerr << SERVER_MSG("setting up server at " << tty::white << s.serverName<< ":" << s.serverEndpoints << tty::dcol) << endl;
+		cerr << SERVER_MSG("setting up server at " << s.serverName<< ":" << s.serverEndpoints) << endl;
 
 		Ice::ObjectAdapterPtr adapter
 				= ic->createObjectAdapterWithEndpoints("AbducerServerAdapter", s.serverEndpoints);
