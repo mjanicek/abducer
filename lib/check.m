@@ -31,12 +31,28 @@
 
 :- implementation.
 
-:- import_module int.
+:- import_module int, string.
 :- import_module pair, set, map.
 :- import_module varset.
 
-find_singleton_vars(vs(Rule, _VS), Singletons) :-
-	Singletons = set.to_sorted_list(singletons(fold_vars_mrule(inc_use_count, Rule, init_use_count))).
+find_singleton_vars(vs(Rule, VS), set.to_sorted_list(NamedSingletons)) :-
+	AllSingletons = singletons(fold_vars_mrule(inc_use_count, Rule, init_use_count)),
+	NamedSingletons = set.filter(var_named(VS), AllSingletons).
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
+:- pred var_named(varset::in, var::in) is semidet.
+
+var_named(VS, Var) :-
+	(if varset.search_name(VS, Var, Name)
+	then
+		(if string.prefix(Name, "_")
+		then fail
+		else true
+		)
+	else
+		true
+	).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
