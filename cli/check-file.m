@@ -38,17 +38,32 @@
 
 main(!IO) :-
 	command_line_arguments(CmdLineArgs, !IO),
-	(if
-		CmdLineArgs = [F|Fs]
+
+	(if CmdLineArgs = ["--ctx"|Files0]
+	then
+		PrintCtx = yes,
+		Files = Files0
+	else
+		PrintCtx = no,
+		Files = CmdLineArgs
+	),
+
+	(if Files = [F|Fs]
 	then
 		some [!Ctx] (
 			!:Ctx = new_ctx,
 			check_facts_files([F|Fs], !Ctx, !IO),
-			nl(!IO),
-			tty_print_ctx(stdout_stream, !.Ctx, !IO)
+
+			(if PrintCtx = yes
+			then
+				nl(!IO),
+				tty_print_ctx(stdout_stream, !.Ctx, !IO)
+			else
+				true
+			)
 		)
 	else
-		print("Usage: check-file FILENAME[S...]\n", !IO)
+		print("Usage: check-file [--ctx] FILENAME[S...]\n", !IO)
 	).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
