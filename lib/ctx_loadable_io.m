@@ -26,22 +26,22 @@
 :- import_module abduction, ctx_modality, lang, blacklist.
 :- import_module ctx_loadable.
 
-:- pred print_facts(ctx::in, string::in, io::di, io::uo) is det.
-:- pred print_facts(io.output_stream::in, ctx::in, string::in, io::di, io::uo) is det.
+:- pred tty_print_facts(ctx::in, string::in, io::di, io::uo) is det.
+:- pred tty_print_facts(io.output_stream::in, ctx::in, string::in, io::di, io::uo) is det.
 
-:- pred print_assumables(ctx::in, string::in, io::di, io::uo) is det.
-:- pred print_assumables(io.output_stream::in, ctx::in, string::in, io::di, io::uo) is det.
+:- pred tty_print_assumables(ctx::in, string::in, io::di, io::uo) is det.
+:- pred tty_print_assumables(io.output_stream::in, ctx::in, string::in, io::di, io::uo) is det.
 
-:- pred print_disjoint_decls(io.output_stream::in, ctx::in, string::in, io::di, io::uo) is det.
+:- pred tty_print_disjoint_decls(io.output_stream::in, ctx::in, string::in, io::di, io::uo) is det.
 
-:- pred print_rules(ctx::in, string::in, io::di, io::uo) is det.
-:- pred print_rules(io.output_stream::in, ctx::in, string::in, io::di, io::uo) is det.
+:- pred tty_print_rules(ctx::in, string::in, io::di, io::uo) is det.
+:- pred tty_print_rules(io.output_stream::in, ctx::in, string::in, io::di, io::uo) is det.
 
-:- pred print_ctx(ctx::in, io::di, io::uo) is det.
-:- pred print_ctx(io.output_stream::in, ctx::in, io::di, io::uo) is det.
+:- pred tty_print_ctx(ctx::in, io::di, io::uo) is det.
+:- pred tty_print_ctx(io.output_stream::in, ctx::in, io::di, io::uo) is det.
 
-:- pred print_proof_trace(ctx::in, proof(ctx_modality)::in, io::di, io::uo) is det.
-:- pred print_proof_trace(io.output_stream::in, ctx::in, proof(ctx_modality)::in, io::di, io::uo) is det.
+%:- pred print_proof_trace(ctx::in, proof(ctx_modality)::in, io::di, io::uo) is det.
+%:- pred print_proof_trace(io.output_stream::in, ctx::in, proof(ctx_modality)::in, io::di, io::uo) is det.
 
 :- func goal_to_string(vscope(list(query(ctx_modality)))) = string.
 :- func query_to_string(varset, query(ctx_modality)) = string.
@@ -65,89 +65,88 @@
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-print_facts(Stream, Ctx, Indent, !IO) :-
+tty_print_facts(Stream, Ctx, Indent, !IO) :-
 	set.fold((pred(Fact::in, !.IO::di, !:IO::uo) is det :-
 		print(Stream, Indent, !IO),
 		print(Stream, tty_vsmatom_to_string(Fact), !IO),
 		nl(Stream, !IO)
 			), facts(Ctx), !IO).
 
-print_facts(Ctx, Indent, !IO) :-
-	print_facts(stdout_stream, Ctx, Indent, !IO).
+tty_print_facts(Ctx, Indent, !IO) :-
+	tty_print_facts(stdout_stream, Ctx, Indent, !IO).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-print_rules(Stream, Ctx, Indent, !IO) :-
+tty_print_rules(Stream, Ctx, Indent, !IO) :-
 	set.fold((pred(Rule::in, !.IO::di, !:IO::uo) is det :-
 		print(Stream, Indent, !IO),
-		print(Stream, vsmrule_to_string(Rule), !IO),
+		print(Stream, tty_vsmrule_to_string(Rule), !IO),
 		nl(Stream, !IO)
 			), rules(Ctx), !IO).
 
-print_rules(Ctx, Indent, !IO) :-
-	print_rules(stdout_stream, Ctx, Indent, !IO).
+tty_print_rules(Ctx, Indent, !IO) :-
+	tty_print_rules(stdout_stream, Ctx, Indent, !IO).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-print_assumables(Stream, Ctx, Indent, !IO) :-
+tty_print_assumables(Stream, Ctx, Indent, !IO) :-
 	map.foldl((pred(FuncName::in, Costs::in, !.IO::di, !:IO::uo) is det :-
 		print(Stream, Indent, !IO),
 		print(Stream, FuncName ++ " = ", !IO),
 
 		CostStrs = list.map((func(m(Mod, GAtom)-Cost) = S :-
-			S = vsmatom_to_string(vs(m(Mod, ground_formula_to_formula(GAtom)), varset.init))
+			S = tty_vsmatom_to_string(vs(m(Mod, ground_formula_to_formula(GAtom)), varset.init))
 					++ " = " ++ float_to_string(Cost)
 				), map.to_assoc_list(Costs)),
 
 		print(Stream, "[\n    " ++ string.join_list(",\n" ++ Indent ++ Indent, CostStrs) ++ "\n" ++ Indent ++ "].\n", !IO)
 			), assumables(Ctx), !IO).
 
-print_assumables(Ctx, Indent, !IO) :-
-	print_assumables(stdout_stream, Ctx, Indent, !IO).
+tty_print_assumables(Ctx, Indent, !IO) :-
+	tty_print_assumables(stdout_stream, Ctx, Indent, !IO).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-print_disjoint_decls(Stream, Ctx, Indent, !IO) :-
+tty_print_disjoint_decls(Stream, Ctx, Indent, !IO) :-
 	set.fold((pred(DD::in, !.IO::di, !:IO::uo) is det :-
 		print(Stream, Indent, !IO),
-		print(Stream, disjoint_decl_to_string(DD), !IO),
+		print(Stream, tty_disjoint_decl_to_string(DD), !IO),
 		nl(Stream, !IO)
 			), disjoint_decls(Ctx), !IO).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-print_ctx(Stream, Ctx, !IO) :-
+tty_print_ctx(Stream, Ctx, !IO) :-
 	print(Stream, "facts:\n", !IO),
-	print_facts(Stream, Ctx, "  ", !IO),
+	tty_print_facts(Stream, Ctx, "  ", !IO),
 
 	nl(Stream, !IO),
 
 	print(Stream, "assumables:\n", !IO),
-	print_assumables(Stream, Ctx, "  ", !IO),
+	tty_print_assumables(Stream, Ctx, "  ", !IO),
 
 	nl(Stream, !IO),
 
 	print(Stream, "rules:\n", !IO),
-	print_rules(Stream, Ctx, "  ", !IO),
+	tty_print_rules(Stream, Ctx, "  ", !IO),
 
 	nl(Stream, !IO),
 
 	print(Stream, "disjoint declarations:\n", !IO),
-	print_disjoint_decls(Stream, Ctx, "  ", !IO),
+	tty_print_disjoint_decls(Stream, Ctx, "  ", !IO),
 
 	nl(Stream, !IO).
 
-print_ctx(Ctx, !IO) :-
-	print_ctx(stdout_stream, Ctx, !IO).
+tty_print_ctx(Ctx, !IO) :-
+	tty_print_ctx(stdout_stream, Ctx, !IO).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
+/*
 print_proof_trace(Ctx, Proof, !IO) :-
 	print_proof_trace(stdout_stream, Ctx, Proof, !IO).
 
 print_proof_trace(_Stream, _Ctx, _Proof, !IO) :-
-	true.
-/*
 	print(Stream, "proof trace:\n", !IO),
 	Proof^p_goals = vs(RevGoals, Varset0),
 	Qs = reverse(RevGoals),
@@ -203,9 +202,9 @@ tty_matom_to_string(Varset, MP) = tty_vsmatom_to_string(vs(MP, Varset)).
 
 :- func tty_mtest_to_string(varset, mtest(M)) = string <= (modality(M), stringable(M)).
 
-tty_mtest_to_string(Varset, prop(MAtom)) = matom_to_string(Varset, MAtom).
-tty_mtest_to_string(Varset, impl(MPs, HMP)) = string.join_list(", ", list.map(matom_to_string(Varset), MPs))
-		++ " -> " ++ matom_to_string(Varset, HMP).
+tty_mtest_to_string(Varset, prop(MAtom)) = tty_matom_to_string(Varset, MAtom).
+tty_mtest_to_string(Varset, impl(MPs, HMP)) = string.join_list(", ", list.map(tty_matom_to_string(Varset), MPs))
+		++ " -> " ++ tty_matom_to_string(Varset, HMP).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
@@ -250,3 +249,44 @@ tty_mgatom_to_string(MGP) = tty_matom_to_string(varset.init, ground_matom_to_mat
 :- func set_of_mgatom_to_string(set(mgatom(ctx_modality))) = string.
 
 set_of_mgatom_to_string(Set) = "[" ++ string.join_list(", ", list.map(tty_mgatom_to_string, set.to_sorted_list(Set))) ++ "]".
+
+%------------------------------------------------------------------------------%
+
+:- func tty_vsmrule_to_string(vscope(mrule(ctx_modality))) = string.
+
+tty_vsmrule_to_string(vs(m(K, As-H), Varset)) = Str :-
+	ModStr = tty_modality_to_string(K),
+	RuleStr = tty_rule_head_to_string(Varset, H) ++ " <- "
+			++ string.join_list(", ", list.map(tty_rule_antecedent_to_string(Varset), As)),
+	(if ModStr = ""
+	then Rest = RuleStr
+	else Rest = "(" ++ RuleStr ++ ")"
+	),
+	Str = ModStr ++ Rest.
+
+:- func tty_annot_vsmatom_to_string(vscope(with_assumability_function(matom(ctx_modality)))) = string.
+
+tty_annot_vsmatom_to_string(vs(cf(MP, F), Varset)) = tty_vsmatom_to_string(vs(MP, Varset))
+		++ "/" ++ assumability_function_to_string(F).
+
+:- func tty_test_vsmatom_to_string(vscope(matom(ctx_modality))) = string.
+
+tty_test_vsmatom_to_string(vs(MP, Varset)) = "?" ++ vsmatom_to_string(vs(MP, Varset)).
+
+:- func tty_rule_antecedent_to_string(varset, rule_antecedent(ctx_modality)) = string.
+
+tty_rule_antecedent_to_string(Varset, std(AnnotMAtom)) = tty_annot_vsmatom_to_string(vs(AnnotMAtom, Varset)).
+tty_rule_antecedent_to_string(Varset, test(MTest)) = "<" ++ tty_mtest_to_string(Varset, MTest) ++ ">?".
+
+:- func tty_rule_head_to_string(varset, rule_head(M)) = string <= (modality(M), stringable(M)).
+
+tty_rule_head_to_string(Varset, std(MAtom)) = tty_matom_to_string(Varset, MAtom).
+tty_rule_head_to_string(Varset, test(MTest)) = "<" ++ tty_mtest_to_string(Varset, MTest) ++ ">?".
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
+:- func tty_disjoint_decl_to_string(disjoint_decl(ctx_modality)) = string.
+
+tty_disjoint_decl_to_string(DD) = "disjoint([" ++ S ++ "])" :-
+	S = string.join_list(", ", list.map((func(MGF) = S0 :- ground_matom(MF, MGF), S0 = tty_matom_to_string(varset.init, MF)), set.to_sorted_list(DD))).
+

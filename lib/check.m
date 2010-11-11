@@ -1,5 +1,5 @@
 %------------------------------------------------------------------------------%
-% Copyright (C) 2009-2010 DFKI GmbH Talking Robots 
+% Copyright (C) 2010 DFKI GmbH Talking Robots 
 % Miroslav Janicek (miroslav.janicek@dfki.de) 
 %
 % This library is free software; you can redistribute it and/or
@@ -18,26 +18,25 @@
 % 02111-1307, USA.
 %------------------------------------------------------------------------------%
 
-:- module abducer.
-
+:- module check.
 :- interface.
 
+:- import_module list.
+:- import_module term, varset.
 :- import_module lang.
-:- import_module lang_io.
-:- import_module lang_ops.
-:- import_module anytime.
-:- import_module blacklist.
-:- import_module context.
-:- import_module modality.
-:- import_module stringable.
-:- import_module enumerable.
-:- import_module assumability.
-:- import_module utils.
-:- import_module abduction.
-:- import_module prob.
-:- import_module ctx_io.
-:- import_module ctx_loadable.
-:- import_module ctx_loadable_io.
-:- import_module ctx_modality.
-:- import_module loading.
-:- import_module check.
+
+:- type warning
+	--->	singleton_variable(var)
+	.
+
+:- pred check_mrule(mrule(M)::in, varset::in, list(warning)::out) is det.
+
+%------------------------------------------------------------------------------%
+
+:- implementation.
+
+check_mrule(R, VS, []) :-
+%	R = m(),
+	true.
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
