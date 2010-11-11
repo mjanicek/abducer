@@ -25,14 +25,34 @@ CXX_SOURCES+=weigabd.cc
 CXX_SOURCES+=SliceToProto.cc ProtoToSlice.cc ProtoUtil.h ProtocolException.cc
 CXX_SOURCES+=protocol.pb.cc
 
+#  -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   #
+
 CXXFLAGS=-Wall
 CXXFLAGS+=-I. -I$(ICE_HOME)/include
-#CXXFLAGS+=$(shell pkg-config --cflags protobuf)
 CXXFLAGS+=-g
+
+PROTOBUF_CXXFLAGS=$(shell pkg-config --cflags protobuf 2>/dev/null || true)
+
+ifneq "$(strip $(PROTOBUF_CXXFLAGS))" ""
+CXXFLAGS+=$(PROTOBUF_CXXFLAGS)
+else
+$(warning pkg-config does not know protobuf, assuming default CXXFLAGS)
+CXXFLAGS+=-pthread
+endif
+
+#  -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   #
 
 LDFLAGS=-L$(ICE_HOME)/lib -lIce -lIceUtil $(ARCHFLAG)
 LDFLAGS+=-lprotobuf
-#LDFLAGS+=-$(shell pkg-config --libs protobuf)
+
+PROTOBUF_LDFLAGS=$(shell pkg-config --libs protobuf 2>/dev/null || true)
+
+ifneq "$(strip $(PROTOBUF_LDFLAGS))" ""
+LDFLAGS+=$(PROTOBUF_LDFLAGS)
+else
+$(warning pkg-config does not know protobuf, assuming default LDFLAGS)
+LDFLAGS+=-lprotobuf
+endif
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -#
 
