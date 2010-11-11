@@ -59,7 +59,13 @@ check_facts_files([], !Ctx, !IO).
 check_facts_files([F|Fs], !Ctx, !IO) :-
 	print("[" ++ F ++ "] ", !IO),
 	load_file(F, Result, !Ctx, [], Warns, !IO),
-	print(Result, !IO),
-	print(" " ++ string(Warns), !IO),
-	nl(!IO),
+	print(string(Result) ++ "\n", !IO),
+	print(string.join_list("\n", list.map(warning_to_string, Warns)) ++ "\n", !IO),
 	check_facts_files(Fs, !Ctx, !IO).
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
+:- func warning_to_string(loading.warning) = string.
+
+warning_to_string(singleton_variable(VarName, Line)) =
+		"    Warning: singleton variable `" ++ VarName ++ "' on line " ++ string.from_int(Line).
