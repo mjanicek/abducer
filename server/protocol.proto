@@ -197,9 +197,22 @@ message AddDisjointDecl {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+message ProofSearchMethod {
+	enum Type {
+		DFS = 1;
+		BOUNDEDDFS = 2;
+		IDDFS = 3;
+	};
+	required Type method = 1;
+	optional double max_bound = 2;
+	optional double init_bound = 3;
+	optional double multiplier = 4;
+};
+
 // preceded by Request(PROVE) 
 message Prove {
 	repeated MarkedQuery queries = 1;
+	required ProofSearchMethod method = 2;
 };
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

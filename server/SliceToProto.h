@@ -44,4 +44,7 @@ protoAssumabilityFunction(const Abducer::AssumabilityFunctionPtr & a_f);
 protocol::MarkedQuery
 protoMarkedQuery(const Abducer::MarkedQueryPtr & a_q);
 
+protocol::ProofSearchMethod
+protoProofSearchMethod(const Abducer::ProofSearchMethodPtr & a_meth);
+
 #endif

@@ -45,6 +45,10 @@
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
+:- pred proof_search_method_from_protocol(protocol.proof_search_method::in, abduction.proof_search_method::out(abduction.proof_search_method_inst)) is semidet.
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
 :- func cost_goal_to_proto(pair(float, goal(ctx_modality))) = protocol.proof.
 :- func query_to_proto(varset, query(ctx_modality)) = protocol.marked_query.
 :- func assumability_function_to_proto(assumability.assumability_function) = protocol.assumability_function.
@@ -134,6 +138,12 @@ query_from_protocol(marked_query(PMAtom, marked_query_marking_asserted, no), ass
 assumability_function_from_protocol(assumability_function(assumability_function_function_type_notassumable, no, no), not_assumable).
 assumability_function_from_protocol(assumability_function(assumability_function_function_type_const, yes(Cost), no), const(Cost)).
 assumability_function_from_protocol(assumability_function(assumability_function_function_type_named, no, yes(Name)), f(Name)).
+
+%------------------------------------------------------------------------------%
+
+proof_search_method_from_protocol(proof_search_method(proof_search_method_type_dfs, _, _, _), unbounded_dfs).
+proof_search_method_from_protocol(proof_search_method(proof_search_method_type_boundeddfs, yes(MaxBound), _, _), bounded_dfs(MaxBound)).
+proof_search_method_from_protocol(proof_search_method(proof_search_method_type_iddfs, _, yes(InitBound), yes(Multiplier)), iddfs(InitBound, multiply_cost(Multiplier))).
 
 %------------------------------------------------------------------------------%
 

@@ -324,7 +324,7 @@ EngineProtobufWrapper::addDisjointDeclaration(const DisjointDeclarationPtr & dd,
 }
 
 void
-EngineProtobufWrapper::startProving(const vector<MarkedQueryPtr> & qs, const Ice::Current&)
+EngineProtobufWrapper::startProvingWithMethod(const vector<MarkedQueryPtr> & qs, const ProofSearchMethodPtr & method, const Ice::Current&)
 {
 	cerr << REQUEST_MSG("proving started") << endl;
 
@@ -337,9 +337,18 @@ EngineProtobufWrapper::startProving(const vector<MarkedQueryPtr> & qs, const Ice
 	for (i = qs.begin(); i != qs.end(); i++) {
 		arg.add_queries()->CopyFrom(protoMarkedQuery(*i));
 	}
+	arg.mutable_method()->CopyFrom(protoProofSearchMethod(method));
 	writeMessageToFileDescriptor(fd_out, arg.SerializeAsString());
 
 	checkOkReply();
+}
+
+void
+EngineProtobufWrapper::startProving(const vector<MarkedQueryPtr> & qs, const Ice::Current& c)
+{
+	cerr << WARNING_MSG("using the deprecated startProving() interface") << endl;
+	DFSPtr method = new DFS();
+	startProvingWithMethod(qs, method, c);
 }
 
 vector<ProofWithCostPtr>

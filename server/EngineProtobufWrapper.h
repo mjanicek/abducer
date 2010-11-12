@@ -51,9 +51,9 @@ public:
 	virtual void addAssumable(const std::string& function, const Abducer::ModalisedAtomPtr & a, float cost, const Ice::Current&);
 	virtual void addDisjointDeclaration(const Abducer::DisjointDeclarationPtr & dd, const Ice::Current&);
 
-//	virtual Abducer::ProveResult prove(const std::vector<Abducer::MarkedQueryPtr> & g, const Ice::Current&);
-
+	virtual void startProvingWithMethod(const std::vector<Abducer::MarkedQueryPtr> & g, const Abducer::ProofSearchMethodPtr & method, const Ice::Current&);
 	virtual void startProving(const std::vector<Abducer::MarkedQueryPtr> & g, const Ice::Current&);
+
 	virtual std::vector<Abducer::ProofWithCostPtr> getProofs(int timeout, const Ice::Current&);
 
 protected:

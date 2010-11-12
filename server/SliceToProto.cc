@@ -176,3 +176,24 @@ protoMarkedQuery(const Abducer::MarkedQueryPtr & a_q)
 
 	return p_q;
 }
+
+protocol::ProofSearchMethod
+protoProofSearchMethod(const Abducer::ProofSearchMethodPtr & a_meth)
+{
+	protocol::ProofSearchMethod p_meth;
+
+	if (Abducer::IDDFSPtr a_iddfs = Abducer::IDDFSPtr::dynamicCast(a_meth)) {
+		p_meth.set_method(protocol::ProofSearchMethod::IDDFS);
+		p_meth.set_init_bound(a_iddfs->initBound);
+		p_meth.set_multiplier(a_iddfs->multiplier);
+	}
+	else if (Abducer::BoundedDFSPtr a_bdfs = Abducer::BoundedDFSPtr::dynamicCast(a_meth)) {
+		p_meth.set_method(protocol::ProofSearchMethod::BOUNDEDDFS);
+		p_meth.set_max_bound(a_bdfs->bound);
+	}
+	else {
+		p_meth.set_method(protocol::ProofSearchMethod::DFS);
+	}
+
+	return p_meth;
+}

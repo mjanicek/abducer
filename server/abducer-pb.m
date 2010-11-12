@@ -399,10 +399,11 @@ process_request(request(request_code_adddisjointdecl), Cont, In, Out, !SCtx, !IO
 process_request(request(request_code_prove), Cont, In, Out, !SCtx, !IO) :-
 	read_pb_message(In, MayArg, !IO),
 	(if
-		MayArg = yes(protocol.prove(PQueries)),
-		list.map_foldl(query_from_protocol, PQueries, Queries, varset.init, VS)
+		MayArg = yes(protocol.prove(PQueries, PMethod)),
+		list.map_foldl(query_from_protocol, PQueries, Queries, varset.init, VS),
+		proof_search_method_from_protocol(PMethod, Method)
 	then
-		do_prove(Out, Queries, VS, CostProofs, !SCtx, !IO),
+		do_prove(Out, Method, Queries, VS, CostProofs, !SCtx, !IO),
 		write_pb_message(Out, prove_reply(prove_reply_return_code_ok, list.map(cost_goal_to_proto, CostProofs)), !IO),
 		Cont = yes
 	else
@@ -413,16 +414,18 @@ process_request(request(request_code_prove), Cont, In, Out, !SCtx, !IO) :-
 
 %------------------------------------------------------------------------------%
 
-:- pragma promise_pure(do_prove/8).
+:- pragma promise_pure(do_prove/9).
 
-:- pred do_prove(SOut::in, list(query(ctx_modality))::in, varset::in,
-		list(pair(float, goal(ctx_modality)))::out, srv_ctx::in, srv_ctx::out, io::di, io::uo) is det
+:- pred do_prove(SOut::in, abduction.proof_search_method::in(proof_search_method_inst),
+		list(query(ctx_modality))::in, varset::in, list(pair(float, goal(ctx_modality)))::out,
+		srv_ctx::in, srv_ctx::out, io::di, io::uo) is det
 		<= stream.writer(SOut, byte, io).
 
-do_prove(Out, Qs, VS, CostProofs, !SCtx, !IO) :-
+do_prove(Out, Method, Qs, VS, CostProofs, !SCtx, !IO) :-
 	impure reset_signaller,
 
 	print(stderr_stream, "Will start proving the following goal:\n  " ++ goal_to_string(vs(Qs, VS)) ++ "\n", !IO),
+	print(stderr_stream, "Proof search method: " ++ string(Method) ++ "\n", !IO),
 
 	P0 = new_proof(!.SCtx^cx, Qs, VS),
 	is_ctx_proof(P0),
@@ -430,7 +433,7 @@ do_prove(Out, Qs, VS, CostProofs, !SCtx, !IO) :-
 %	print_ctx(stderr_stream, !.SCtx^cx, !IO),
 	write_pb_message(Out, request_reply(request_reply_return_code_ok, no), !IO),
 
-	prove(unbounded_dfs, P0, Ps, probabilistic_costs, !.SCtx^cx),
+	prove(Method, P0, Ps, probabilistic_costs, !.SCtx^cx),
 	print(stderr_stream, "Done with proving.\n", !IO),
 	Proofs0 = list.map((func(P) = Cost-P :- Cost = proof_cost(!.SCtx^cx, P, probabilistic_costs)), set.to_sorted_list(Ps)),
 
