@@ -21,7 +21,7 @@
 :- module loading.
 :- interface.
 
-:- import_module list.
+:- import_module list, set.
 :- import_module io.
 :- import_module ctx_loadable.
 
@@ -33,6 +33,8 @@
 
 :- type warning
 	--->	singleton_variable(string, int)
+	;	dangerous_names(set(string), int)
+	;	multiply_used_anon(string, int)
 	.
 
 :- pred load_stdin(load_result::out, ctx::in, ctx::out, list(warning)::in, list(warning)::out, io::di, io::uo) is det.
@@ -70,8 +72,22 @@ load_stdin(Result, MainCtx0, MainCtx, MainWs0, MainWs, !IO) :-
 				(if term_to_mrule(Term, MRule)
 				then
 					add_rule(vs(MRule, VS), Ctx0, Ctx),
+
 					find_singleton_vars(vs(MRule, VS), Singletons),
-					Ws = Ws0 ++ list.map((func(Var) = singleton_variable(varset.lookup_name(VS, Var), Line)), Singletons),
+					Ws1 = Ws0 ++ list.map(
+						(func(Var) = singleton_variable(varset.lookup_name(VS, Var), Line)),
+							set.to_sorted_list(Singletons)),
+
+					find_named_and_anonymised_vars(vs(MRule, VS), DangerousVars),
+					Ws2 = Ws1 ++ list.map(
+						(func(DVars) = dangerous_names(set.map(varset.lookup_name(VS), DVars), Line)),
+							set.to_sorted_list(DangerousVars)),
+
+					find_multiply_used_anonymous_vars(vs(MRule, VS), MultiVars),
+					Ws = Ws2 ++ list.map(
+						(func(Var) = multiply_used_anon(varset.lookup_name(VS, Var), Line)),
+							set.to_sorted_list(MultiVars)),
+
 					LoopResult = ok,
 					Continue = yes
 				else

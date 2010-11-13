@@ -29,7 +29,8 @@
 
 :- implementation.
 :- import_module require.
-:- import_module list, string, bool.
+:- import_module string, bool.
+:- import_module list, set.
 :- import_module term, term_io.
 :- import_module utils.
 :- import_module stringable.
@@ -88,4 +89,29 @@ check_facts_files([F|Fs], !Ctx, !IO) :-
 :- func warning_to_string(loading.warning) = string.
 
 warning_to_string(singleton_variable(VarName, Line)) =
-		"    Warning: singleton variable `" ++ VarName ++ "' on line " ++ string.from_int(Line).
+		"    line " ++ string.from_int(Line) ++ ": "
+		++ "variable " ++ pretty_escape(VarName) ++ " used only once".
+
+warning_to_string(dangerous_names(Vars, Line)) =
+		"    line " ++ string.from_int(Line) ++ ": "
+		++ "potentially confusing variables " ++ VarS :-
+	VarS = pretty_conjunction(list.map(pretty_escape, set.to_sorted_list(Vars))).
+
+warning_to_string(multiply_used_anon(VarName, Line)) =
+		"    line " ++ string.from_int(Line) ++ ": "
+		++ "anonymised variable " ++ pretty_escape(VarName) ++ " used more than once".
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
+:- func pretty_escape(string) = string.
+
+pretty_escape(S) = "`" ++ S ++ "'".
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
+
+:- func pretty_conjunction(list(string)) = string.
+
+pretty_conjunction([]) = "".
+pretty_conjunction([S]) = S.
+pretty_conjunction([S1, S2]) = S1 ++ " and " ++ S2.
+pretty_conjunction([S1, S2, S3|T]) = S1 ++ ", " ++ pretty_conjunction([S2, S3|T]).
