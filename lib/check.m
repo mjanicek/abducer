@@ -83,7 +83,7 @@ find_multiply_used_anonymous_vars(vs(Rule, VS), UnnamedVars) :-
 var_named(VS, Var) :-
 	(if varset.search_name(VS, Var, Name)
 	then (if string.prefix(Name, "_") then fail else true)
-	else true
+	else fail
 	).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
