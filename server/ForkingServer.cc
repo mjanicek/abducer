@@ -37,14 +37,21 @@ using namespace Abducer;
 
 #define THIS  "Server"
 
-ForkingServer::ForkingServer(const string & enginePath_, const string & socketPath_, int socket_fd_)
-: enginePath(enginePath_),
-		socketPath(socketPath_), socket_fd(socket_fd_),
+ForkingServer::ForkingServer(const vector<string> & engineArgV_, int socket_fd_)
+: engineArgV(engineArgV_), socket_fd(socket_fd_),
 		adapters(),
 		identities(),
 		communicators(),
 		base_port(15200)
 {
+	string s;
+	for (vector<string>::const_iterator it = engineArgV.begin(); it != engineArgV.end(); ++it) {
+		s += "\"" + *it + "\"";
+		if (it + 1 != engineArgV.end()) {
+			s += ", ";
+		}
+	}
+	cerr << NOTIFY_MSG("engines will be started as [" << s << "]") << endl;
 }
 
 ForkingServer::~ForkingServer()
@@ -88,7 +95,14 @@ ForkingServer::startNewServer(const string & engineName)
 	pid_t pchild;
 
 	if ((pchild = fork()) == 0) {
-		execlp(enginePath.c_str(), enginePath.c_str(), socketPath.c_str(), NULL);
+
+		vector<char *> argv;
+		for (vector<string>::iterator it = engineArgV.begin(); it != engineArgV.end(); ++it) {
+			argv.push_back(const_cast<char *>(it->c_str()));
+		}
+		argv.push_back(NULL);
+
+		execvp(argv[0], &argv[0]);
 		perror("exec()");
 		return 0;
 	}
@@ -99,7 +113,7 @@ ForkingServer::startNewServer(const string & engineName)
 		struct sockaddr_un address;
 		socklen_t address_length = sizeof(address);
 
-		cerr << NOTIFY_MSG("waiting for a connection at [" << socketPath << "]") << endl;
+		cerr << NOTIFY_MSG("waiting for a connection on the socket") << endl;
 		if ((connection_fd = accept(socket_fd, (struct sockaddr *) &address, &address_length)) == -1) {
 			cerr << NOTIFY_MSG("accept() failed: " << strerror(errno)) << endl;
 			return 0;

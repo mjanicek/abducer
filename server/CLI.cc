@@ -36,6 +36,7 @@ processCommandLineArgs(int argc, char ** argv, Settings & setup)
 			{"name",       required_argument, 0, 'n'},
 			{"endpoints",  required_argument, 0, 'e'},
 			{"abducer",    required_argument, 0, 'a'},
+			{"arg",        required_argument, 0, 'x'},
 			{0, 0, 0, 0}
 		};
 
@@ -43,7 +44,7 @@ processCommandLineArgs(int argc, char ** argv, Settings & setup)
 		int c;
 		int idx = 0;
 
-		c = getopt_long(argc, argv, "hn:e:a:", longOptions, &idx);
+		c = getopt_long(argc, argv, "hn:e:a:x:", longOptions, &idx);
 		if (c == -1) {
 			break;
 		}
@@ -71,6 +72,10 @@ processCommandLineArgs(int argc, char ** argv, Settings & setup)
 
 		case 'a':
 			setup.abducerPath = optarg;
+			break;
+
+		case 'x':
+			setup.abducerArgs.push_back(optarg);
 			break;
 
 		case '?':

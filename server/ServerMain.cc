@@ -94,6 +94,7 @@ main(int argc, char ** argv)
 			if ((socketFd = prepareSocket(socketPath)) == -1) {
 				return EXIT_FAILURE;
 			}
+			cerr << NOTIFY_MSG("socket ready at [" << socketPath << "]") << endl;
 
 			runServer(s, socketFd, socketPath);
 
@@ -132,12 +133,19 @@ runServer(const Settings & s, int socketFd, const string & socketPath)
 	try {
 		ic = Ice::initialize();
 
-		cerr << SERVER_MSG("setting up server at " << s.serverName<< ":" << s.serverEndpoints) << endl;
+		cerr << SERVER_MSG("setting up ICE server at " << s.serverName<< ":" << s.serverEndpoints) << endl;
 
 		Ice::ObjectAdapterPtr adapter
 				= ic->createObjectAdapterWithEndpoints("AbducerServerAdapter", s.serverEndpoints);
 
-		Ice::ObjectPtr object = new ForkingServer(s.abducerPath, socketPath, socketFd);
+		vector<string> argv;
+		argv.push_back(s.abducerPath);
+		for (vector<string>::const_iterator it = s.abducerArgs.begin(); it != s.abducerArgs.end(); ++it) {
+			argv.push_back(*it);
+		}
+		argv.push_back(socketPath);
+
+		Ice::ObjectPtr object = new ForkingServer(argv, socketFd);
 		adapter->add(object, ic->stringToIdentity(s.serverName));
 		adapter->activate();
 
@@ -195,13 +203,10 @@ printStatus(const Settings & s)
 		cerr << WARNING_MSG("server interface version " << Abducer::RELEASE << " may be incompatible") << endl;
 	}
 
-	cerr << NOTIFY_MSG("abducer binary: [" << s.abducerPath << "]") << endl;
+//	cerr << NOTIFY_MSG("abducer binary: [" << s.abducerPath << "]") << endl;
 	if (s.abducerPath == DEFAULT_ABDUCER_PATH) {
-		cerr << WARNING_MSG("abducer binary is set to default") << endl;
+		cerr << WARNING_MSG("engine binary is set to default") << endl;
 	}
-
-	cerr << NOTIFY_MSG("abducer working directory: [" << cwd << "]") << endl;
-//	cerr << NOTIFY_MSG("abducer PID: " << abducerPID) << endl;
 
 	delete cwd;
 }
@@ -220,7 +225,8 @@ printUsage()
 		<< "ARGS may be the following (defaults in brackets):" << endl
 		<< "  -n NAME         Name of the ICE server [" << DEFAULT_SERVER_NAME << "]" << endl
 		<< "  -e ENDPOINTS    Endpoints of the ICE server [" << DEFAULT_SERVER_ENDPOINTS << "]" << endl
-		<< "  -a ABDUCER_BIN  Path to the abducer binary [" << DEFAULT_ABDUCER_PATH << "]" << endl
+		<< "  -a ABDUCER_BIN  Path to the engine binary [" << DEFAULT_ABDUCER_PATH << "]" << endl
+		<< "  -x ARG          Add ARG to the engine arguments" << endl
 		<< "  -h              Print (this) help" << endl;
 }
 

@@ -49,28 +49,43 @@
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
+:- type settings
+	--->	settings(
+		silent :: bool
+	).
+
 :- type srv_ctx
 	--->	srv_ctx(
-		cx :: ctx,
-		best_proof :: maybe(proof(ctx_modality))
+		settings :: settings,
+		cx :: ctx
 	).
 
 main(!IO) :-
-	io.command_line_arguments(CmdArgs, !IO),
+	io.command_line_arguments(AllArgs, !IO),
+
+	(if AllArgs = ["--silent" | RestArgs0]
+	then
+		Silent = yes,
+		RestArgs = RestArgs0
+	else
+		Silent = no,
+		RestArgs = AllArgs
+	),
+
 	(if
-		CmdArgs = [SocketPath]
+		RestArgs = [SocketPath]
 	then
 		unix_socket.connect(SocketPath, ConnectResult, !IO),
 		(
 			ConnectResult = ok(UnSock),
-			inner_loop(UnSock, UnSock, srv_ctx(new_ctx, no), _, !IO)
+			inner_loop(UnSock, UnSock, srv_ctx(settings(Silent), new_ctx), _, !IO)
 		;
 			ConnectResult = error(E),
 			format(stderr_stream, "connection error: %s\n", [s(string(E))], !IO)
 		)
 	else
 		io.progname("?", ProgName, !IO),
-		format(stderr_stream, "Usage: %s SOCKET_PATH\n", [s(ProgName)], !IO)
+		format(stderr_stream, "Usage: %s [--silent] SOCKET_PATH\n", [s(ProgName)], !IO)
 	).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
@@ -205,8 +220,8 @@ inner_loop(In, Out, !SCtx, !IO) :-
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-process_request(request(request_code_clearcontext), yes, _In, Out, _SCtxOld, SCtxNew, !IO) :-
-	SCtxNew = srv_ctx(new_ctx, no),
+process_request(request(request_code_clearcontext), yes, _In, Out, SCtxOld, SCtxNew, !IO) :-
+	SCtxNew = srv_ctx(SCtxOld^settings, new_ctx),
 	write_pb_message(Out, request_reply(request_reply_return_code_ok, no), !IO).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
@@ -424,8 +439,13 @@ process_request(request(request_code_prove), Cont, In, Out, !SCtx, !IO) :-
 do_prove(Out, Method, Qs, VS, CostProofs, !SCtx, !IO) :-
 	impure reset_signaller,
 
-	print(stderr_stream, "Will start proving the following goal:\n  " ++ goal_to_string(vs(Qs, VS)) ++ "\n", !IO),
-	print(stderr_stream, "Proof search method: " ++ string(Method) ++ "\n", !IO),
+	(if !.SCtx^settings^silent = no
+	then
+		print(stderr_stream, "Will start proving the following goal:\n  " ++ goal_to_string(vs(Qs, VS)) ++ "\n", !IO),
+		print(stderr_stream, "Proof search method: " ++ string(Method) ++ "\n", !IO)
+	else
+		true
+	),
 
 	P0 = new_proof(!.SCtx^cx, Qs, VS),
 	is_ctx_proof(P0),
@@ -434,22 +454,32 @@ do_prove(Out, Method, Qs, VS, CostProofs, !SCtx, !IO) :-
 	write_pb_message(Out, request_reply(request_reply_return_code_ok, no), !IO),
 
 	prove(Method, P0, Ps, probabilistic_costs, !.SCtx^cx),
-	print(stderr_stream, "Done with proving.\n", !IO),
+
+	(if !.SCtx^settings^silent = no
+	then print(stderr_stream, "Done with proving.\n", !IO)
+	else true
+	),
+
 	Proofs0 = list.map((func(P) = Cost-P :- Cost = proof_cost(!.SCtx^cx, P, probabilistic_costs)), set.to_sorted_list(Ps)),
 
 	list.sort((pred((CA-_)::in, (CB-_)::in, Comp::out) is det :-
 		float_compare(CA, CB, Comp)
 			), Proofs0, Proofs),
 
-	format(stderr_stream, "\n  %d proof(s) found.\n", [i(list.length(Proofs))], !IO),
+	(if !.SCtx^settings^silent = no
+	then
+		format(stderr_stream, "\n  %d proof(s) found.\n", [i(list.length(Proofs))], !IO),
 
-	list.foldl2((pred((Cost-proof(Gz, _BL))::in, Idx0::in, Idx::out, !.IO::di, !:IO::uo) is det :-
-		print(stderr_stream, "---------------------------------------------------------------------\n", !IO),
-		format(stderr_stream, "#%d, cost = %f\n\n", [i(Idx0), f(Cost)], !IO),
-		print(stderr_stream, "  " ++ goal_to_string(Gz) ++ "\n", !IO),
-		Idx = Idx0 + 1
-			), Proofs, 1, _, !IO),
-	print(stderr_stream, "---------------------------------------------------------------------\n", !IO),
+		list.foldl2((pred((Cost-proof(Gz, _BL))::in, Idx0::in, Idx::out, !.IO::di, !:IO::uo) is det :-
+			print(stderr_stream, "---------------------------------------------------------------------\n", !IO),
+			format(stderr_stream, "#%d, cost = %f\n\n", [i(Idx0), f(Cost)], !IO),
+			print(stderr_stream, "  " ++ goal_to_string(Gz) ++ "\n", !IO),
+			Idx = Idx0 + 1
+				), Proofs, 1, _, !IO),
+		print(stderr_stream, "---------------------------------------------------------------------\n", !IO)
+	else
+		true
+	),
 
 	CostProofs = list.map((func(Cost-proof(G, _)) = Cost-G), Proofs).
 

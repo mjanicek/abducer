@@ -22,6 +22,7 @@
 // ----------------------------------------------------------------------------
 
 #include <string>
+#include <vector>
 
 enum CommandLineAction {
 	Error,
@@ -33,6 +34,7 @@ struct Settings {
 	std::string serverName;
 	std::string serverEndpoints;
 	std::string abducerPath;
+	std::vector<std::string> abducerArgs;
 };
 
 CommandLineAction

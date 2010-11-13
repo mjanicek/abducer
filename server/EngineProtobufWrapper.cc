@@ -60,7 +60,7 @@ EngineProtobufWrapper::EngineProtobufWrapper(const string & name_, pid_t abducer
 EngineProtobufWrapper::~EngineProtobufWrapper()
 {
 //	close(fd_in);
-//	cerr << NOTIFY_MSG("killing process " << abducer_pid) << endl;
+	cerr << NOTIFY_MSG("sending SIGKILL to PID " << abducer_pid) << endl;
 	kill(abducer_pid, SIGKILL);
 }
 

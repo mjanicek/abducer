@@ -32,15 +32,14 @@ namespace Abducer = ::de::dfki::lt::tr::infer::weigabd::slice;
 
 class ForkingServer : public Abducer::AbductionEngineServer {
 public:
-	ForkingServer(const std::string & enginePath, const std::string & socketPath, int socket_fd);
+	ForkingServer(const std::vector<std::string> & engineArgV, int socket_fd);
 	virtual ~ForkingServer();
 
 	virtual Abducer::AbductionEnginePrx getEngineProxy(const std::string & name, const Ice::Current&);
 protected:
 	Ice::ObjectAdapterPtr startNewServer(const std::string & name);
 
-	std::string enginePath;
-	std::string socketPath;
+	std::vector<std::string> engineArgV;
 	int socket_fd;
 
 	std::map<std::string, Ice::ObjectAdapterPtr> adapters;
