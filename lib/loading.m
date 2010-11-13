@@ -21,6 +21,7 @@
 :- module loading.
 :- interface.
 
+:- import_module bool.
 :- import_module list, set.
 :- import_module io.
 :- import_module ctx_loadable.
@@ -37,8 +38,8 @@
 	;	multiply_used_anon(string, int)
 	.
 
-:- pred load_stdin(load_result::out, ctx::in, ctx::out, list(warning)::in, list(warning)::out, io::di, io::uo) is det.
-:- pred load_file(string::in, load_result::out, ctx::in, ctx::out, list(warning)::in, list(warning)::out, io::di, io::uo) is det.
+:- pred load_stdin(load_result::out, ctx::in, ctx::out, bool::in, list(warning)::in, list(warning)::out, io::di, io::uo) is det.
+:- pred load_file(string::in, load_result::out, ctx::in, ctx::out, bool::in, list(warning)::in, list(warning)::out, io::di, io::uo) is det.
 
 %------------------------------------------------------------------------------%
 
@@ -53,7 +54,7 @@
 :- import_module ctx_modality, ctx_io.
 :- import_module check.
 
-load_stdin(Result, MainCtx0, MainCtx, MainWs0, MainWs, !IO) :-
+load_stdin(Result, MainCtx0, MainCtx, DoWarn, MainWs0, MainWs, !IO) :-
 
 	do_while_result((pred(Continue::out, LoopResult::out, Ctx0-Ws0::in, Ctx-Ws::out, !.IO::di, !:IO::uo) is det :-
 		term_io.read_term_with_op_table(init_wabd_op_table, ReadResult, !IO),
@@ -73,20 +74,25 @@ load_stdin(Result, MainCtx0, MainCtx, MainWs0, MainWs, !IO) :-
 				then
 					add_rule(vs(MRule, VS), Ctx0, Ctx),
 
-					find_singleton_vars(vs(MRule, VS), Singletons),
-					Ws1 = Ws0 ++ list.map(
-						(func(Var) = singleton_variable(varset.lookup_name(VS, Var), Line)),
-							set.to_sorted_list(Singletons)),
+					(if DoWarn = yes
+					then
+						find_singleton_vars(vs(MRule, VS), Singletons),
+						Ws1 = Ws0 ++ list.map(
+							(func(Var) = singleton_variable(varset.lookup_name(VS, Var), Line)),
+								set.to_sorted_list(Singletons)),
 
-					find_named_and_anonymised_vars(vs(MRule, VS), DangerousVars),
-					Ws2 = Ws1 ++ list.map(
-						(func(DVars) = dangerous_names(set.map(varset.lookup_name(VS), DVars), Line)),
-							set.to_sorted_list(DangerousVars)),
+						find_named_and_anonymised_vars(vs(MRule, VS), DangerousVars),
+						Ws2 = Ws1 ++ list.map(
+							(func(DVars) = dangerous_names(set.map(varset.lookup_name(VS), DVars), Line)),
+								set.to_sorted_list(DangerousVars)),
 
-					find_multiply_used_anonymous_vars(vs(MRule, VS), MultiVars),
-					Ws = Ws2 ++ list.map(
-						(func(Var) = multiply_used_anon(varset.lookup_name(VS, Var), Line)),
-							set.to_sorted_list(MultiVars)),
+						find_multiply_used_anonymous_vars(vs(MRule, VS), MultiVars),
+						Ws = Ws2 ++ list.map(
+							(func(Var) = multiply_used_anon(varset.lookup_name(VS, Var), Line)),
+								set.to_sorted_list(MultiVars))
+					else
+						Ws = Ws0
+					),
 
 					LoopResult = ok,
 					Continue = yes
@@ -130,12 +136,12 @@ load_stdin(Result, MainCtx0, MainCtx, MainWs0, MainWs, !IO) :-
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%
 
-load_file(Filename, Result, !Ctx, !Warn, !IO) :-
+load_file(Filename, Result, !Ctx, DoWarn, !Warn, !IO) :-
 	see(Filename, SeeRes, !IO),
 	(if
 		SeeRes = ok
 	then
-		load_stdin(Result, !Ctx, !Warn, !IO),
+		load_stdin(Result, !Ctx, DoWarn, !Warn, !IO),
 		seen(!IO)
 	else
 		Result = file_read_error

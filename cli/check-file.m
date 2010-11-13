@@ -74,7 +74,7 @@ main(!IO) :-
 check_facts_files([], !Ctx, !IO).
 check_facts_files([F|Fs], !Ctx, !IO) :-
 	print("[" ++ F ++ "] ", !IO),
-	load_file(F, Result, !Ctx, [], Warns, !IO),
+	load_file(F, Result, !Ctx, yes, [], Warns, !IO),
 	print(string(Result) ++ "\n", !IO),
 	(if Warns = []
 	then
