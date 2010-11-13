@@ -18,7 +18,7 @@
 % 02111-1307, USA.
 %------------------------------------------------------------------------------%
 
-:- module 'check-file'.
+:- module 'check-abd'.
 
 :- interface.
 :- import_module io.
@@ -64,7 +64,7 @@ main(!IO) :-
 			)
 		)
 	else
-		print("Usage: check-file [--ctx] FILENAME[S...]\n", !IO)
+		print("Usage: check-abd [--ctx] FILENAME[S...]\n", !IO)
 	).
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -%

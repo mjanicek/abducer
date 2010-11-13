@@ -19,7 +19,7 @@ server: lib
 .PHONY: cli
 cli: lib
 	make -C cli
-	[ -e check-file ] || ln -s cli/check-file
+	[ -e check-abd ] || ln -s cli/check-abd
 	[ -e abducer-cli ] || ln -s cli/abducer-cli
 
 .PHONY: tests
@@ -41,5 +41,5 @@ clean:
 	make -C tests clean
 	make -C util clean
 	rm -f $(SERVER_BIN) $(ABDUCTION_ENGINE)
-	rm -f abducer-cli check-file
+	rm -f abducer-cli check-abd
 	rm -f timeout

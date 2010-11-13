@@ -2,11 +2,11 @@
 
 # Binary files to be built.
 #
-MBIN=check-file abducer-cli
+MBIN=check-abd abducer-cli
 
 # Mercury source files.
 #
-MFILES=check-file.m abducer-cli.m
+MFILES=check-abd.m abducer-cli.m
 
 LIBABDUCER=../lib/libabducer.a
 
