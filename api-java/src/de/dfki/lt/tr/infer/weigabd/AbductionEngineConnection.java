@@ -34,25 +34,11 @@ public class AbductionEngineConnection {
     protected Ice.Communicator ic;
     protected AbductionEnginePrx prx;
 	protected AbductionEngineServerPrx srvPrx = null;
+	protected String name = "[UNBOUND]";
 
     public AbductionEngineConnection() {
         ic = Ice.Util.initialize();
     }
-
-/*
-    @Override
-    protected void finalize() {
-	super.finalize();
-        if (ic != null) {
-            try {
-                ic.destroy();
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
- */
 
 	/**
 	 * Connect to the server.
@@ -80,6 +66,7 @@ public class AbductionEngineConnection {
 	public void bindToEngine(String engineName) {
 		if (srvPrx != null) {
 			prx = srvPrx.getEngineProxy(engineName);
+			name = engineName;
 		}
 		else {
 			throw new Error("lost connection to the server");
@@ -103,5 +90,14 @@ public class AbductionEngineConnection {
     public AbductionEnginePrx getProxy() {
         return prx;
     }
+
+	/**
+	 * Return the engine name.
+	 *
+	 * @return
+	 */
+	public String getEngineName() {
+		return name;
+	}
 
 }
