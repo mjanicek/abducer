@@ -40,6 +40,8 @@ $(warning pkg-config does not know protobuf, assuming default CXXFLAGS)
 CXXFLAGS+=-pthread
 endif
 
+CXXFLAGS+=$(shell pkg-config --cflags liblog4cxx)
+
 #  -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   #
 
 LDFLAGS=-L$(ICE_HOME)/lib -lIce -lIceUtil $(ARCHFLAG)
@@ -53,6 +55,8 @@ else
 $(warning pkg-config does not know protobuf, assuming default LDFLAGS)
 LDFLAGS+=-lprotobuf
 endif
+
+LDFLAGS+=$(shell pkg-config --libs liblog4cxx)
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -#
 

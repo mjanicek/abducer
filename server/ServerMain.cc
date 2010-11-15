@@ -29,6 +29,9 @@
 #include <IceUtil/CtrlCHandler.h>
 #include "weigabd.h"
 
+#include <log4cxx/logger.h>
+#include <log4cxx/xml/domconfigurator.h>
+
 #include <iostream>
 
 #include "ForkingServer.h"
@@ -40,8 +43,10 @@
 #include "Logging.h"
 
 using namespace std;
+using namespace log4cxx;
+using namespace log4cxx::xml;
 
-#define THIS  "Server"
+LoggerPtr serverLogger(Logger::getLogger("srv-main"));
 
 const string DEFAULT_SERVER_NAME = "AbducerServer";
 const string DEFAULT_SERVER_ENDPOINTS = "default -p 10000";
@@ -83,6 +88,8 @@ main(int argc, char ** argv)
 	s.serverEndpoints = DEFAULT_SERVER_ENDPOINTS;
 	s.abducerPath = DEFAULT_ABDUCER_PATH;
 
+	DOMConfigurator::configure("Log4cxxConfig.xml");
+
 	switch (processCommandLineArgs(argc, argv, s)) {
 	case Start:
 		{
@@ -94,12 +101,12 @@ main(int argc, char ** argv)
 			if ((socketFd = prepareSocket(socketPath)) == -1) {
 				return EXIT_FAILURE;
 			}
-			cerr << NOTIFY_MSG("socket ready at [" << socketPath << "]") << endl;
+			LOG4CXX_DEBUG(serverLogger, "socket ready at `" << socketPath << "'");
 
 			runServer(s, socketFd, socketPath);
 
 			wait(0);
-			cerr << NOTIFY_MSG("unlinking [" << socketPath << "]") << endl;
+			LOG4CXX_DEBUG(serverLogger, "unlinking `" << socketPath << "'");
 			unlink(socketPath.c_str());
 
 			return EXIT_SUCCESS;
@@ -133,7 +140,7 @@ runServer(const Settings & s, int socketFd, const string & socketPath)
 	try {
 		ic = Ice::initialize();
 
-		cerr << SERVER_MSG("setting up ICE server at " << s.serverName<< ":" << s.serverEndpoints) << endl;
+		LOG4CXX_INFO(serverLogger, "setting up ICE server at " << s.serverName << ":" << s.serverEndpoints);
 
 		Ice::ObjectAdapterPtr adapter
 				= ic->createObjectAdapterWithEndpoints("AbducerServerAdapter", s.serverEndpoints);
@@ -152,7 +159,7 @@ runServer(const Settings & s, int socketFd, const string & socketPath)
 		ic->waitForShutdown();
 	}
 	catch (const Abducer::EngineException & e) {
-		cerr << ERROR_MSG("server exception: " << e.message) << endl;
+		LOG4CXX_ERROR(serverLogger, "server exception: \"" << e.message << "\"");
 	}
 	catch (const Ice::Exception& e) {
 		cerr << e << endl;
@@ -163,8 +170,6 @@ runServer(const Settings & s, int socketFd, const string & socketPath)
 		status = 1;
 	}
 
-	cerr << SERVER_MSG("server shut down") << endl;
-
 	if (ic) {
 		try {
 			ic->destroy();
@@ -174,14 +179,15 @@ runServer(const Settings & s, int socketFd, const string & socketPath)
 			status = 1;
 		}
 	}
+
+	LOG4CXX_INFO(serverLogger, "server shut down");
 	return status;
 }
 
 void
 shutdownServer(int signum)
 {
-	cerr << endl;
-	cerr << SERVER_MSG("received signal " << signum) << endl;
+	LOG4CXX_DEBUG(serverLogger, "received signal " << signum);
 	try {
 		ic->destroy();
 	}
@@ -200,12 +206,12 @@ printStatus(const Settings & s)
 	getcwd(cwd, cwd_length);
 
 	if (!interfaceVersionOk()) {
-		cerr << WARNING_MSG("server interface version " << Abducer::RELEASE << " may be incompatible") << endl;
+		LOG4CXX_WARN(serverLogger, "server interface version " << Abducer::RELEASE << " may be incompatible");
 	}
 
 //	cerr << NOTIFY_MSG("abducer binary: [" << s.abducerPath << "]") << endl;
 	if (s.abducerPath == DEFAULT_ABDUCER_PATH) {
-		cerr << WARNING_MSG("engine binary is set to default") << endl;
+		LOG4CXX_WARN(serverLogger, "engine binary is set to default");
 	}
 
 	delete cwd;
@@ -233,8 +239,8 @@ printUsage()
 void
 printVersion()
 {
-	cerr << "Abducer server " << ABDUCER_VERSION << endl;
-	cerr << "(c) 2009-2010 DFKI GmbH Talking Robots" << endl;
+	cout << "Abducer server " << ABDUCER_VERSION << endl;
+	cout << "(c) 2009-2010 DFKI GmbH Talking Robots" << endl;
 }
 
 string
@@ -255,7 +261,7 @@ prepareSocket(const string & socketPath)
 
 	socket_fd = socket(PF_UNIX, SOCK_STREAM, 0);
 	if (socket_fd < 0) {
-		cerr << ERROR_MSG("socket() failed") << endl;
+		LOG4CXX_ERROR(serverLogger, "socket() failed: " << strerror(errno));
 		return -1;
 	} 
 
@@ -265,12 +271,12 @@ prepareSocket(const string & socketPath)
 	size_t address_length = sizeof(address.sun_family) + strlen(address.sun_path) + 1;
 
 	if (bind(socket_fd, (struct sockaddr *) &address, address_length) != 0) {
-		cerr << ERROR_MSG("bind() to \"" << socketPath << "\" failed: " << strerror(errno)) << endl;
+		LOG4CXX_ERROR(serverLogger, "bind() to `" << socketPath << "' failed: " << strerror(errno));
 		return -1;
 	}
 
 	if (listen(socket_fd, 1) != 0) {
-		cerr << ERROR_MSG("listen() failed: " << strerror(errno)) << endl;
+		LOG4CXX_ERROR(serverLogger, "listen() failed: " << strerror(errno));
 		return -1;
 	}
 

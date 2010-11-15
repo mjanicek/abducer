@@ -23,6 +23,8 @@
 #include <sys/types.h>
 #include <signal.h>
 
+#include <log4cxx/logger.h>
+
 #include "common.h"
 #include "EngineProtobufWrapper.h"
 
@@ -40,6 +42,7 @@
 #include "ProtocolException.h"
 
 using namespace std;
+using namespace log4cxx;
 using namespace Abducer;
 
 #include <vector>

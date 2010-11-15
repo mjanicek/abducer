@@ -25,4 +25,4 @@ if [ ! -e "$PATH_TO_ENGINE" ]; then
 	exit 1
 fi
 
-"$PATH_TO_SERVER" -n "$SERVER_NAME" -e "$SERVER_ENDPOINTS" -a "$DIR/$ENGINE_BIN"
+"$PATH_TO_SERVER" -n "$SERVER_NAME" -e "$SERVER_ENDPOINTS" -a "$DIR/$ENGINE_BIN" -x --silent
