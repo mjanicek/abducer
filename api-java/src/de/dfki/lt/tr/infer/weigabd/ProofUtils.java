@@ -31,6 +31,7 @@ import de.dfki.lt.tr.infer.weigabd.slice.NullAssumabilityFunction;
 import de.dfki.lt.tr.infer.weigabd.slice.Term;
 import de.dfki.lt.tr.infer.weigabd.slice.UnsolvedQuery;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Utilities for manipulating proofs.
@@ -45,14 +46,14 @@ public abstract class ProofUtils {
 	 * @param qs the sequence of queries (proof)
 	 * @return all elements of qs that are of type AssertedQuery
 	 */
-	public static AssertedQuery[] filterAsserted(MarkedQuery[] qs) {
-		ArrayList<AssertedQuery> list = new ArrayList<AssertedQuery>();
-		for (int i = 0; i < qs.length; i++) {
-			if (qs[i] instanceof AssertedQuery) {
-				list.add((AssertedQuery) qs[i]);
+	public static List<AssertedQuery> filterAsserted(List<MarkedQuery> qs) {
+		ArrayList<AssertedQuery> result = new ArrayList<AssertedQuery>();
+		for (MarkedQuery q : qs) {
+			if (q instanceof AssertedQuery) {
+				result.add((AssertedQuery) q);
 			}
 		}
-		return list.toArray(new AssertedQuery[0]);
+		return result;
 	}
 
 	/**
@@ -61,28 +62,29 @@ public abstract class ProofUtils {
 	 * @param qs the sequence of queries (proof)
 	 * @return all elements of qs that are of type AssumedQuery
 	 */
-	public static AssumedQuery[] filterAssumed(MarkedQuery[] qs) {
-		ArrayList<AssumedQuery> list = new ArrayList<AssumedQuery>();
-		for (int i = 0; i < qs.length; i++) {
-			if (qs[i] instanceof AssumedQuery) {
-				list.add((AssumedQuery) qs[i]);
+	public static List<AssumedQuery> filterAssumed(List<MarkedQuery> qs) {
+		ArrayList<AssumedQuery> result = new ArrayList<AssumedQuery>();
+		for (MarkedQuery q : qs) {
+			if (q instanceof AssumedQuery) {
+				result.add((AssumedQuery) q);
 			}
 		}
-		return list.toArray(new AssumedQuery[0]);		
+		return result;
 	}
 
 	/**
 	 * Convert a proof to a sequence of modalised atoms, thereby stripping
-	 * the proof of its marking.
+	 * the proof of the markings.
+	 *
 	 * @param qs the sequence of queries (proof)
 	 * @return sequence of the corresponding modalised atoms
 	 */
-	public static ModalisedAtom[] stripMarking(MarkedQuery[] qs) {
-		ArrayList<ModalisedAtom> list = new ArrayList<ModalisedAtom>();
-		for (int i = 0; i < qs.length; i++) {
-			list.add(qs[i].atom);
+	public static List<ModalisedAtom> stripMarking(List<MarkedQuery> qs) {
+		ArrayList<ModalisedAtom> result = new ArrayList<ModalisedAtom>();
+		for (MarkedQuery q : qs) {
+			result.add(q.atom);
 		}
-		return list.toArray(new ModalisedAtom[0]);
+		return result;
 	}
 
 	/**
@@ -96,27 +98,24 @@ public abstract class ProofUtils {
 	 * @param m modality prefix
 	 * @return sequence of modalised formulas from mas with m removed
 	 */
-	public static ModalisedAtom[] filterStripByModalityPrefix(ModalisedAtom[] mas, Modality[] m) {
-		ArrayList<ModalisedAtom> list = new ArrayList<ModalisedAtom>();
-		for (int i = 0; i < mas.length; i++) {
-			if (mas[i].m.length >= m.length) {
+	public static List<ModalisedAtom> filterStripByModalityPrefix(List<ModalisedAtom> mas, List<Modality> m) {
+		ArrayList<ModalisedAtom> result = new ArrayList<ModalisedAtom>();
+		for (ModalisedAtom ma : mas) {
+			if (ma.m.size() >= m.size()) {
 				boolean good = true;
-				for (int j = 0; j < m.length; j++) {
-					good = good && mas[i].m[j] == m[j];
+				for (int j = 0; j < m.size(); j++) {
+					good = good && ma.m.get(j) == m.get(j);
 				}
 				if (good) {
 					ArrayList<Modality> ms = new ArrayList<Modality>();
-					for (int k = m.length; k < mas[i].m.length; k++) {
-						ms.add(mas[i].m[k]);
+					for (int k = m.size(); k < ma.m.size(); k++) {
+						ms.add(ma.m.get(k));
 					}
-					ModalisedAtom ma = TermAtomFactory.modalisedAtom(
-							ms.toArray(new Modality[0]),
-							(Atom) mas[i].a.clone());
-					list.add(ma);
+					result.add(new ModalisedAtom(ms, (Atom) ma.a.clone()));
 				}
 			}
 		}
-		return list.toArray(new ModalisedAtom[0]);
+		return result;
 	}
 
 	/**
@@ -125,12 +124,9 @@ public abstract class ProofUtils {
 	 * @param goal the goal formula
 	 * @return the proof
 	 */
-	public static UnsolvedQuery[] newUnsolvedProof(ModalisedAtom goal) {
-		UnsolvedQuery q = new UnsolvedQuery();
-		q.atom = goal;
-		NullAssumabilityFunction af = new NullAssumabilityFunction();
-		q.f = af;
-
-		return new UnsolvedQuery[] {q};
+	public static ArrayList<UnsolvedQuery> newUnsolvedProof(ModalisedAtom goal) {
+		ArrayList<UnsolvedQuery> result = new ArrayList<UnsolvedQuery>();
+		result.add(new UnsolvedQuery(goal, new NullAssumabilityFunction()))
+		return result;
 	}
 }

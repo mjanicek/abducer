@@ -31,7 +31,8 @@ import de.dfki.lt.tr.infer.weigabd.slice.ProvedQuery;
 import de.dfki.lt.tr.infer.weigabd.slice.Term;
 import de.dfki.lt.tr.infer.weigabd.slice.UnsolvedQuery;
 import de.dfki.lt.tr.infer.weigabd.slice.VariableTerm;
-
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Utilities for converting elements of the language to strings.
@@ -73,13 +74,14 @@ public abstract class MercuryUtils {
 		else if (t instanceof FunctionTerm) {
 		    FunctionTerm f = (FunctionTerm) t;
 		    s = termStringEscape(f.functor);
-		    if (f.args.length > 0) {
-			s += "(";
-			for (int i = 0; i < f.args.length; i++) {
-			    s += termToString(f.args[i]);
-			    s += (i == f.args.length-1 ? "" : ", ");
-			   }
-			s += ")";
+		    if (!f.args.isEmpty()) {
+				s += "(";
+				Iterator<Term> iter = f.args.iterator();
+				while (iter.hasNext()) {
+					s += termToString(iter.next());
+					s += (iter.hasNext() ? "" : ", ");
+				}
+				s += ")";
 		    }
 		    return s;
 		}
@@ -94,13 +96,16 @@ public abstract class MercuryUtils {
 	 * @return corresponding string
 	 */
 	public static String atomToString(Atom a) {
-		String s = termStringEscape(a.predSym) + "(";
-		for (int i = 0; i < a.args.length; i++) {
-			s += termToString(a.args[i]);
-			s += (i == a.args.length-1 ? "" : ", ");
+		String s = termStringEscape(a.predSym);
+		if (!a.args.isEmpty()) {
+			s += "(";
+			Iterator<Term> iter = a.args.iterator();
+			while (iter.hasNext()) {
+				s += termToString(iter.next());
+				s += (iter.hasNext() ? "" : ", ");
+			}
+			s += ")";
 		}
-		s += ")";
-		
 		return s;
 	}
 
@@ -110,9 +115,7 @@ public abstract class MercuryUtils {
 	 * @return corresponding string
 	 */
 	public static String modalisedAtomToString(ModalisedAtom ma) {
-		String modStr = modalitySeqToString(ma.m);
-		String predStr = atomToString(ma.a);
-		return !modStr.equals("") ? modStr + ":" + predStr : predStr;
+		return modalitySeqToString(ma.m) + atomToString(ma.a);
 	}
 
 	/** Convert a sequence of modalities to a string. If the sequence
@@ -121,11 +124,10 @@ public abstract class MercuryUtils {
 	 * @param m the sequence
 	 * @return corresponding string
 	 */
-	public static String modalitySeqToString(Modality[] m) {
+	public static String modalitySeqToString(List<Modality> m) {
 		String s = "";
-		for (int i = 0; i < m.length; i++) {
-			s += modalityToString(m[i]);
-			s += (i == m.length-1 ? "" : ":");
+		for (Modality mod : m) {
+			s += modalityToString(mod) + ":";
 		}
 		return s;
 	}

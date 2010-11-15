@@ -26,6 +26,7 @@ import de.dfki.lt.tr.infer.weigabd.slice.ModalisedAtom;
 import de.dfki.lt.tr.infer.weigabd.slice.Modality;
 import de.dfki.lt.tr.infer.weigabd.slice.Term;
 import de.dfki.lt.tr.infer.weigabd.slice.VariableTerm;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -43,10 +44,7 @@ public abstract class TermAtomFactory {
 	 * @return Predicate the predicate
 	 */
 	public static Atom atom(String predSym, Term[] args) {
-		Atom a = new Atom();
-		a.predSym = predSym;
-		a.args = args;
-		return a;
+		return new Atom(predSym, Arrays.asList(args));
 	}
 
 	/**
@@ -57,10 +55,7 @@ public abstract class TermAtomFactory {
 	 * @return Predicate the predicate
 	 */
 	public static Atom atom(String predSym, List<Term> args) {
-		Atom a = new Atom();
-		a.predSym = predSym;
-		a.args = args.toArray(new Term[0]);
-		return a;
+		return new Atom(predSym, args);
 	}
 	
 	/**
@@ -83,10 +78,7 @@ public abstract class TermAtomFactory {
 	 * @return FunctionTerm the term
 	 */
 	public static FunctionTerm term(String functor, Term[] args) {
-		FunctionTerm f = new FunctionTerm();
-		f.functor = functor;
-		f.args = args;
-		return f;
+		return new FunctionTerm(functor, Arrays.asList(args));
 	}
 
 	/**
@@ -97,10 +89,7 @@ public abstract class TermAtomFactory {
 	 * @return FunctionTerm the term
 	 */
 	public static FunctionTerm term(String functor, List<Term> args) {
-		FunctionTerm f = new FunctionTerm();
-		f.functor = functor;
-		f.args = args.toArray(new Term[0]);
-		return f;
+		return new FunctionTerm(functor, args);
 	}
 
 	/**
@@ -120,9 +109,7 @@ public abstract class TermAtomFactory {
 	 * @return VariableTerm the term
 	 */
 	public static VariableTerm var(String name) {
-		VariableTerm v = new VariableTerm();
-		v.name = name;
-		return v;
+		return new VariableTerm(name);
 	}
 
 	/**
@@ -133,10 +120,7 @@ public abstract class TermAtomFactory {
 	 * @return ModalisedAtom the modalised atom, "m1...mn:p(t1...tn)"
 	 */
 	public static ModalisedAtom modalisedAtom(Modality[] ms, Atom a) {
-		ModalisedAtom ma = new ModalisedAtom();
-		ma.m = ms;
-		ma.a = a;
-		return ma;
+		return new ModalisedAtom(Arrays.asList(ms), a);
 	}
 
 	/**
@@ -147,10 +131,7 @@ public abstract class TermAtomFactory {
 	 * @return ModalisedAtom the modalised atom, "m1...mn:p(t1...tn)"
 	 */
 	public static ModalisedAtom modalisedAtom(List<Modality> ms, Atom a) {
-		ModalisedAtom ma = new ModalisedAtom();
-		ma.m = ms.toArray(new Modality[0]);
-		ma.a = a;
-		return ma;
+		return new ModalisedAtom(ms, a);
 	}
 
 }

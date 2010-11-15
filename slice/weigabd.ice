@@ -42,13 +42,12 @@ module slice {
 	const string RELEASE = "2.1";
 
 	//-----------------------------------------------------------------
-
 	// TERMS & ATOMS
 
 	// Base class for both types of terms.
 	class Term { };
 
-	sequence<Term> TermSeq;
+	["java:type:java.util.ArrayList<Term>"] sequence<Term> TermSeq;
 
 	// The representation of a named variable.
 	class VariableTerm extends Term {
@@ -70,7 +69,6 @@ module slice {
 	};
 
 	//-----------------------------------------------------------------
-
 	// MODALITIES
 
 	enum Modality {
@@ -83,103 +81,113 @@ module slice {
 		Truth
 	};
 
-	sequence<Modality> ModalitySeq;
+	["java:type:java.util.ArrayList<Modality>"] sequence<Modality> ModalitySeq;
 
 	//-----------------------------------------------------------------
+	// MODALISED ATOMS
 
+	// Modalised atom, consisting of a sequence of modalities and an
+	// atom.
 	class ModalisedAtom {
 		ModalitySeq m;
 		Atom a;
 	};
 
-	sequence<ModalisedAtom> ModalisedAtomSeq;
+	["java:type:java.util.ArrayList<ModalisedAtom>"] sequence<ModalisedAtom> ModalisedAtomSeq;
 
 	//-----------------------------------------------------------------
+	// RULES
 
-	enum Marking {
-		Unsolved,
-		Proved,
-		Assumed,
-		Asserted
-	};
-
+	// Base class for assumability functions.
 	class AssumabilityFunction { };
 
+	// "Null" assumability function. Such annotated antecedents cannot
+	// be assumed (i.e. have to be proved).
 	class NullAssumabilityFunction extends AssumabilityFunction { };
 
+	// Constant assumability function. Such annotated antecedents
+	// are always assumed under the given cost.
 	class ConstAssumabilityFunction extends AssumabilityFunction {
 		float cost;
 	};
 
+	// Named assumability function. Such annotated antecedents can
+	// only be assumed iff they are in the domain of the assumability
+	// function.
 	class NamedAssumabilityFunction extends AssumabilityFunction {
 		string name;
 	};
 
-	//-----------------------------------------------------------------
+	//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
+	// Base class for rule antecedents.
 	class Antecedent {
 		ModalisedAtom matom;
 	};
 
+	// Antecedent assumable under the given assumability function
+	// (including the NullAssumabilityFunction).
 	class AssumableAntecedent extends Antecedent {
 		AssumabilityFunction f;
 	};
 
+	// Asserted antecedent.
 	class AssertionAntecedent extends Antecedent { };
 
-	sequence<Antecedent> AntecedentSeq;
+	["java:type:java.util.ArrayList<Antecedent>"] sequence<Antecedent> AntecedentSeq;
 
+	// A rule, consisting of a head and a sequence of antecedents.
 	class Rule {
 		ModalisedAtom head;
 		AntecedentSeq ante;
 	};
 
 	//-----------------------------------------------------------------
+	// DISJOINT DECLARATIONS
 
+	// A disjoint declaration.
 	class DisjointDeclaration {
 		ModalisedAtomSeq atoms;
 	};
 
 	//-----------------------------------------------------------------
+	// QUERIES
 
-	// PIECES OF PROOF
-
-	// base class for abductive proofs
+	// Base class for abductive proofs.
 	class MarkedQuery {
 		ModalisedAtom atom;
 	};
 
-	// this predicate has been solved
+	// "Proved". Marks modalised atoms that have been solved.
 	class ProvedQuery extends MarkedQuery { };
 
-	// this predicate is yet to be solved
+	// "Unsolved". Marks modalised atoms that are yet to be solved.
 	class UnsolvedQuery extends MarkedQuery {
 		AssumabilityFunction f;
 	};
 
-	// assumed predicate
+	// "Assumed". Marks modalised atoms that are assumed under the given
+	// assumability function.
 	class AssumedQuery extends MarkedQuery {
 		AssumabilityFunction f;
 	};
 
-	// asserted predicate
+	// "Asserted". Marks modalised atoms that are asserted.
 	class AssertedQuery extends MarkedQuery { };
 
 	//-----------------------------------------------------------------
-
 	// PROOF
 
-	sequence<MarkedQuery> MarkedQuerySeq;
+	["java:type:java.util.ArrayList<MarkedQuery>"] sequence<MarkedQuery> MarkedQuerySeq;
 
 	class ProofWithCost {
 		MarkedQuerySeq proof;
 		float cost;
 	};
 
-	sequence<ProofWithCost> ProofWithCostSeq;
+	["java:type:java.util.ArrayList<ProofWithCost>"] sequence<ProofWithCost> ProofWithCostSeq;
 
 	//-----------------------------------------------------------------
-
 	// SERVER INTERFACE
 
 	enum ProveResult {
@@ -188,7 +196,8 @@ module slice {
 		Error
 	};
 
-	//-----------------------------------------------------------------
+	//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+	// Exceptions
 
 	exception AbducerException { };
 	
@@ -208,7 +217,8 @@ module slice {
 		string message;
 	};
 
-	//-----------------------------------------------------------------
+	//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+	// Proof search method
 
 	class ProofSearchMethod { };
 
@@ -225,6 +235,7 @@ module slice {
 	};
 
 	//-----------------------------------------------------------------
+	// Abduction engine
 
 	interface AbductionEngine {
 
@@ -258,6 +269,7 @@ module slice {
 	};
 
 	//-----------------------------------------------------------------
+	// Engine server 
 
 	interface AbductionEngineServer {
 		AbductionEngine* getEngineProxy(string name);
