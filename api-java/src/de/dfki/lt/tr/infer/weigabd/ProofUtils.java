@@ -126,7 +126,7 @@ public abstract class ProofUtils {
 	 */
 	public static ArrayList<UnsolvedQuery> newUnsolvedProof(ModalisedAtom goal) {
 		ArrayList<UnsolvedQuery> result = new ArrayList<UnsolvedQuery>();
-		result.add(new UnsolvedQuery(goal, new NullAssumabilityFunction()))
+		result.add(new UnsolvedQuery(goal, new NullAssumabilityFunction()));
 		return result;
 	}
 }
