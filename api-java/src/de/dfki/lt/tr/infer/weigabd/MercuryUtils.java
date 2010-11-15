@@ -33,14 +33,19 @@ import de.dfki.lt.tr.infer.weigabd.slice.UnsolvedQuery;
 import de.dfki.lt.tr.infer.weigabd.slice.VariableTerm;
 
 
+/**
+ * Utilities for converting elements of the language to strings.
+ *
+ * @author Miroslav Janicek
+ */
 public abstract class MercuryUtils {
 
-        /** Escape the given string if it starts with an uppercase
-         *  letter or contains a '-'.
-         *
-         * @param s the string
-         * @return escaped string if necessary
-         */
+	/** Escape the given string if it starts with an uppercase
+	 *  letter or contains a '-'.
+	 *
+	 * @param s the string
+	 * @return escaped string if necessary
+	 */
 	public static String termStringEscape(String s) {
 		if (s.equals("") || s.contains("-") || s.contains(":") || !Character.isLowerCase(s.charAt(0))) {
 			return "'" + s + "'";
@@ -50,13 +55,13 @@ public abstract class MercuryUtils {
 		}
 	}
 
-        /** Convert a term to a string. If the term is a variable,
-         *  it is given a "V_" prefix to assure that it starts with
-         *  an uppercase letter.
-         *
-         * @param t the term
-         * @return corresponding string
-         */
+	/** Convert a term to a string. If the term is a variable,
+	 *  it is given a "V_" prefix to assure that it starts with
+	 *  an uppercase letter.
+	 *
+	 * @param t the term
+	 * @return corresponding string
+	 */
 	public static String termToString(Term t) {
 		String s = "";
 
@@ -83,11 +88,11 @@ public abstract class MercuryUtils {
 		}
 	}
 
-        /** Convert an atom to a string.
-         *
-         * @param a the atom
-         * @return corresponding string
-         */
+	/** Convert an atom to a string.
+	 *
+	 * @param a the atom
+	 * @return corresponding string
+	 */
 	public static String atomToString(Atom a) {
 		String s = termStringEscape(a.predSym) + "(";
 		for (int i = 0; i < a.args.length; i++) {
@@ -99,23 +104,23 @@ public abstract class MercuryUtils {
 		return s;
 	}
 
-        /** Convert a modalised atom to a string.
-         *
-         * @param ma the modalised atom
-         * @return corresponding string
-         */
+	/** Convert a modalised atom to a string.
+	 *
+	 * @param ma the modalised atom
+	 * @return corresponding string
+	 */
 	public static String modalisedAtomToString(ModalisedAtom ma) {
 		String modStr = modalitySeqToString(ma.m);
 		String predStr = atomToString(ma.a);
 		return !modStr.equals("") ? modStr + ":" + predStr : predStr;
 	}
 
-        /** Convert a sequence of modalities to a string. If the sequence
-         *  is non-empty, then each modality is delimited by a ':'.
-         *
-         * @param m the sequence
-         * @return corresponding string
-         */
+	/** Convert a sequence of modalities to a string. If the sequence
+	 *  is non-empty, then each modality is delimited by a ':'.
+	 *
+	 * @param m the sequence
+	 * @return corresponding string
+	 */
 	public static String modalitySeqToString(Modality[] m) {
 		String s = "";
 		for (int i = 0; i < m.length; i++) {
@@ -125,11 +130,11 @@ public abstract class MercuryUtils {
 		return s;
 	}
 
-        /** Convert a modality to a string.
-         *
-         * @param m the modality
-         * @return corresponding string
-         */
+	/** Convert a modality to a string.
+	 *
+	 * @param m the modality
+	 * @return corresponding string
+	 */
     public static String modalityToString(Modality m) {
 		switch (m) {
 			case Truth:
@@ -166,6 +171,12 @@ public abstract class MercuryUtils {
 		return s;
 	}
 
+	/**
+	 * Return the string representation of a marked query marking.
+	 *
+	 * @param q marked query
+	 * @return the marking as a string
+	 */
 	public static String markedQueryToMarkingString(MarkedQuery q) {
 		if (q instanceof UnsolvedQuery) {
 			return "unsolved";

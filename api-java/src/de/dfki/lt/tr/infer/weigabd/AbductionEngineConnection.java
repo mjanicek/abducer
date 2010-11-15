@@ -31,14 +31,14 @@ import de.dfki.lt.tr.infer.weigabd.slice.AbductionEngineServerPrxHelper;
  */
 public class AbductionEngineConnection {
 
-    protected Ice.Communicator ic;
-    protected AbductionEnginePrx prx;
-	protected AbductionEngineServerPrx srvPrx = null;
-	protected String name = "[UNBOUND]";
+	private Ice.Communicator ic;
+	private AbductionEnginePrx prx = null;
+	private AbductionEngineServerPrx srvPrx = null;
+	private String name = "[UNBOUND]";
 
-    public AbductionEngineConnection() {
-        ic = Ice.Util.initialize();
-    }
+	public AbductionEngineConnection() {
+		ic = Ice.Util.initialize();
+	}
 
 	/**
 	 * Connect to the server.
@@ -46,23 +46,28 @@ public class AbductionEngineConnection {
 	 * @param name server Ice name
 	 * @param endpoint server Ice endpoint
 	 */
-    public void connectToServer(String serverName, String serverEndpoint) {
-        try {
-            ic = Ice.Util.initialize();
-            Ice.ObjectPrx base = ic.stringToProxy(serverName + ":" + serverEndpoint);
-            srvPrx = AbductionEngineServerPrxHelper.checkedCast(base);
-            if (srvPrx == null) {
-                throw new Error("Unable to create proxy");
-            }
-        }
-        catch (Ice.LocalException e) {
-            e.printStackTrace();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+	public void connectToServer(String serverName, String serverEndpoint) {
+		try {
+			ic = Ice.Util.initialize();
+			Ice.ObjectPrx base = ic.stringToProxy(serverName + ":" + serverEndpoint);
+			srvPrx = AbductionEngineServerPrxHelper.checkedCast(base);
+			if (srvPrx == null) {
+				throw new Error("Unable to create proxy");
+			}
+		}
+		catch (Ice.LocalException e) {
+			e.printStackTrace();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
+	/**
+	 * Bind to an engine.
+	 *
+	 * @param engineName name of the engine
+	 */
 	public void bindToEngine(String engineName) {
 		if (srvPrx != null) {
 			prx = srvPrx.getEngineProxy(engineName);
@@ -74,22 +79,22 @@ public class AbductionEngineConnection {
 	}
 
 	/**
-	 * Return the Ice communicator.
+	 * Return the Ice communicator of the connection.
 	 *
-	 * @return
+	 * @return the communicator
 	 */
-    public Ice.Communicator getCommunicator() {
-        return ic;
-    }
+	public Ice.Communicator getCommunicator() {
+		return ic;
+	}
 
 	/**
 	 * Return the abducer proxy.
 	 * 
 	 * @return
 	 */
-    public AbductionEnginePrx getProxy() {
-        return prx;
-    }
+	public AbductionEnginePrx getProxy() {
+		return prx;
+	}
 
 	/**
 	 * Return the engine name.

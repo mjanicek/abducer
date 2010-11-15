@@ -28,10 +28,15 @@ import de.dfki.lt.tr.infer.weigabd.slice.Term;
 import de.dfki.lt.tr.infer.weigabd.slice.VariableTerm;
 import java.util.List;
 
+/**
+ * Term and atom creator helpers.
+ *
+ * @author Miroslav Janicek
+ */
 public abstract class TermAtomFactory {
 
 	/**
-	 * Return a new predicate.
+	 * Return a new atom.
 	 * 
 	 * @param predSym predicate symbol
 	 * @param args arguments (terms)
@@ -45,7 +50,7 @@ public abstract class TermAtomFactory {
 	}
 
 	/**
-	 * Return a new predicate.
+	 * Return a new atom.
 	 *
 	 * @param predSym predicate symbol
 	 * @param args arguments (terms)
@@ -59,7 +64,7 @@ public abstract class TermAtomFactory {
 	}
 	
 	/**
-	 * Return a two-place predicate.
+	 * Return an atom with two arguments.
 	 * 
 	 * @param predSym predicate symbol
 	 * @param arg1 first argument

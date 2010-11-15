@@ -32,7 +32,12 @@ import de.dfki.lt.tr.infer.weigabd.slice.Term;
 import de.dfki.lt.tr.infer.weigabd.slice.UnsolvedQuery;
 import java.util.ArrayList;
 
-public class ProofUtils {
+/**
+ * Utilities for manipulating proofs.
+ *
+ * @author Miroslav Janicek
+ */
+public abstract class ProofUtils {
 
 	/**
 	 * Given a sequence of queries, return all queries marked as asserted.
@@ -49,7 +54,7 @@ public class ProofUtils {
 		}
 		return list.toArray(new AssertedQuery[0]);
 	}
-	
+
 	/**
 	 * Given a sequence of queries, return all queries that are marked as assumed.
 	 * 
@@ -128,20 +133,4 @@ public class ProofUtils {
 
 		return new UnsolvedQuery[] {q};
 	}
-
-	/**
-	 * Convert a term to string.
-	 *
-	 * @param t the term
-	 * @return functor of t, or null if not applicable
-	 */
-	public static String termToString(Term t) {
-		if (t instanceof FunctionTerm) {
-			return ((FunctionTerm)t).functor;
-		}
-		else {
-			return null;
-		}
-	}
-
 }
