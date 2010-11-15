@@ -467,6 +467,7 @@ do_prove(Out, Method, Qs, VS, CostProofs, !SCtx, !IO) :-
 	;
 		ProveResult = exception(Ex),
 		print(stderr_stream, "Exception: " ++ string(Ex) ++ "\n", !IO),
+		% FIXME: notify the caller about this!
 		Ps = set.init
 	),
 
