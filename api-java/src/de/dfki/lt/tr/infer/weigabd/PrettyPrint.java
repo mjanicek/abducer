@@ -39,7 +39,7 @@ import java.util.List;
  *
  * @author Miroslav Janicek
  */
-public abstract class MercuryUtils {
+public abstract class PrettyPrint {
 
 	/** Escape the given string if it starts with an uppercase
 	 *  letter or contains a '-'.
@@ -167,7 +167,7 @@ public abstract class MercuryUtils {
 		String s = "";
 		for (int i = 0; i < proof.length; i++) {
 			s += "  [" + markedQueryToMarkingString(proof[i]) + "]\t";
-			s += MercuryUtils.modalisedAtomToString(proof[i].atom);
+			s += modalisedAtomToString(proof[i].atom);
 			if (i < proof.length-1) { s += ",\n"; }
 		}
 		return s;
