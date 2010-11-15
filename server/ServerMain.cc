@@ -105,7 +105,6 @@ main(int argc, char ** argv)
 
 			runServer(s, socketFd, socketPath);
 
-			wait(0);
 			LOG4CXX_DEBUG(serverLogger, "unlinking `" << socketPath << "'");
 			unlink(socketPath.c_str());
 
@@ -179,6 +178,7 @@ runServer(const Settings & s, int socketFd, const string & socketPath)
 			status = 1;
 		}
 	}
+	wait(0);
 
 	LOG4CXX_INFO(serverLogger, "server shut down");
 	return status;
@@ -187,7 +187,7 @@ runServer(const Settings & s, int socketFd, const string & socketPath)
 void
 shutdownServer(int signum)
 {
-	LOG4CXX_DEBUG(serverLogger, "received signal " << signum);
+	LOG4CXX_DEBUG(serverLogger, "received signal " << signum << ", shutting down");
 	try {
 		ic->destroy();
 	}
