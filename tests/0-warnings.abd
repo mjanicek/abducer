@@ -12,3 +12,7 @@ p(_A) <-
 
 p(_, _) <-
 	p(_).
+
+disjoint([]).
+disjoint([p(x)]).
+disjoint([p(X)]).  % should be an error

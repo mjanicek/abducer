@@ -33,7 +33,7 @@ syn match   aAssert        /?/
 
 " keywords
 syn keyword aModality  understand generate event int i att bel
-syn keyword aKeyword   disjoint_decl
+syn keyword aKeyword   disjoint
 
 hi link aComment  Comment
 hi link aNote     Todo
