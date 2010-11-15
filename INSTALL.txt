@@ -1,22 +1,54 @@
+ABOUT THIS DOCUMENT
+-------------------
+
+This document describes the necessary steps to install the abducer on your
+machine.
+
+
+AUTHOR
+------
+
+Miroslav Janicek <miroslav.janicek@dfki.de>
+
+
 DEPENDENCIES
 ------------
 
-You'll need a recent Mercury compiler (preferably release 10.04.1) and
-Google Protocol Buffers (preferabably version 2.3.0).
+In order to compile and run the abducer, you'll need the following
+third-party software packages:
+
+  * a recent Mercury compiler (preferably release 10.04.2)
+  * Google Protocol Buffers (preferabably version 2.3.0)
+  * log4cxx (preferably version 0.10.0).
+
+For instructions on how to install the dependencies on your machine, see
+below.
+
+The following operating systems are supported, and the abducer is regularly
+tested there:
+
+  * Ubuntu 10.04 LTS
+  * Mac OS 10.6, Mac OS 10.5
+
+If you're unsuccessfully trying to compile and run the abducer in another
+environment, please contact the author.
 
 
-INSTALLING MERCURY
-------------------
+INSTALLING DEPENDENCIES
+-----------------------
 
-1) Download the latest stable version of the Mercury compiler,
-   it's the package "Compiler" at the bottom this page:
+A. Installing Mercury
+---------------------
+
+1) Download the latest stable version of the Mercury compiler, it's the
+   package "Compiler" at the bottom this page:
 
 	 http://www.mercury.csse.unimelb.edu.au/download/release.html
 
 2) Unpack it somewhere and enter that directory.
 
 3) Run the following command (but only after you've read the short note
-   under it):
+   below):
 
    On Linux and MacOS X 10.6, run
 
@@ -26,9 +58,12 @@ INSTALLING MERCURY
 
      $ ./configure --enable-libgrades=hlc.gc
 
+   This is for your own good -- it restricts the installed versions of the
+   Mercury standard library and Mercury compiler to the bare minimum.
+
    I also recommend using the --prefix=INSTALLPATH option to `configure'
-   so that you have the installation under control. The INSTALLPATH
-   could look something like
+   so that you have the installation under control. The INSTALLPATH could
+   look something like
 
      "$HOME/Devel/mercury-10.04"
 
@@ -45,20 +80,32 @@ INSTALLING MERCURY
 
 6) Make sure that MERCURY_HOME/bin is in your $PATH environment variable.
 
-Voila! Your Mercury is compiled. For the instructions on how to build
-and use the abducer, see further below.
+Voila! Your Mercury is compiled. For the instructions on how to build and
+use the abducer, see further below.
 
 
-INSTALLING GOOGLE PROTOCOL BUFFERS
-----------------------------------
-
-On MacOS X using ports, execute the following command:
-
-  $ sudo port install protobuf-cpp
+B. Installing Google Protocol Buffers
+-------------------------------------
 
 On Ubuntu, use the command
 
   $ sudo apt-get install libprotobuf-dev
+
+On MacOS X using MacPorts, execute the following command:
+
+  $ sudo port install protobuf-cpp
+
+
+C. Installing log4cxx
+---------------------
+
+On Ubuntu, use the command
+
+  $ sudo apt-get install liblog4cxx10-dev
+
+On MacOS X using MacPorts, execute the command
+
+  $ sudo port install log4cxx
 
 
 COMPILING AND RUNNING THE ABDUCER SERVER
