@@ -30,7 +30,7 @@
 
 :- implementation.
 
-:- import_module require, solutions.
+:- import_module require, solutions, exception.
 :- import_module map, set, list, pair, assoc_list, string, float, bitmap, int, bag, bool, maybe.
 :- import_module utils.
 :- import_module abduction, lang, context, assumability.
@@ -453,7 +453,22 @@ do_prove(Out, Method, Qs, VS, CostProofs, !SCtx, !IO) :-
 %	print_ctx(stderr_stream, !.SCtx^cx, !IO),
 	write_pb_message(Out, request_reply(request_reply_return_code_ok, no), !IO),
 
-	prove(Method, P0, Ps, probabilistic_costs, !.SCtx^cx),
+	promise_only_solution_io((pred(Result::out, !.IO::di, !:IO::uo) is cc_multi :-
+		try_io((pred(PsX::out, !.IO::di, !:IO::uo) is det :-
+			prove(Method, P0, PsX, probabilistic_costs, !.SCtx^cx)
+		), Result, !IO)), ProveResult, !IO),
+
+	(
+		ProveResult = succeeded(Ps0),
+		Ps = Ps0
+	;
+		ProveResult = failed,
+		Ps = set.init
+	;
+		ProveResult = exception(Ex),
+		print(stderr_stream, "Exception: " ++ string(Ex) ++ "\n", !IO),
+		Ps = set.init
+	),
 
 	(if !.SCtx^settings^silent = no
 	then print(stderr_stream, "Done with proving.\n", !IO)

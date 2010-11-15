@@ -20,8 +20,6 @@
 
 #include "ForkingServer.h"
 
-#include "Logging.h"
-
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/un.h>
@@ -39,8 +37,6 @@ using namespace log4cxx;
 using namespace Abducer;
 
 LoggerPtr forkerLogger(Logger::getLogger("srv-forker"));
-
-#define THIS  "Server"
 
 ForkingServer::ForkingServer(const vector<string> & engineArgV_, int socket_fd_)
 : engineArgV(engineArgV_), socket_fd(socket_fd_),
@@ -80,7 +76,9 @@ ForkingServer::getEngineProxy(const string & name, const Ice::Current&)
 		adapters[name] = startNewServer(name);
 	}
 	else {
-		LOG4CXX_DEBUG(forkerLogger, "engine " + name + " already running");
+		LOG4CXX_DEBUG(forkerLogger, "engine " + name + " seems to be running, checking");
+		adapters[name]->createProxy(identities[name])->ice_ping();  // FIXME: doesn't test the *engine*
+		LOG4CXX_DEBUG(forkerLogger, "the engine seems to be up");
 	}
 
 	Ice::ObjectPrx oprx = adapters[name]->createProxy(identities[name]);

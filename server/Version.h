@@ -23,6 +23,6 @@
 
 #include <string>
 
-const std::string ABDUCER_VERSION = "2.0.3-pre";
+const std::string ABDUCER_VERSION = "2.1.0-pre";
 
 #endif

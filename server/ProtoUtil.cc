@@ -21,6 +21,8 @@
 #include "ProtoUtil.h"
 #include <unistd.h>
 #include <stdint.h>
+#include <errno.h>
+#include <string.h>
 
 #include <iostream>  // for debugging purposes
 #include "common.h"
@@ -42,7 +44,7 @@ read_all(int fd, char * buf, size_t num)
 		remaining = remaining - nr;
 	}
 
-	return (remaining > 0 || nr <= 0) ? -1 : num;
+	return (remaining > 0 || nr <= 0) ? nr : num;
 }
 
 string
@@ -79,7 +81,7 @@ readMessageFromFileDescriptor(int fd)
 		}
 	}
 	else {
-		cerr << ERROR_MSG("read: unable to read the message size") << endl;
+		cerr << ERROR_MSG("read: unable to read the message size: read() = " << nr << ": " << strerror(errno)) << endl;
 	}
 
 	return string();
