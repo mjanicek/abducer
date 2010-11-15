@@ -25,6 +25,8 @@
 #include <vector>
 #include <unistd.h>
 
+#include <log4cxx/logger.h>
+
 #include <iostream>
 
 namespace Abducer = ::de::dfki::lt::tr::infer::weigabd::slice;
@@ -67,6 +69,8 @@ protected:
 
 	int fd_in;
 	int fd_out;
+
+	log4cxx::LoggerPtr logger;
 };
 
 #endif

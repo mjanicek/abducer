@@ -36,8 +36,6 @@
 
 #include "TtyUtils.h"
 
-#include "Logging.h"
-
 #include "ProtoUtil.h"
 #include "ProtocolException.h"
 
@@ -47,30 +45,28 @@ using namespace Abducer;
 
 #include <vector>
 
-#define THIS  (this->name)
-
 EngineProtobufWrapper::EngineProtobufWrapper(const string & name_, pid_t abducer_pid_, int fd_in_, int fd_out_)
 : name(name_),
 		abducer_pid(abducer_pid_),
 		fd_in(fd_in_),
-		fd_out(fd_out_)
+		fd_out(fd_out_),
+		logger(Logger::getLogger("abducer.engines." + name))
 {
 	GOOGLE_PROTOBUF_VERIFY_VERSION;
-	cerr << SERVER_MSG("initialising the abducer") << endl;
-	clearContext();
+	LOG4CXX_INFO(logger, "initialising engine wrapper, engine PID = " << abducer_pid);
 }
 
 EngineProtobufWrapper::~EngineProtobufWrapper()
 {
 //	close(fd_in);
-	cerr << NOTIFY_MSG("sending SIGKILL to PID " << abducer_pid) << endl;
+	LOG4CXX_INFO(logger, "sending SIGKILL to PID " << abducer_pid);
 	kill(abducer_pid, SIGKILL);
 }
 
 void
 EngineProtobufWrapper::clearContext()
 {
-	cerr << REQUEST_MSG("clearing context") << endl;
+	LOG4CXX_DEBUG(logger, "clearing context");
 
 	protocol::Request request;
 	request.set_rt(protocol::Request::CLEARCONTEXT);
@@ -117,7 +113,7 @@ EngineProtobufWrapper::clearContext(const Ice::Current&)
 void
 EngineProtobufWrapper::loadFile(const string& filename, const Ice::Current&)
 {
-	cerr << REQUEST_MSG("loading file [" << filename << "]") << endl;
+	LOG4CXX_DEBUG(logger, "loading file [" << filename << "]");
 
 	protocol::Request request;
 	request.set_rt(protocol::Request::LOADFILE);
@@ -152,7 +148,7 @@ EngineProtobufWrapper::loadFile(const string& filename, const Ice::Current&)
 
 		case protocol::LoadFileReply::IOERROR:
 			{
-				cerr << ERROR_MSG("file read error") << endl;
+				LOG4CXX_ERROR(logger, "file read error");
 				throw FileReadErrorException(filename);
 			}
 			break;
@@ -160,11 +156,11 @@ EngineProtobufWrapper::loadFile(const string& filename, const Ice::Current&)
 		case protocol::LoadFileReply::SYNTAXERROR:
 			{
 				if (reply.has_error() && reply.has_line()) {
-					cerr << ERROR_MSG("syntax error: " << reply.error() << " on line " << reply.line()) << endl;
+					LOG4CXX_ERROR(logger, "syntax error: " << reply.error() << " on line " << reply.line());
 					throw SyntaxErrorException(filename, reply.error(), reply.line());
 				}
 				else {
-					cerr << ERROR_MSG("unknown syntax error") << endl;
+					LOG4CXX_ERROR(logger, "unknown syntax error");
 					throw SyntaxErrorException(filename, "unknown syntax error", 1);
 				}
 			}
@@ -179,7 +175,7 @@ EngineProtobufWrapper::loadFile(const string& filename, const Ice::Current&)
 void
 EngineProtobufWrapper::clearRules(const Ice::Current&)
 {
-	cerr << REQUEST_MSG("clearing rules") << endl;
+	LOG4CXX_DEBUG(logger, "clearing rules");
 
 	protocol::Request request;
 	request.set_rt(protocol::Request::CLEARRULES);
@@ -191,7 +187,7 @@ EngineProtobufWrapper::clearRules(const Ice::Current&)
 void
 EngineProtobufWrapper::clearFacts(const Ice::Current&)
 {
-	cerr << REQUEST_MSG("clearing all facts") << endl;
+	LOG4CXX_DEBUG(logger, "clearing all facts");
 
 	protocol::Request request;
 	request.set_rt(protocol::Request::CLEARFACTS);
@@ -203,7 +199,7 @@ EngineProtobufWrapper::clearFacts(const Ice::Current&)
 void
 EngineProtobufWrapper::clearFactsByModality(Modality mod, const Ice::Current&)
 {
-	cerr << REQUEST_MSG("clearing [" << modalityToString(mod) << "] facts") << endl;
+	LOG4CXX_DEBUG(logger, "clearing [" << modalityToString(mod) << "] facts");
 
 	protocol::Request request;
 	request.set_rt(protocol::Request::CLEARFACTSBYMODALITY);
@@ -219,7 +215,7 @@ EngineProtobufWrapper::clearFactsByModality(Modality mod, const Ice::Current&)
 void
 EngineProtobufWrapper::clearAssumables(const Ice::Current&)
 {
-	cerr << REQUEST_MSG("clearing assumables") << endl;
+	LOG4CXX_DEBUG(logger, "clearing assumables");
 
 	protocol::Request request;
 	request.set_rt(protocol::Request::CLEARASSUMABLES);
@@ -231,7 +227,7 @@ EngineProtobufWrapper::clearAssumables(const Ice::Current&)
 void
 EngineProtobufWrapper::clearAssumabilityFunction(const string & function, const Ice::Current&)
 {
-	cerr << REQUEST_MSG("clearing assumable function [" << function << "]") << endl;
+	LOG4CXX_DEBUG(logger, "clearing assumable function [" << function << "]");
 
 	protocol::Request request;
 	request.set_rt(protocol::Request::CLEARASSUMABILITYFUNCTION);
@@ -247,7 +243,7 @@ EngineProtobufWrapper::clearAssumabilityFunction(const string & function, const 
 void
 EngineProtobufWrapper::clearDisjointDeclarations(const Ice::Current&)
 {
-	cerr << REQUEST_MSG("clearing disjoint declarations") << endl;
+	LOG4CXX_DEBUG(logger, "clearing disjoint declarations");
 
 	protocol::Request request;
 	request.set_rt(protocol::Request::CLEARDISJOINTDECLS);
@@ -259,7 +255,7 @@ EngineProtobufWrapper::clearDisjointDeclarations(const Ice::Current&)
 void
 EngineProtobufWrapper::addRule(const RulePtr & rule, const Ice::Current&)
 {
-	cerr << REQUEST_MSG("adding a rule") << endl;
+	LOG4CXX_DEBUG(logger, "adding a rule");
 
 	protocol::Request request;
 	request.set_rt(protocol::Request::ADDRULE);
@@ -275,7 +271,7 @@ EngineProtobufWrapper::addRule(const RulePtr & rule, const Ice::Current&)
 void
 EngineProtobufWrapper::addFact(const ModalisedAtomPtr & fact, const Ice::Current&)
 {
-	cerr << REQUEST_MSG("adding fact [" << modalisedAtomToString(fact) << "]") << endl;
+	LOG4CXX_DEBUG(logger, "adding fact [" << modalisedAtomToString(fact) << "]");
 
 	protocol::Request request;
 	request.set_rt(protocol::Request::ADDFACT);
@@ -291,7 +287,7 @@ EngineProtobufWrapper::addFact(const ModalisedAtomPtr & fact, const Ice::Current
 void
 EngineProtobufWrapper::addAssumable(const string & function, const ModalisedAtomPtr & a, float cost, const Ice::Current&)
 {
-	cerr << REQUEST_MSG("adding assumable [" << modalisedAtomToString(a) << " / " << function << "]") << endl;
+	LOG4CXX_DEBUG(logger, "adding assumable [" << modalisedAtomToString(a) << " / " << function << "]");
 
 	protocol::Request request;
 	request.set_rt(protocol::Request::ADDASSUMABLE);
@@ -309,7 +305,7 @@ EngineProtobufWrapper::addAssumable(const string & function, const ModalisedAtom
 void
 EngineProtobufWrapper::addDisjointDeclaration(const DisjointDeclarationPtr & dd, const Ice::Current&)
 {
-	cerr << REQUEST_MSG("adding a disjoint declaration") << endl;
+	LOG4CXX_DEBUG(logger, "adding a disjoint declaration");
 
 	protocol::Request request;
 	request.set_rt(protocol::Request::ADDDISJOINTDECL);
@@ -329,7 +325,7 @@ EngineProtobufWrapper::addDisjointDeclaration(const DisjointDeclarationPtr & dd,
 void
 EngineProtobufWrapper::startProvingWithMethod(const vector<MarkedQueryPtr> & qs, const ProofSearchMethodPtr & method, const Ice::Current&)
 {
-	cerr << REQUEST_MSG("proving started") << endl;
+	LOG4CXX_DEBUG(logger, "proving started");
 
 	protocol::Request request;
 	request.set_rt(protocol::Request::PROVE);
@@ -349,7 +345,7 @@ EngineProtobufWrapper::startProvingWithMethod(const vector<MarkedQueryPtr> & qs,
 void
 EngineProtobufWrapper::startProving(const vector<MarkedQueryPtr> & qs, const Ice::Current& c)
 {
-	cerr << WARNING_MSG("using the deprecated startProving() interface") << endl;
+	LOG4CXX_WARN(logger, "using the deprecated startProving() interface");
 	DFSPtr method = new DFS();
 	startProvingWithMethod(qs, method, c);
 }
@@ -357,7 +353,7 @@ EngineProtobufWrapper::startProving(const vector<MarkedQueryPtr> & qs, const Ice
 vector<ProofWithCostPtr>
 EngineProtobufWrapper::getProofs(int timeout, const Ice::Current&)
 {
-	cerr << REQUEST_MSG("waiting for results, timeout=" << timeout) << endl;
+	LOG4CXX_DEBUG(logger, "waiting for results, timeout=" << timeout);
 
 	struct pollfd pfd[1];
 	pfd[0].fd = fd_in;
@@ -366,29 +362,29 @@ EngineProtobufWrapper::getProofs(int timeout, const Ice::Current&)
 	int rc = poll(pfd, 1, timeout);
 	if (rc > 0) {
 		// something is on stdin -> finished
-		cerr << NOTIFY_MSG("results ready before timeout") << endl;
+		LOG4CXX_DEBUG(logger, "results ready before timeout");
 	}
 	else if (rc == 0) {
 		// timeout -- send SIGUSR1 to the abducer and assume that it's enough
-		cerr << NOTIFY_MSG("timeout") << endl;
+		LOG4CXX_DEBUG(logger, "timeout, sending SIGUSR1 to the engine");
 		kill(abducer_pid, SIGUSR1);
 	}
 	else {
 		// an error occurred
-		cerr << ERROR_MSG("poll() error") << endl;
+		LOG4CXX_ERROR(logger, "poll() error: " << strerror(errno));
 		return vector<ProofWithCostPtr>();
 	}
 
 	// retrieve all proofs
 	const vector<ProofWithCostPtr> & proofs = getProofs();
-	cerr << NOTIFY_MSG("got " << proofs.size() << " results") << endl;
+	LOG4CXX_DEBUG(logger, "got " << proofs.size() << " results");
 	return proofs;
 }
 
 vector<ProofWithCostPtr>
 EngineProtobufWrapper::getProofs()
 {
-	debug(cerr << NOTIFY_MSG("retrieving proofs") << endl);
+	LOG4CXX_TRACE(logger, "retrieving proofs");
 
 	string s_reply = readMessageFromFileDescriptor(fd_in);
 	if (s_reply == "") {
@@ -404,7 +400,7 @@ EngineProtobufWrapper::getProofs()
 		throw EngineException("abducer internal error");
 	}
 
-	debug(cerr << NOTIFY_MSG("parsed the message, " << reply.proofs_size() << " proofs total") << endl);
+	LOG4CXX_TRACE(logger, "parsed the message, " << reply.proofs_size() << " proofs total");
 
 	vector<ProofWithCostPtr> result;
 	for (int i = 0; i < reply.proofs_size(); i++) {

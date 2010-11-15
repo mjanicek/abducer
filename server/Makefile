@@ -11,7 +11,7 @@ SLICE_PATH?=../slice
 BIN=abducer-server
 
 CXX_HEADERS=CLI.h
-CXX_HEADERS+=SliceToString.h TtyUtils.h EngineProtobufWrapper.h Logging.h Version.h common.h
+CXX_HEADERS+=SliceToString.h TtyUtils.h EngineProtobufWrapper.h Version.h common.h
 CXX_HEADERS+=ForkingServer.h
 CXX_HEADERS+=Constants.h
 CXX_HEADERS+=weigabd.h

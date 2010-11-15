@@ -36,7 +36,7 @@ using namespace std;
 using namespace log4cxx;
 using namespace Abducer;
 
-LoggerPtr forkerLogger(Logger::getLogger("srv-forker"));
+LoggerPtr forkerLogger(Logger::getLogger("abducer.forker"));
 
 ForkingServer::ForkingServer(const vector<string> & engineArgV_, int socket_fd_)
 : engineArgV(engineArgV_), socket_fd(socket_fd_),

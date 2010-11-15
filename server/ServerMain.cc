@@ -40,13 +40,12 @@
 
 #include "CLI.h"
 #include "Version.h"
-#include "Logging.h"
 
 using namespace std;
 using namespace log4cxx;
 using namespace log4cxx::xml;
 
-LoggerPtr serverLogger(Logger::getLogger("srv-main"));
+LoggerPtr serverLogger(Logger::getLogger("abducer.main"));
 
 const string DEFAULT_SERVER_NAME = "AbducerServer";
 const string DEFAULT_SERVER_ENDPOINTS = "default -p 10000";
