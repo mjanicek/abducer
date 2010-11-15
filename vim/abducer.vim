@@ -3,7 +3,7 @@ if exists("b:current_syntax")
 endif
 let b:current_syntax = "abducer"
 
-" Mercury is case sensitive
+" the language is case sensitive
 syn case match
 
 syn sync fromstart
@@ -32,10 +32,8 @@ syn match   aCostFunction  /\//
 syn match   aAssert        /?/
 
 " keywords
-syn keyword aModality  understand generate
-syn keyword aModality  event int
-syn keyword aModality  i att
-syn keyword aModality  bel
+syn keyword aModality  understand generate event int i att bel
+syn keyword aKeyword   disjoint_decl
 
 hi link aComment  Comment
 hi link aNote     Todo
@@ -50,6 +48,6 @@ hi link aEnd           Statement
 hi link aRevImpl       Statement
 hi link aEmbedImpl     Statement
 hi link aCostFunction  Statement
+hi link aKeyword       Statement
 hi link aAssert        Special
-
-hi link aModality  Type
+hi link aModality      Type
