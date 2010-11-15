@@ -1,7 +1,7 @@
 <project name="Abducer Java API" default="jar" basedir=".">
 
 	<property name="build.sysclasspath" value="last" />
-	<property file="build.properties" />
+	<property name="abducer.dir" value="../.." />
 
 	<property name="debug" value="true" />
 
@@ -80,6 +80,7 @@
 	<target name="clean">
 		<delete dir="${generated.dir}"/>
 		<delete dir="${output.dir}"/>
+		<delete dir="${jar.dir}"/>
 	</target>
 
 </project>
