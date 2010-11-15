@@ -1,15 +1,15 @@
 #!/bin/sh
 
-SERVER_BIN=abducer-server-bin
-ENGINE_BIN=abduction-engine
+SERVER_BIN=abducer-server
+ENGINE_BIN=abducer-engine-pb
 
 SERVER_NAME="AbducerServer"
 SERVER_ENDPOINTS="default -p 10000"
 
 DIR="`pwd`/`dirname $0`"
 
-PATH_TO_SERVER="$DIR/$SERVER_BIN"
-PATH_TO_ENGINE="$DIR/$ENGINE_BIN"
+PATH_TO_SERVER="$DIR/bin/$SERVER_BIN"
+PATH_TO_ENGINE="$DIR/bin/$ENGINE_BIN"
 
 if [ ! -e "$PATH_TO_SERVER" ]; then
 	echo "Unable to find the server binary \``basename $PATH_TO_SERVER`' in"
@@ -25,4 +25,4 @@ if [ ! -e "$PATH_TO_ENGINE" ]; then
 	exit 1
 fi
 
-"$PATH_TO_SERVER" -n "$SERVER_NAME" -e "$SERVER_ENDPOINTS" -a "$DIR/$ENGINE_BIN" -x --silent
+"$PATH_TO_SERVER" -n "$SERVER_NAME" -e "$SERVER_ENDPOINTS" -a "$PATH_TO_ENGINE" -x --silent -l "$DIR/Log4jConfig.xml"

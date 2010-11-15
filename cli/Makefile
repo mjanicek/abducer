@@ -1,4 +1,7 @@
-# $Id: Makefile 4590 2009-11-13 15:21:40Z janicek $
+#------------------------------------------------------------------------------#
+# Build settings
+
+OUTPUT_DIR?=../bin
 
 # Binary files to be built.
 #
@@ -32,17 +35,18 @@ endif
 .SUFFIXES:
 
 .PHONY: compile
-compile: $(MBIN)
+compile: $(addprefix $(OUTPUT_DIR)/, $(MBIN))
 
-$(MBIN): $(MFILES) $(LIBABDUCER)
+$(addprefix $(OUTPUT_DIR)/, $(MBIN)): $(MFILES) $(LIBABDUCER)
 	mmc --make \
 		--grade $(GRADE) \
 		$(MCFLAGS) \
-		$@
+		$(MBIN)
+	mv abducer-cli $(OUTPUT_DIR) || true
+	mv check-abd $(OUTPUT_DIR) || true
 
 .PHONY: clean
 clean:
-	rm -rf $(BIN) Mercury \
+	rm -rf Mercury \
 		$(addsuffix .err, $(basename $(MFILES))) \
 		$(addsuffix .mh, $(basename $(MFILES))) \
-		$(MBIN)

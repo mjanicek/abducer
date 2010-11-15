@@ -3,8 +3,8 @@
 METH=dfs
 
 if [ $# -eq 2 ]; then
-	../timeout -usr1 "$2" -- ../abducer-cli $METH test. <"$1" >log && less -R log
+	../bin/timeout -usr1 "$2" -- ../bin/abducer-cli $METH test. <"$1" >log && less -R log
 else
-#	../abducer-cli $METH test. <"$1" | less -R
-	../abducer-cli $METH test. <"$1" >/dev/null 2>&1
+#	../bin/abducer-cli $METH test. <"$1" | less -R
+	../bin/abducer-cli $METH test. <"$1" >/dev/null 2>&1
 fi

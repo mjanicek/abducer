@@ -1,14 +1,17 @@
 #------------------------------------------------------------------------------#
+# Build settings
 
+OUTPUT_DIR?=../bin
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -#
 # ICE
 
 SLICE_PATH?=../slice
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -#
-
 # C++
 
-BIN=abducer-server
+BIN=$(OUTPUT_DIR)/abducer-server
 
 CXX_HEADERS=CLI.h
 CXX_HEADERS+=SliceToString.h TtyUtils.h EngineProtobufWrapper.h Version.h common.h
@@ -59,11 +62,10 @@ endif
 LDFLAGS+=$(shell pkg-config --libs liblog4cxx)
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -#
-
 # Mercury
 
-MBIN=abducer-pb
-M_SOURCES=abducer-pb.m protobuf_runtime.m protocol_loading.m
+MBIN=$(OUTPUT_DIR)/abducer-engine-pb
+M_SOURCES=abducer-engine-pb.m protobuf_runtime.m protocol_loading.m
 M_SOURCES+=unix_socket.m
 M_SOURCES+=protocol.m
 
@@ -85,7 +87,7 @@ $(info Please set the environment variable ICE_HOME to the root of your Ice)
 $(info installation.)
 $(info e.g. export ICE_HOME=/opt/local)
 $(info )
-$(error ICE_HOME undefined)
+$(warning ICE_HOME undefined)
 endif
 
 # on BSD, without deactivating suffix rules, any "non-suffixed"
@@ -133,7 +135,8 @@ $(MBIN): $(M_SOURCES) $(LIBABDUCER)
 	mmc --make \
 		--grade $(GRADE) \
 		$(MCFLAGS) \
-		$@
+		`basename $@`
+	mv `basename $(MBIN)` $(OUTPUT_DIR) || true
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -#
 
@@ -144,4 +147,3 @@ clean:
 		Mercury \
 		$(addsuffix .err, $(basename $(M_SOURCES))) \
 		$(addsuffix .mh, $(basename $(M_SOURCES))) \
-		$(BIN) $(MBIN)

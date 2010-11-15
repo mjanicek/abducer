@@ -1,3 +1,8 @@
+SERVER_BIN=abducer-server
+ENGINE_BIN=abducer-engine-pb
+
+#------------------------------------------------------------------------------#
+
 .PHONY: all
 all: server cli tests
 
@@ -7,20 +12,13 @@ all: server cli tests
 lib:
 	make -C lib
 
-ABDUCTION_ENGINE=abduction-engine
-SERVER_BIN=abducer-server-bin
-
 .PHONY: server
 server: lib
-	make -C server
-	[ -e $(SERVER_BIN) ] || ln -s server/abducer-server $(SERVER_BIN)
-	[ -e $(ABDUCTION_ENGINE) ] || ln -s server/abducer-pb $(ABDUCTION_ENGINE)
+	make -C server OUTPUT_DIR=`pwd`/bin
 
 .PHONY: cli
 cli: lib
-	make -C cli
-	[ -e check-abd ] || ln -s cli/check-abd
-	[ -e abducer-cli ] || ln -s cli/abducer-cli
+	make -C cli OUTPUT_DIR=`pwd`/bin
 
 .PHONY: tests
 tests: lib util
@@ -29,7 +27,7 @@ tests: lib util
 .PHONY: util
 util:
 	make -C util
-	[ -e timeout ] || ln -s util/timeout/timeout
+	[ -e bin/timeout ] || cp util/timeout/timeout bin
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -#
 
@@ -40,6 +38,6 @@ clean:
 	make -C cli clean
 	make -C tests clean
 	make -C util clean
-	rm -f $(SERVER_BIN) $(ABDUCTION_ENGINE)
-	rm -f abducer-cli check-abd
-	rm -f timeout
+	rm -f bin/$(SERVER_BIN) bin/$(ENGINE_BIN)
+	rm -f bin/abducer-cli bin/check-abd
+	rm -f bin/timeout

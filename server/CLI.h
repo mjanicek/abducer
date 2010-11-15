@@ -35,6 +35,7 @@ struct Settings {
 	std::string serverEndpoints;
 	std::string abducerPath;
 	std::vector<std::string> abducerArgs;
+	std::string logConfigPath;
 };
 
 CommandLineAction
