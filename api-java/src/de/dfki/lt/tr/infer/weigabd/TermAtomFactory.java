@@ -20,12 +20,12 @@
 
 package de.dfki.lt.tr.infer.weigabd;
 
-import de.dfki.lt.tr.infer.weigabd.slice.FunctionTerm;
-import de.dfki.lt.tr.infer.weigabd.slice.Atom;
-import de.dfki.lt.tr.infer.weigabd.slice.ModalisedAtom;
-import de.dfki.lt.tr.infer.weigabd.slice.Modality;
-import de.dfki.lt.tr.infer.weigabd.slice.Term;
-import de.dfki.lt.tr.infer.weigabd.slice.VariableTerm;
+import de.dfki.lt.tr.infer.weigabd.slice.lang.Atom;
+import de.dfki.lt.tr.infer.weigabd.slice.lang.FunctionTerm;
+import de.dfki.lt.tr.infer.weigabd.slice.lang.ModalisedAtom;
+import de.dfki.lt.tr.infer.weigabd.slice.lang.Modality;
+import de.dfki.lt.tr.infer.weigabd.slice.lang.Term;
+import de.dfki.lt.tr.infer.weigabd.slice.lang.VariableTerm;
 import java.util.Arrays;
 import java.util.List;
 

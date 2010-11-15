@@ -29,15 +29,15 @@
 namespace Abducer = ::de::dfki::lt::tr::infer::weigabd::slice;
 
 std::string
-atomToString(const Abducer::AtomPtr & a);
+atomToString(const Abducer::lang::AtomPtr & a);
 
 std::string
-termToString(const Abducer::TermPtr & t);
+termToString(const Abducer::lang::TermPtr & t);
 
 std::string
-modalityToString(const Abducer::Modality m);
+modalityToString(const Abducer::lang::Modality m);
 
 std::string
-modalisedAtomToString(const Abducer::ModalisedAtomPtr & ma);
+modalisedAtomToString(const Abducer::lang::ModalisedAtomPtr & ma);
 
 #endif

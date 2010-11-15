@@ -23,7 +23,7 @@
 #include "Constants.h"
 
 using namespace std;
-using namespace Abducer;
+using namespace Abducer::lang;
 
 string
 quoteGuard(string s)

@@ -26,7 +26,7 @@
 
 namespace Abducer = ::de::dfki::lt::tr::infer::weigabd::slice;
 
-class ProtocolException : public Abducer::EngineException {
+class ProtocolException : public Abducer::engine::EngineException {
 public:
 	ProtocolException(const std::string & message);
 };

@@ -41,6 +41,8 @@ module slice {
 
 	const string RELEASE = "2.1";
 
+module lang {
+
 	//-----------------------------------------------------------------
 	// TERMS & ATOMS
 
@@ -150,12 +152,16 @@ module slice {
 		ModalisedAtomSeq atoms;
 	};
 
+};
+
+module proof {
+
 	//-----------------------------------------------------------------
 	// QUERIES
 
 	// Base class for abductive proofs.
 	class MarkedQuery {
-		ModalisedAtom atom;
+		lang::ModalisedAtom atom;
 	};
 
 	// "Proved". Marks modalised atoms that have been solved.
@@ -163,13 +169,13 @@ module slice {
 
 	// "Unsolved". Marks modalised atoms that are yet to be solved.
 	class UnsolvedQuery extends MarkedQuery {
-		AssumabilityFunction f;
+		lang::AssumabilityFunction f;
 	};
 
 	// "Assumed". Marks modalised atoms that are assumed under the given
 	// assumability function.
 	class AssumedQuery extends MarkedQuery {
-		AssumabilityFunction f;
+		lang::AssumabilityFunction f;
 	};
 
 	// "Asserted". Marks modalised atoms that are asserted.
@@ -187,14 +193,12 @@ module slice {
 
 	["java:type:java.util.ArrayList<ProofWithCost>"] sequence<ProofWithCost> ProofWithCostSeq;
 
+};
+
+module engine {
+
 	//-----------------------------------------------------------------
 	// SERVER INTERFACE
-
-	enum ProveResult {
-		ProofFound,
-		NoProofFound,
-		Error
-	};
 
 	//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 	// Exceptions
@@ -246,26 +250,26 @@ module slice {
 
 		void clearRules();
 		void clearFacts();
-		void clearFactsByModality(Modality type);
+		void clearFactsByModality(lang::Modality type);
 		void clearAssumables();
 		void clearAssumabilityFunction(string function);
 		void clearDisjointDeclarations();
 
-		void addRule(Rule r);
-		void addFact(ModalisedAtom a);
-		void addAssumable(string function, ModalisedAtom a, float cost);
-		void addDisjointDeclaration(DisjointDeclaration dd);
+		void addRule(lang::Rule r);
+		void addFact(lang::ModalisedAtom a);
+		void addAssumable(string function, lang::ModalisedAtom a, float cost);
+		void addDisjointDeclaration(lang::DisjointDeclaration dd);
 
 		// Start proving the goal.
-		void startProvingWithMethod(MarkedQuerySeq g, ProofSearchMethod method);
-		void startProving(MarkedQuerySeq g);  // for backward compatibility
+		void startProvingWithMethod(proof::MarkedQuerySeq g, ProofSearchMethod method);
+		void startProving(proof::MarkedQuerySeq g);  // for backward compatibility
 
 		// If timeout > 0, it will be the maximum interval (in miliseconds)
 		// to wait for the results -- after this interval has expired,
 		// the best available result will be provided. If timeout == 0,
 		// return the best results so far immediately; if timeout == -1,
 		// wait indefinitely.
-		ProofWithCostSeq getProofs(int timeout);
+		proof::ProofWithCostSeq getProofs(int timeout);
 	};
 
 	//-----------------------------------------------------------------
@@ -275,6 +279,7 @@ module slice {
 		AbductionEngine* getEngineProxy(string name);
 	};
 
+};
 };
 };
 };

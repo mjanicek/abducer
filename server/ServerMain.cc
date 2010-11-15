@@ -157,7 +157,7 @@ runServer(const Settings & s, int socketFd, const string & socketPath)
 
 		ic->waitForShutdown();
 	}
-	catch (const Abducer::EngineException & e) {
+	catch (const Abducer::engine::EngineException & e) {
 		LOG4CXX_ERROR(serverLogger, "server exception: \"" << e.message << "\"");
 	}
 	catch (const Ice::Exception& e) {

@@ -27,24 +27,24 @@
 namespace Abducer = ::de::dfki::lt::tr::infer::weigabd::slice;
 
 protocol::Modality
-protoModality(Abducer::Modality m);
+protoModality(Abducer::lang::Modality m);
 
 protocol::ModalisedAtom
-protoModalisedAtom(const Abducer::ModalisedAtomPtr & a_ma);
+protoModalisedAtom(const Abducer::lang::ModalisedAtomPtr & a_ma);
 
 protocol::ModalisedRule
-protoModalisedRule(const Abducer::RulePtr & a_r);
+protoModalisedRule(const Abducer::lang::RulePtr & a_r);
 
 protocol::Antecedent
-protoAntecedent(const Abducer::AntecedentPtr & a_a);
+protoAntecedent(const Abducer::lang::AntecedentPtr & a_a);
 
 protocol::AssumabilityFunction
-protoAssumabilityFunction(const Abducer::AssumabilityFunctionPtr & a_f);
+protoAssumabilityFunction(const Abducer::lang::AssumabilityFunctionPtr & a_f);
 
 protocol::MarkedQuery
-protoMarkedQuery(const Abducer::MarkedQueryPtr & a_q);
+protoMarkedQuery(const Abducer::proof::MarkedQueryPtr & a_q);
 
 protocol::ProofSearchMethod
-protoProofSearchMethod(const Abducer::ProofSearchMethodPtr & a_meth);
+protoProofSearchMethod(const Abducer::engine::ProofSearchMethodPtr & a_meth);
 
 #endif

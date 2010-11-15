@@ -66,7 +66,7 @@ ForkingServer::~ForkingServer()
 	}
 }
 
-AbductionEnginePrx
+engine::AbductionEnginePrx
 ForkingServer::getEngineProxy(const string & name, const Ice::Current&)
 {
 	map<string, Ice::ObjectAdapterPtr>::iterator it = adapters.find(name);
@@ -83,7 +83,7 @@ ForkingServer::getEngineProxy(const string & name, const Ice::Current&)
 
 	Ice::ObjectPrx oprx = adapters[name]->createProxy(identities[name]);
 
-	if (AbductionEnginePrx eprx = AbductionEnginePrx::checkedCast(oprx)) {
+	if (engine::AbductionEnginePrx eprx = engine::AbductionEnginePrx::checkedCast(oprx)) {
 		return eprx;
 	}
 	else {

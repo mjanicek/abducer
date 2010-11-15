@@ -26,25 +26,25 @@
 
 namespace Abducer = ::de::dfki::lt::tr::infer::weigabd::slice;
 
-Abducer::ProofWithCostPtr
+Abducer::proof::ProofWithCostPtr
 proofWithCostFromProto(const protocol::Proof & p_p);
 
-Abducer::MarkedQueryPtr
+Abducer::proof::MarkedQueryPtr
 markedQueryFromProto(const protocol::MarkedQuery & p_q);
 
-Abducer::AssumabilityFunctionPtr
+Abducer::lang::AssumabilityFunctionPtr
 assumabilityFunctionFromProto(const protocol::AssumabilityFunction & p_af);
 
-Abducer::ModalisedAtomPtr
+Abducer::lang::ModalisedAtomPtr
 modalisedAtomFromProto(const protocol::ModalisedAtom & p_ma);
 
-Abducer::Modality
+Abducer::lang::Modality
 modalityFromProto(protocol::Modality p_m);
 
-Abducer::AtomPtr
+Abducer::lang::AtomPtr
 atomFromProto(const protocol::Atom & p_a);
 
-Abducer::TermPtr
+Abducer::lang::TermPtr
 termFromProto(const protocol::Term & p_t);
 
 #endif

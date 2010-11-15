@@ -26,33 +26,33 @@
 using namespace std;
 
 protocol::Modality
-protoModality(Abducer::Modality m) {
+protoModality(Abducer::lang::Modality m) {
 	switch (m) {
-		case Abducer::Understanding: return protocol::UNDERSTANDING;
-		case Abducer::Generation:    return protocol::GENERATION;
-		case Abducer::Event:         return protocol::EVENT;
-		case Abducer::Intention:     return protocol::INTENTION;
-		case Abducer::Attention:     return protocol::ATTENTION;
-		case Abducer::Belief:        return protocol::BELIEF;
-		case Abducer::Truth:         return protocol::TRUTH;
+		case Abducer::lang::Understanding: return protocol::UNDERSTANDING;
+		case Abducer::lang::Generation:    return protocol::GENERATION;
+		case Abducer::lang::Event:         return protocol::EVENT;
+		case Abducer::lang::Intention:     return protocol::INTENTION;
+		case Abducer::lang::Attention:     return protocol::ATTENTION;
+		case Abducer::lang::Belief:        return protocol::BELIEF;
+		case Abducer::lang::Truth:         return protocol::TRUTH;
 		default: throw ProtocolException("unknown modality");
 	}
 }
 
 protocol::Term
-protoTerm(const Abducer::TermPtr & a_t)
+protoTerm(const Abducer::lang::TermPtr & a_t)
 {
 	protocol::Term p_t;
 
-	if (Abducer::FunctionTermPtr a_ft = Abducer::FunctionTermPtr::dynamicCast(a_t)) {
+	if (Abducer::lang::FunctionTermPtr a_ft = Abducer::lang::FunctionTermPtr::dynamicCast(a_t)) {
 		p_t.set_type(protocol::Term::FUNCTION);
 		p_t.set_functor(a_ft->functor);
-		vector<Abducer::TermPtr>::const_iterator i;
+		vector<Abducer::lang::TermPtr>::const_iterator i;
 		for (i = a_ft->args.begin(); i != a_ft->args.end(); i++) {
 			p_t.add_args()->CopyFrom(protoTerm(*i));
 		}
 	}
-	else if (Abducer::VariableTermPtr a_vt = Abducer::VariableTermPtr::dynamicCast(a_t)) {
+	else if (Abducer::lang::VariableTermPtr a_vt = Abducer::lang::VariableTermPtr::dynamicCast(a_t)) {
 		p_t.set_type(protocol::Term::VARIABLE);
 		p_t.set_var_name(a_vt->name);
 	}
@@ -64,12 +64,12 @@ protoTerm(const Abducer::TermPtr & a_t)
 }
 
 protocol::Atom
-protoAtom(const Abducer::AtomPtr & a_a)
+protoAtom(const Abducer::lang::AtomPtr & a_a)
 {
 	protocol::Atom p_a;
 	p_a.set_pred_sym(a_a->predSym);
 
-	vector<Abducer::TermPtr>::const_iterator i;
+	vector<Abducer::lang::TermPtr>::const_iterator i;
 	for (i = a_a->args.begin(); i != a_a->args.end(); i++) {
 		p_a.add_args()->CopyFrom(protoTerm(*i));
 	}
@@ -78,11 +78,11 @@ protoAtom(const Abducer::AtomPtr & a_a)
 }
 
 protocol::ModalisedAtom
-protoModalisedAtom(const Abducer::ModalisedAtomPtr & a_ma)
+protoModalisedAtom(const Abducer::lang::ModalisedAtomPtr & a_ma)
 {
 	protocol::ModalisedAtom p_ma;
 
-	vector<Abducer::Modality>::const_iterator i;
+	vector<Abducer::lang::Modality>::const_iterator i;
 	for (i = a_ma->m.begin(); i != a_ma->m.end(); i++) {
 		p_ma.add_mod(protoModality(*i));
 	}
@@ -92,13 +92,13 @@ protoModalisedAtom(const Abducer::ModalisedAtomPtr & a_ma)
 }
 
 protocol::ModalisedRule
-protoModalisedRule(const Abducer::RulePtr & a_r)
+protoModalisedRule(const Abducer::lang::RulePtr & a_r)
 {
 	protocol::ModalisedRule p_r;
 
 	p_r.mutable_head()->CopyFrom(protoModalisedAtom(a_r->head));
 
-	vector<Abducer::AntecedentPtr>::const_iterator i;
+	vector<Abducer::lang::AntecedentPtr>::const_iterator i;
 	for (i = a_r->ante.begin(); i != a_r->ante.end(); i++) {
 		p_r.add_ante()->CopyFrom(protoAntecedent(*i));
 	}
@@ -107,16 +107,16 @@ protoModalisedRule(const Abducer::RulePtr & a_r)
 }
 
 protocol::Antecedent
-protoAntecedent(const Abducer::AntecedentPtr & a_a)
+protoAntecedent(const Abducer::lang::AntecedentPtr & a_a)
 {
 	protocol::Antecedent p_a;
 	p_a.mutable_matom()->CopyFrom(protoModalisedAtom(a_a->matom));
 
-	if (Abducer::AssumableAntecedentPtr a_aa = Abducer::AssumableAntecedentPtr::dynamicCast(a_a)) {
+	if (Abducer::lang::AssumableAntecedentPtr a_aa = Abducer::lang::AssumableAntecedentPtr::dynamicCast(a_a)) {
 		p_a.set_type(protocol::Antecedent::ASSUMABLE);
 		p_a.mutable_function()->CopyFrom(protoAssumabilityFunction(a_aa->f));
 	}
-	else if (Abducer::AssertionAntecedentPtr a_ra = Abducer::AssertionAntecedentPtr::dynamicCast(a_a)) {
+	else if (Abducer::lang::AssertionAntecedentPtr a_ra = Abducer::lang::AssertionAntecedentPtr::dynamicCast(a_a)) {
 		p_a.set_type(protocol::Antecedent::ASSERTED);
 	}
 	else {
@@ -127,18 +127,18 @@ protoAntecedent(const Abducer::AntecedentPtr & a_a)
 }
 
 protocol::AssumabilityFunction
-protoAssumabilityFunction(const Abducer::AssumabilityFunctionPtr & a_f)
+protoAssumabilityFunction(const Abducer::lang::AssumabilityFunctionPtr & a_f)
 {
 	protocol::AssumabilityFunction p_f;
 
-	if (Abducer::NullAssumabilityFunctionPtr a_nf = Abducer::NullAssumabilityFunctionPtr::dynamicCast(a_f)) {
+	if (Abducer::lang::NullAssumabilityFunctionPtr a_nf = Abducer::lang::NullAssumabilityFunctionPtr::dynamicCast(a_f)) {
 		p_f.set_function_type(protocol::AssumabilityFunction::NOTASSUMABLE);
 	}
-	else if (Abducer::ConstAssumabilityFunctionPtr a_cf = Abducer::ConstAssumabilityFunctionPtr::dynamicCast(a_f)) {
+	else if (Abducer::lang::ConstAssumabilityFunctionPtr a_cf = Abducer::lang::ConstAssumabilityFunctionPtr::dynamicCast(a_f)) {
 		p_f.set_function_type(protocol::AssumabilityFunction::CONST);
 		p_f.set_cost(a_cf->cost);
 	}
-	else if (Abducer::NamedAssumabilityFunctionPtr a_mf = Abducer::NamedAssumabilityFunctionPtr::dynamicCast(a_f)) {
+	else if (Abducer::lang::NamedAssumabilityFunctionPtr a_mf = Abducer::lang::NamedAssumabilityFunctionPtr::dynamicCast(a_f)) {
 		p_f.set_function_type(protocol::AssumabilityFunction::NAMED);
 		p_f.set_function_name(a_mf->name);
 	}
@@ -150,24 +150,24 @@ protoAssumabilityFunction(const Abducer::AssumabilityFunctionPtr & a_f)
 }
 
 protocol::MarkedQuery
-protoMarkedQuery(const Abducer::MarkedQueryPtr & a_q)
+protoMarkedQuery(const Abducer::proof::MarkedQueryPtr & a_q)
 {
 	protocol::MarkedQuery p_q;
 
 	p_q.mutable_matom()->CopyFrom(protoModalisedAtom(a_q->atom));
 
-	if (Abducer::ProvedQueryPtr a_pq = Abducer::ProvedQueryPtr::dynamicCast(a_q)) {
+	if (Abducer::proof::ProvedQueryPtr a_pq = Abducer::proof::ProvedQueryPtr::dynamicCast(a_q)) {
 		p_q.set_marking(protocol::MarkedQuery::PROVED);
 	}
-	else if (Abducer::UnsolvedQueryPtr a_uq = Abducer::UnsolvedQueryPtr::dynamicCast(a_q)) {
+	else if (Abducer::proof::UnsolvedQueryPtr a_uq = Abducer::proof::UnsolvedQueryPtr::dynamicCast(a_q)) {
 		p_q.set_marking(protocol::MarkedQuery::UNSOLVED);
 		p_q.mutable_function()->CopyFrom(protoAssumabilityFunction(a_uq->f));
 	}
-	else if (Abducer::AssumedQueryPtr a_sq = Abducer::AssumedQueryPtr::dynamicCast(a_q)) {
+	else if (Abducer::proof::AssumedQueryPtr a_sq = Abducer::proof::AssumedQueryPtr::dynamicCast(a_q)) {
 		p_q.set_marking(protocol::MarkedQuery::ASSUMED);
 		p_q.mutable_function()->CopyFrom(protoAssumabilityFunction(a_sq->f));
 	}
-	else if (Abducer::AssertedQueryPtr a_rq = Abducer::AssertedQueryPtr::dynamicCast(a_q)) {
+	else if (Abducer::proof::AssertedQueryPtr a_rq = Abducer::proof::AssertedQueryPtr::dynamicCast(a_q)) {
 		p_q.set_marking(protocol::MarkedQuery::ASSERTED);
 	}
 	else {
@@ -178,16 +178,16 @@ protoMarkedQuery(const Abducer::MarkedQueryPtr & a_q)
 }
 
 protocol::ProofSearchMethod
-protoProofSearchMethod(const Abducer::ProofSearchMethodPtr & a_meth)
+protoProofSearchMethod(const Abducer::engine::ProofSearchMethodPtr & a_meth)
 {
 	protocol::ProofSearchMethod p_meth;
 
-	if (Abducer::IDDFSPtr a_iddfs = Abducer::IDDFSPtr::dynamicCast(a_meth)) {
+	if (Abducer::engine::IDDFSPtr a_iddfs = Abducer::engine::IDDFSPtr::dynamicCast(a_meth)) {
 		p_meth.set_method(protocol::ProofSearchMethod::IDDFS);
 		p_meth.set_init_bound(a_iddfs->initBound);
 		p_meth.set_multiplier(a_iddfs->multiplier);
 	}
-	else if (Abducer::BoundedDFSPtr a_bdfs = Abducer::BoundedDFSPtr::dynamicCast(a_meth)) {
+	else if (Abducer::engine::BoundedDFSPtr a_bdfs = Abducer::engine::BoundedDFSPtr::dynamicCast(a_meth)) {
 		p_meth.set_method(protocol::ProofSearchMethod::BOUNDEDDFS);
 		p_meth.set_max_bound(a_bdfs->bound);
 	}

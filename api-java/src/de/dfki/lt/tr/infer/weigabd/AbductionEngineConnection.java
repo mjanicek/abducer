@@ -20,9 +20,9 @@
 
 package de.dfki.lt.tr.infer.weigabd;
 
-import de.dfki.lt.tr.infer.weigabd.slice.AbductionEnginePrx;
-import de.dfki.lt.tr.infer.weigabd.slice.AbductionEngineServerPrx;
-import de.dfki.lt.tr.infer.weigabd.slice.AbductionEngineServerPrxHelper;
+import de.dfki.lt.tr.infer.weigabd.slice.engine.AbductionEnginePrx;
+import de.dfki.lt.tr.infer.weigabd.slice.engine.AbductionEngineServerPrx;
+import de.dfki.lt.tr.infer.weigabd.slice.engine.AbductionEngineServerPrxHelper;
 
 /**
  * A wrapper for manipulating the abducer server.

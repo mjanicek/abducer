@@ -23,10 +23,10 @@
 
 #include "ProtocolException.h"
 
-Abducer::ProofWithCostPtr
+Abducer::proof::ProofWithCostPtr
 proofWithCostFromProto(const protocol::Proof & p_p)
 {
-	Abducer::ProofWithCostPtr a_p = new Abducer::ProofWithCost();
+	Abducer::proof::ProofWithCostPtr a_p = new Abducer::proof::ProofWithCost();
 	a_p->cost = p_p.cost();
 	for (int j = 0; j < p_p.proof_size(); j++) {
 		a_p->proof.push_back(markedQueryFromProto(p_p.proof(j)));
@@ -34,20 +34,20 @@ proofWithCostFromProto(const protocol::Proof & p_p)
 	return a_p;
 }
 
-Abducer::MarkedQueryPtr
+Abducer::proof::MarkedQueryPtr
 markedQueryFromProto(const protocol::MarkedQuery & p_q)
 {
 	switch (p_q.marking()) {
 		case protocol::MarkedQuery::PROVED:
 			{
-				Abducer::ProvedQueryPtr a_pq = new Abducer::ProvedQuery();
+				Abducer::proof::ProvedQueryPtr a_pq = new Abducer::proof::ProvedQuery();
 				a_pq->atom = modalisedAtomFromProto(p_q.matom());
 				return a_pq;
 			}
 
 		case protocol::MarkedQuery::UNSOLVED:
 			{
-				Abducer::UnsolvedQueryPtr a_uq = new Abducer::UnsolvedQuery();
+				Abducer::proof::UnsolvedQueryPtr a_uq = new Abducer::proof::UnsolvedQuery();
 				a_uq->atom = modalisedAtomFromProto(p_q.matom());
 				if (p_q.has_function()) {
 					a_uq->f = assumabilityFunctionFromProto(p_q.function());
@@ -60,7 +60,7 @@ markedQueryFromProto(const protocol::MarkedQuery & p_q)
 
 		case protocol::MarkedQuery::ASSUMED:
 			{
-				Abducer::AssumedQueryPtr a_sq = new Abducer::AssumedQuery();
+				Abducer::proof::AssumedQueryPtr a_sq = new Abducer::proof::AssumedQuery();
 				a_sq->atom = modalisedAtomFromProto(p_q.matom());
 				if (p_q.has_function()) {
 					a_sq->f = assumabilityFunctionFromProto(p_q.function());
@@ -73,7 +73,7 @@ markedQueryFromProto(const protocol::MarkedQuery & p_q)
 
 		case protocol::MarkedQuery::ASSERTED:
 			{
-				Abducer::AssertedQueryPtr a_rq = new Abducer::AssertedQuery();
+				Abducer::proof::AssertedQueryPtr a_rq = new Abducer::proof::AssertedQuery();
 				a_rq->atom = modalisedAtomFromProto(p_q.matom());
 				return a_rq;
 			}
@@ -83,19 +83,19 @@ markedQueryFromProto(const protocol::MarkedQuery & p_q)
 	}
 }
 
-Abducer::AssumabilityFunctionPtr
+Abducer::lang::AssumabilityFunctionPtr
 assumabilityFunctionFromProto(const protocol::AssumabilityFunction & p_f)
 {
 	switch (p_f.function_type()) {
 		case protocol::AssumabilityFunction::NOTASSUMABLE:
 			{
-				Abducer::NullAssumabilityFunctionPtr a_nf = new Abducer::NullAssumabilityFunction();
+				Abducer::lang::NullAssumabilityFunctionPtr a_nf = new Abducer::lang::NullAssumabilityFunction();
 				return a_nf;
 			}
 
 		case protocol::AssumabilityFunction::CONST:
 			{
-				Abducer::ConstAssumabilityFunctionPtr a_cf = new Abducer::ConstAssumabilityFunction();
+				Abducer::lang::ConstAssumabilityFunctionPtr a_cf = new Abducer::lang::ConstAssumabilityFunction();
 				if (p_f.has_cost()) {
 					a_cf->cost = p_f.cost();
 					return a_cf;
@@ -107,7 +107,7 @@ assumabilityFunctionFromProto(const protocol::AssumabilityFunction & p_f)
 
 		case protocol::AssumabilityFunction::NAMED:
 			{
-				Abducer::NamedAssumabilityFunctionPtr a_nf = new Abducer::NamedAssumabilityFunction();
+				Abducer::lang::NamedAssumabilityFunctionPtr a_nf = new Abducer::lang::NamedAssumabilityFunction();
 				if (p_f.has_function_name()) {
 					a_nf->name = p_f.function_name();
 					return a_nf;
@@ -122,10 +122,10 @@ assumabilityFunctionFromProto(const protocol::AssumabilityFunction & p_f)
 	}
 }
 
-Abducer::ModalisedAtomPtr
+Abducer::lang::ModalisedAtomPtr
 modalisedAtomFromProto(const protocol::ModalisedAtom & p_ma)
 {
-	Abducer::ModalisedAtomPtr result = new Abducer::ModalisedAtom();
+	Abducer::lang::ModalisedAtomPtr result = new Abducer::lang::ModalisedAtom();
 	for (int i = 0; i < p_ma.mod_size(); i++) {
 		result->m.push_back(modalityFromProto(p_ma.mod(i)));
 	}
@@ -133,25 +133,25 @@ modalisedAtomFromProto(const protocol::ModalisedAtom & p_ma)
 	return result;
 }
 
-Abducer::Modality
+Abducer::lang::Modality
 modalityFromProto(protocol::Modality p_m)
 {
 	switch (p_m) {
-		case protocol::UNDERSTANDING: return Abducer::Understanding;
-		case protocol::GENERATION:    return Abducer::Generation;
-		case protocol::EVENT:         return Abducer::Event;
-		case protocol::INTENTION:     return Abducer::Intention;
-		case protocol::ATTENTION:     return Abducer::Attention;
-		case protocol::BELIEF:        return Abducer::Belief;
-		case protocol::TRUTH:         return Abducer::Truth;
+		case protocol::UNDERSTANDING: return Abducer::lang::Understanding;
+		case protocol::GENERATION:    return Abducer::lang::Generation;
+		case protocol::EVENT:         return Abducer::lang::Event;
+		case protocol::INTENTION:     return Abducer::lang::Intention;
+		case protocol::ATTENTION:     return Abducer::lang::Attention;
+		case protocol::BELIEF:        return Abducer::lang::Belief;
+		case protocol::TRUTH:         return Abducer::lang::Truth;
 		default: throw ProtocolException("unknown modality");
 	}
 }
 
-Abducer::AtomPtr
+Abducer::lang::AtomPtr
 atomFromProto(const protocol::Atom & p_a)
 {
-	Abducer::AtomPtr result = new Abducer::Atom();
+	Abducer::lang::AtomPtr result = new Abducer::lang::Atom();
 	result->predSym = p_a.pred_sym();
 	for (int i = 0; i < p_a.args_size(); i++) {
 		result->args.push_back(termFromProto(p_a.args(i)));
@@ -159,13 +159,13 @@ atomFromProto(const protocol::Atom & p_a)
 	return result;
 }
 
-Abducer::TermPtr
+Abducer::lang::TermPtr
 termFromProto(const protocol::Term & p_t)
 {
 	switch (p_t.type()) {
 		case protocol::Term::FUNCTION:
 			{
-				Abducer::FunctionTermPtr ft = new Abducer::FunctionTerm();
+				Abducer::lang::FunctionTermPtr ft = new Abducer::lang::FunctionTerm();
 				if (p_t.has_functor()) {
 					ft->functor = p_t.functor();
 					for (int i = 0; i < p_t.args_size(); i++) {
@@ -180,7 +180,7 @@ termFromProto(const protocol::Term & p_t)
 
 		case protocol::Term::VARIABLE:
 			{
-				Abducer::VariableTermPtr vt = new Abducer::VariableTerm();
+				Abducer::lang::VariableTermPtr vt = new Abducer::lang::VariableTerm();
 				if (p_t.has_var_name()) {
 					vt->name = p_t.var_name();
 					return vt;

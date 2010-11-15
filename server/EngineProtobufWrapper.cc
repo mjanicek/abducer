@@ -149,7 +149,7 @@ EngineProtobufWrapper::loadFile(const string& filename, const Ice::Current&)
 		case protocol::LoadFileReply::IOERROR:
 			{
 				LOG4CXX_ERROR(logger, "file read error");
-				throw FileReadErrorException(filename);
+				throw engine::FileReadErrorException(filename);
 			}
 			break;
 
@@ -157,11 +157,11 @@ EngineProtobufWrapper::loadFile(const string& filename, const Ice::Current&)
 			{
 				if (reply.has_error() && reply.has_line()) {
 					LOG4CXX_ERROR(logger, "syntax error: " << reply.error() << " on line " << reply.line());
-					throw SyntaxErrorException(filename, reply.error(), reply.line());
+					throw engine::SyntaxErrorException(filename, reply.error(), reply.line());
 				}
 				else {
 					LOG4CXX_ERROR(logger, "unknown syntax error");
-					throw SyntaxErrorException(filename, "unknown syntax error", 1);
+					throw engine::SyntaxErrorException(filename, "unknown syntax error", 1);
 				}
 			}
 			break;
@@ -197,7 +197,7 @@ EngineProtobufWrapper::clearFacts(const Ice::Current&)
 }
 
 void
-EngineProtobufWrapper::clearFactsByModality(Modality mod, const Ice::Current&)
+EngineProtobufWrapper::clearFactsByModality(lang::Modality mod, const Ice::Current&)
 {
 	LOG4CXX_DEBUG(logger, "clearing [" << modalityToString(mod) << "] facts");
 
@@ -253,7 +253,7 @@ EngineProtobufWrapper::clearDisjointDeclarations(const Ice::Current&)
 }
 
 void
-EngineProtobufWrapper::addRule(const RulePtr & rule, const Ice::Current&)
+EngineProtobufWrapper::addRule(const lang::RulePtr & rule, const Ice::Current&)
 {
 	LOG4CXX_DEBUG(logger, "adding a rule");
 
@@ -269,7 +269,7 @@ EngineProtobufWrapper::addRule(const RulePtr & rule, const Ice::Current&)
 }
 
 void
-EngineProtobufWrapper::addFact(const ModalisedAtomPtr & fact, const Ice::Current&)
+EngineProtobufWrapper::addFact(const lang::ModalisedAtomPtr & fact, const Ice::Current&)
 {
 	LOG4CXX_DEBUG(logger, "adding fact [" << modalisedAtomToString(fact) << "]");
 
@@ -285,7 +285,7 @@ EngineProtobufWrapper::addFact(const ModalisedAtomPtr & fact, const Ice::Current
 }
 
 void
-EngineProtobufWrapper::addAssumable(const string & function, const ModalisedAtomPtr & a, float cost, const Ice::Current&)
+EngineProtobufWrapper::addAssumable(const string & function, const lang::ModalisedAtomPtr & a, float cost, const Ice::Current&)
 {
 	LOG4CXX_DEBUG(logger, "adding assumable [" << modalisedAtomToString(a) << " / " << function << "]");
 
@@ -303,7 +303,7 @@ EngineProtobufWrapper::addAssumable(const string & function, const ModalisedAtom
 }
 
 void
-EngineProtobufWrapper::addDisjointDeclaration(const DisjointDeclarationPtr & dd, const Ice::Current&)
+EngineProtobufWrapper::addDisjointDeclaration(const lang::DisjointDeclarationPtr & dd, const Ice::Current&)
 {
 	LOG4CXX_DEBUG(logger, "adding a disjoint declaration");
 
@@ -312,7 +312,7 @@ EngineProtobufWrapper::addDisjointDeclaration(const DisjointDeclarationPtr & dd,
 	writeMessageToFileDescriptor(logger, fd_out, request.SerializeAsString());
 
 	protocol::AddDisjointDecl arg;
-	vector<ModalisedAtomPtr>::const_iterator i;
+	vector<lang::ModalisedAtomPtr>::const_iterator i;
 	for (i = dd->atoms.begin(); i != dd->atoms.end(); i++) {
 		arg.add_dd()->CopyFrom(protoModalisedAtom(*i));
 	}
@@ -323,7 +323,7 @@ EngineProtobufWrapper::addDisjointDeclaration(const DisjointDeclarationPtr & dd,
 }
 
 void
-EngineProtobufWrapper::startProvingWithMethod(const vector<MarkedQueryPtr> & qs, const ProofSearchMethodPtr & method, const Ice::Current&)
+EngineProtobufWrapper::startProvingWithMethod(const vector<proof::MarkedQueryPtr> & qs, const engine::ProofSearchMethodPtr & method, const Ice::Current&)
 {
 	LOG4CXX_DEBUG(logger, "proving started");
 
@@ -332,7 +332,7 @@ EngineProtobufWrapper::startProvingWithMethod(const vector<MarkedQueryPtr> & qs,
 	writeMessageToFileDescriptor(logger, fd_out, request.SerializeAsString());
 
 	protocol::Prove arg;
-	vector<MarkedQueryPtr>::const_iterator i;
+	vector<proof::MarkedQueryPtr>::const_iterator i;
 	for (i = qs.begin(); i != qs.end(); i++) {
 		arg.add_queries()->CopyFrom(protoMarkedQuery(*i));
 	}
@@ -343,14 +343,14 @@ EngineProtobufWrapper::startProvingWithMethod(const vector<MarkedQueryPtr> & qs,
 }
 
 void
-EngineProtobufWrapper::startProving(const vector<MarkedQueryPtr> & qs, const Ice::Current& c)
+EngineProtobufWrapper::startProving(const vector<proof::MarkedQueryPtr> & qs, const Ice::Current& c)
 {
 	LOG4CXX_WARN(logger, "using the deprecated startProving() interface");
-	DFSPtr method = new DFS();
+	engine::DFSPtr method = new engine::DFS();
 	startProvingWithMethod(qs, method, c);
 }
 
-vector<ProofWithCostPtr>
+vector<proof::ProofWithCostPtr>
 EngineProtobufWrapper::getProofs(int timeout, const Ice::Current&)
 {
 	LOG4CXX_DEBUG(logger, "waiting for results, timeout=" << timeout);
@@ -372,16 +372,16 @@ EngineProtobufWrapper::getProofs(int timeout, const Ice::Current&)
 	else {
 		// an error occurred
 		LOG4CXX_ERROR(logger, "poll() error: " << strerror(errno));
-		return vector<ProofWithCostPtr>();
+		return vector<proof::ProofWithCostPtr>();
 	}
 
 	// retrieve all proofs
-	const vector<ProofWithCostPtr> & proofs = getProofs();
+	const vector<proof::ProofWithCostPtr> & proofs = getProofs();
 	LOG4CXX_DEBUG(logger, "got " << proofs.size() << " results");
 	return proofs;
 }
 
-vector<ProofWithCostPtr>
+vector<proof::ProofWithCostPtr>
 EngineProtobufWrapper::getProofs()
 {
 	LOG4CXX_TRACE(logger, "retrieving proofs");
@@ -397,12 +397,12 @@ EngineProtobufWrapper::getProofs()
 	}
 
 	if (reply.rc() == protocol::ProveReply::ABDUCERERROR) {
-		throw EngineException("abducer internal error");
+		throw engine::EngineException("abducer internal error");
 	}
 
 	LOG4CXX_TRACE(logger, "parsed the message, " << reply.proofs_size() << " proofs total");
 
-	vector<ProofWithCostPtr> result;
+	vector<proof::ProofWithCostPtr> result;
 	for (int i = 0; i < reply.proofs_size(); i++) {
 		result.push_back(proofWithCostFromProto(reply.proofs(i)));
 	}
