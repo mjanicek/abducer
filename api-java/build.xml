@@ -67,6 +67,9 @@
 			<fileset dir="${src.dir}" defaultexcludes="yes">
 			</fileset>
 
+			<fileset dir="${generated.dir}" defaultexcludes="yes">
+			</fileset>
+
 			<doctitle><![CDATA[<h1>Abducer Java API</h1>]]></doctitle>
 			<bottom><![CDATA[<i>Copyright &#169; 2009-2010 DFKI GmbH. All Rights Reserved.</i>]]></bottom>
 		</javadoc>
