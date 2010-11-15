@@ -87,7 +87,7 @@ main(int argc, char ** argv)
 	s.serverEndpoints = DEFAULT_SERVER_ENDPOINTS;
 	s.abducerPath = DEFAULT_ABDUCER_PATH;
 
-	DOMConfigurator::configure("Log4cxxConfig.xml");
+	DOMConfigurator::configure("Log4jConfig.xml");
 
 	switch (processCommandLineArgs(argc, argv, s)) {
 	case Start:
