@@ -39,7 +39,7 @@ module infer {
 module weigabd {
 module slice {
 
-	const string RELEASE = "2.0";
+	const string RELEASE = "2.1";
 
 	//-----------------------------------------------------------------
 
