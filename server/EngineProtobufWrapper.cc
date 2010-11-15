@@ -70,7 +70,7 @@ EngineProtobufWrapper::clearContext()
 
 	protocol::Request request;
 	request.set_rt(protocol::Request::CLEARCONTEXT);
-	writeMessageToFileDescriptor(fd_out, request.SerializeAsString());
+	writeMessageToFileDescriptor(logger, fd_out, request.SerializeAsString());
 
 	checkOkReply();
 }
@@ -78,7 +78,7 @@ EngineProtobufWrapper::clearContext()
 void
 EngineProtobufWrapper::checkOkReply()
 {
-	string s_ack = readMessageFromFileDescriptor(fd_in);
+	string s_ack = readMessageFromFileDescriptor(logger, fd_in);
 	if (s_ack == "") {
 		throw ProtocolException("failed to read the reply");
 	}
@@ -117,13 +117,13 @@ EngineProtobufWrapper::loadFile(const string& filename, const Ice::Current&)
 
 	protocol::Request request;
 	request.set_rt(protocol::Request::LOADFILE);
-	writeMessageToFileDescriptor(fd_out, request.SerializeAsString());
+	writeMessageToFileDescriptor(logger, fd_out, request.SerializeAsString());
 
 	protocol::LoadFile arg;
 	arg.set_file_name(filename);
-	writeMessageToFileDescriptor(fd_out, arg.SerializeAsString());
+	writeMessageToFileDescriptor(logger, fd_out, arg.SerializeAsString());
 
-	string s_reply = readMessageFromFileDescriptor(fd_in);
+	string s_reply = readMessageFromFileDescriptor(logger, fd_in);
 	if (s_reply == "") {
 		throw ProtocolException("failed to read a message");
 	}
@@ -179,7 +179,7 @@ EngineProtobufWrapper::clearRules(const Ice::Current&)
 
 	protocol::Request request;
 	request.set_rt(protocol::Request::CLEARRULES);
-	writeMessageToFileDescriptor(fd_out, request.SerializeAsString());
+	writeMessageToFileDescriptor(logger, fd_out, request.SerializeAsString());
 
 	checkOkReply();
 }
@@ -191,7 +191,7 @@ EngineProtobufWrapper::clearFacts(const Ice::Current&)
 
 	protocol::Request request;
 	request.set_rt(protocol::Request::CLEARFACTS);
-	writeMessageToFileDescriptor(fd_out, request.SerializeAsString());
+	writeMessageToFileDescriptor(logger, fd_out, request.SerializeAsString());
 
 	checkOkReply();
 }
@@ -203,11 +203,11 @@ EngineProtobufWrapper::clearFactsByModality(Modality mod, const Ice::Current&)
 
 	protocol::Request request;
 	request.set_rt(protocol::Request::CLEARFACTSBYMODALITY);
-	writeMessageToFileDescriptor(fd_out, request.SerializeAsString());
+	writeMessageToFileDescriptor(logger, fd_out, request.SerializeAsString());
 
 	protocol::ClearFactsByModality arg;
 	arg.set_mod(protoModality(mod));
-	writeMessageToFileDescriptor(fd_out, arg.SerializeAsString());
+	writeMessageToFileDescriptor(logger, fd_out, arg.SerializeAsString());
 
 	checkOkReply();
 }
@@ -219,7 +219,7 @@ EngineProtobufWrapper::clearAssumables(const Ice::Current&)
 
 	protocol::Request request;
 	request.set_rt(protocol::Request::CLEARASSUMABLES);
-	writeMessageToFileDescriptor(fd_out, request.SerializeAsString());
+	writeMessageToFileDescriptor(logger, fd_out, request.SerializeAsString());
 
 	checkOkReply();
 }
@@ -231,11 +231,11 @@ EngineProtobufWrapper::clearAssumabilityFunction(const string & function, const 
 
 	protocol::Request request;
 	request.set_rt(protocol::Request::CLEARASSUMABILITYFUNCTION);
-	writeMessageToFileDescriptor(fd_out, request.SerializeAsString());
+	writeMessageToFileDescriptor(logger, fd_out, request.SerializeAsString());
 
 	protocol::ClearAssumabilityFunction arg;
 	arg.set_function_name(function);
-	writeMessageToFileDescriptor(fd_out, arg.SerializeAsString());
+	writeMessageToFileDescriptor(logger, fd_out, arg.SerializeAsString());
 
 	checkOkReply();
 }
@@ -247,7 +247,7 @@ EngineProtobufWrapper::clearDisjointDeclarations(const Ice::Current&)
 
 	protocol::Request request;
 	request.set_rt(protocol::Request::CLEARDISJOINTDECLS);
-	writeMessageToFileDescriptor(fd_out, request.SerializeAsString());
+	writeMessageToFileDescriptor(logger, fd_out, request.SerializeAsString());
 
 	checkOkReply();
 }
@@ -259,11 +259,11 @@ EngineProtobufWrapper::addRule(const RulePtr & rule, const Ice::Current&)
 
 	protocol::Request request;
 	request.set_rt(protocol::Request::ADDRULE);
-	writeMessageToFileDescriptor(fd_out, request.SerializeAsString());
+	writeMessageToFileDescriptor(logger, fd_out, request.SerializeAsString());
 
 	protocol::AddRule arg;
 	arg.mutable_rule()->CopyFrom(protoModalisedRule(rule));
-	writeMessageToFileDescriptor(fd_out, arg.SerializeAsString());
+	writeMessageToFileDescriptor(logger, fd_out, arg.SerializeAsString());
 
 	checkOkReply();
 }
@@ -275,11 +275,11 @@ EngineProtobufWrapper::addFact(const ModalisedAtomPtr & fact, const Ice::Current
 
 	protocol::Request request;
 	request.set_rt(protocol::Request::ADDFACT);
-	writeMessageToFileDescriptor(fd_out, request.SerializeAsString());
+	writeMessageToFileDescriptor(logger, fd_out, request.SerializeAsString());
 
 	protocol::AddFact arg;
 	arg.mutable_fact()->CopyFrom(protoModalisedAtom(fact));
-	writeMessageToFileDescriptor(fd_out, arg.SerializeAsString());
+	writeMessageToFileDescriptor(logger, fd_out, arg.SerializeAsString());
 
 	checkOkReply();
 }
@@ -291,13 +291,13 @@ EngineProtobufWrapper::addAssumable(const string & function, const ModalisedAtom
 
 	protocol::Request request;
 	request.set_rt(protocol::Request::ADDASSUMABLE);
-	writeMessageToFileDescriptor(fd_out, request.SerializeAsString());
+	writeMessageToFileDescriptor(logger, fd_out, request.SerializeAsString());
 
 	protocol::AddAssumable arg;
 	arg.set_function_name(function);
 	arg.mutable_fact()->CopyFrom(protoModalisedAtom(a));
 	arg.set_cost(cost);
-	writeMessageToFileDescriptor(fd_out, arg.SerializeAsString());
+	writeMessageToFileDescriptor(logger, fd_out, arg.SerializeAsString());
 
 	checkOkReply();
 }
@@ -309,7 +309,7 @@ EngineProtobufWrapper::addDisjointDeclaration(const DisjointDeclarationPtr & dd,
 
 	protocol::Request request;
 	request.set_rt(protocol::Request::ADDDISJOINTDECL);
-	writeMessageToFileDescriptor(fd_out, request.SerializeAsString());
+	writeMessageToFileDescriptor(logger, fd_out, request.SerializeAsString());
 
 	protocol::AddDisjointDecl arg;
 	vector<ModalisedAtomPtr>::const_iterator i;
@@ -317,7 +317,7 @@ EngineProtobufWrapper::addDisjointDeclaration(const DisjointDeclarationPtr & dd,
 		arg.add_dd()->CopyFrom(protoModalisedAtom(*i));
 	}
 	// FIXME: check that it's non-empty
-	writeMessageToFileDescriptor(fd_out, arg.SerializeAsString());
+	writeMessageToFileDescriptor(logger, fd_out, arg.SerializeAsString());
 
 	checkOkReply();
 }
@@ -329,7 +329,7 @@ EngineProtobufWrapper::startProvingWithMethod(const vector<MarkedQueryPtr> & qs,
 
 	protocol::Request request;
 	request.set_rt(protocol::Request::PROVE);
-	writeMessageToFileDescriptor(fd_out, request.SerializeAsString());
+	writeMessageToFileDescriptor(logger, fd_out, request.SerializeAsString());
 
 	protocol::Prove arg;
 	vector<MarkedQueryPtr>::const_iterator i;
@@ -337,7 +337,7 @@ EngineProtobufWrapper::startProvingWithMethod(const vector<MarkedQueryPtr> & qs,
 		arg.add_queries()->CopyFrom(protoMarkedQuery(*i));
 	}
 	arg.mutable_method()->CopyFrom(protoProofSearchMethod(method));
-	writeMessageToFileDescriptor(fd_out, arg.SerializeAsString());
+	writeMessageToFileDescriptor(logger, fd_out, arg.SerializeAsString());
 
 	checkOkReply();
 }
@@ -386,7 +386,7 @@ EngineProtobufWrapper::getProofs()
 {
 	LOG4CXX_TRACE(logger, "retrieving proofs");
 
-	string s_reply = readMessageFromFileDescriptor(fd_in);
+	string s_reply = readMessageFromFileDescriptor(logger, fd_in);
 	if (s_reply == "") {
 		throw ProtocolException("failed to read a message");
 	}

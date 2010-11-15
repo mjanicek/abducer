@@ -23,10 +23,12 @@
 
 #include <string>
 
+#include <log4cxx/logger.h>
+
 std::string
-readMessageFromFileDescriptor(int fd);
+readMessageFromFileDescriptor(log4cxx::LoggerPtr logger, int fd);
 
 void
-writeMessageToFileDescriptor(int fd, const std::string & msg);
+writeMessageToFileDescriptor(log4cxx::LoggerPtr logger, int fd, const std::string & msg);
 
 #endif

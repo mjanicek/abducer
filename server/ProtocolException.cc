@@ -20,15 +20,8 @@
 
 #include "ProtocolException.h"
 
-// XXX for debugging only!
-#include <iostream>
-#include "Logging.h"
 using namespace std;
-
-#define THIS  "Protocol"
 
 ProtocolException::ProtocolException(const std::string & message_)
 : EngineException(message_)
-{
-	cerr << ERROR_MSG("protocol exception: " << message_) << endl;  // XXX for debugging only!
-}
+{ }

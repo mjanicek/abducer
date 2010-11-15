@@ -26,13 +26,11 @@
 
 #include <iostream>  // for debugging purposes
 #include "common.h"
-#include "Logging.h"
 
 const size_t MSG_SIZE_LIMIT = (4096 * 1024);  // 4 MiB should be more than enough!
 
 using namespace std;
-
-#define THIS  "Protocol"
+using namespace log4cxx;
 
 ssize_t
 read_all(int fd, char * buf, size_t num)
@@ -48,7 +46,7 @@ read_all(int fd, char * buf, size_t num)
 }
 
 string
-readMessageFromFileDescriptor(int fd)
+readMessageFromFileDescriptor(LoggerPtr logger, int fd)
 {
 	uint32_t msg_len = 0;
 	ssize_t nr;
@@ -56,7 +54,7 @@ readMessageFromFileDescriptor(int fd)
 	char * buf = 0;
 
 	if ((nr = read_all(fd, (char *) &msg_len, sizeof(msg_len))) == sizeof(msg_len)) {
-		debug(cerr << NOTIFY_MSG("read: the message appears to be " << msg_len << " bytes long") << endl);
+		LOG4CXX_TRACE(logger, "read: the message appears to be " << msg_len << " bytes long");
 		if (msg_len < MSG_SIZE_LIMIT) {
 			if (msg_len > 0) {
 				buf = new char[msg_len];
@@ -66,40 +64,41 @@ readMessageFromFileDescriptor(int fd)
 					return result;
 				}
 				else {
-					cerr << ERROR_MSG("read: failed to read the entire message (read " << nr
-							<< " out of " << msg_len << " bytes)") << endl;
+					LOG4CXX_ERROR(logger, "read: failed to read the entire message (read " << nr
+							<< " out of " << msg_len << " bytes)");
 					delete buf;
 				}
 			}
 			else {
-				cerr << WARNING_MSG("read: zero length message received") << endl;
+				LOG4CXX_WARN(logger, "read: zero length message received");
 				return string();
 			}
 		}
 		else {
-			cerr << ERROR_MSG("read: message size limit exceeded") << endl;
+			LOG4CXX_ERROR(logger, "read: message size limit exceeded");
 		}
 	}
 	else {
-		cerr << ERROR_MSG("read: unable to read the message size: read() = " << nr << ": " << strerror(errno)) << endl;
+		LOG4CXX_ERROR(logger, "read: unable to read the message size: read() = " << nr
+				<< ": " << strerror(errno));
 	}
 
 	return string();
 }
 
 void
-writeMessageToFileDescriptor(int fd, const std::string & msg)
+writeMessageToFileDescriptor(LoggerPtr logger, int fd, const std::string & msg)
 {
 	uint32_t msg_len = msg.length();
 	ssize_t nw;
 	
-	debug(cerr << NOTIFY_MSG("write: pbuf'd message for output is " << msg_len << " bytes long") << endl);
+	LOG4CXX_TRACE(logger, "write: pbuf'd message for output is " << msg_len << " bytes long");
 	if ((nw = write(fd, &msg_len, sizeof(msg_len))) == sizeof(msg_len)) {
 		if ((nw = write(fd, msg.data(), (size_t)msg_len)) != (ssize_t)msg_len) {
 			throw "unable to write the message";
 		}
 		else {
-			debug(cerr << NOTIFY_MSG("wrote " << nw << " bytes") << endl);
+			LOG4CXX_TRACE(logger, "wrote " << nw << " bytes");
 //			for (int i = 0; i < nw; i++) {
 //				cerr << (unsigned int)((unsigned char)msg.data()[i]) << " ";
 //			}
