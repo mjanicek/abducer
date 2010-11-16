@@ -56,7 +56,7 @@
 		</javac>
 	</target>
 
-	<target name="doc">
+	<target name="doc" depends="generate-slice">
 		<javadoc
 				destdir="${javadoc.dir}"
 				author="true"

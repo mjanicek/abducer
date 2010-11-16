@@ -34,17 +34,17 @@ public class AbductionEngineConnection {
 	private Ice.Communicator ic;
 	private AbductionEnginePrx prx = null;
 	private AbductionEngineServerPrx srvPrx = null;
-	private String name = "[UNBOUND]";
+	private String name = null;
 
 	public AbductionEngineConnection() {
 		ic = Ice.Util.initialize();
 	}
 
 	/**
-	 * Connect to the server.
+	 * Connect to the engine server.
 	 *
-	 * @param name server Ice name
-	 * @param endpoint server Ice endpoint
+	 * @param serverName server Ice name
+	 * @param serverEndpoint server Ice endpoint
 	 */
 	public void connectToServer(String serverName, String serverEndpoint) {
 		try {
@@ -79,7 +79,7 @@ public class AbductionEngineConnection {
 	}
 
 	/**
-	 * Return the Ice communicator of the connection.
+	 * Return the Ice communicator of the connection to the engine server.
 	 *
 	 * @return the communicator
 	 */
@@ -88,18 +88,18 @@ public class AbductionEngineConnection {
 	}
 
 	/**
-	 * Return the abducer proxy.
+	 * Return the engine proxy.
 	 * 
-	 * @return
+	 * @return the proxy, or <tt>null</tt> if not bound to an engine
 	 */
-	public AbductionEnginePrx getProxy() {
+	public AbductionEnginePrx getEngineProxy() {
 		return prx;
 	}
 
 	/**
 	 * Return the engine name.
 	 *
-	 * @return
+	 * @return engine name, <tt>null</tt> if not bound to an engine
 	 */
 	public String getEngineName() {
 		return name;
