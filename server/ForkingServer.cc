@@ -36,7 +36,7 @@ using namespace std;
 using namespace log4cxx;
 using namespace Abducer;
 
-LoggerPtr forkerLogger(Logger::getLogger("abducer.forker"));
+LoggerPtr forkerLogger(Logger::getLogger("abducer.server"));
 
 ForkingServer::ForkingServer(const vector<string> & engineArgV_, int socket_fd_)
 : engineArgV(engineArgV_), socket_fd(socket_fd_),
@@ -64,6 +64,7 @@ ForkingServer::~ForkingServer()
 		LOG4CXX_DEBUG(forkerLogger, "shutting down " << it->first);
 		it->second->destroy();
 	}
+	LOG4CXX_DEBUG(forkerLogger, "server shut down");
 }
 
 engine::AbductionEnginePrx

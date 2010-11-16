@@ -19,9 +19,13 @@
 	</appender>
 
 	<root>
-		<priority value="all" />
+		<priority value="debug" />
 		<appender-ref ref="console" />
-		<appender-ref ref="logfile" />
 	</root>
+
+	<logger name="root">
+		<level value="trace" />
+		<appender-ref ref="logfile" />
+	</logger>
 
 </log4j:configuration>

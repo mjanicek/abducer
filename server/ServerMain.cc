@@ -180,14 +180,14 @@ runServer(const Settings & s, int socketFd, const string & socketPath)
 	}
 	wait(0);
 
-	LOG4CXX_INFO(serverLogger, "server shut down");
+	LOG4CXX_INFO(serverLogger, "all engines terminated");
 	return status;
 }
 
 void
 shutdownServer(int signum)
 {
-	LOG4CXX_DEBUG(serverLogger, "received signal " << signum << ", shutting down");
+	LOG4CXX_DEBUG(serverLogger, "received signal " << signum << ", shutting down the server");
 	try {
 		ic->destroy();
 	}
