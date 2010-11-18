@@ -19,11 +19,7 @@
 // ----------------------------------------------------------------------------
 
 #include <unistd.h>
-#include <stdlib.h>
 #include <sys/wait.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/un.h>
 
 #include <Ice/Ice.h>
 #include <IceUtil/CtrlCHandler.h>
@@ -34,9 +30,10 @@
 
 #include <iostream>
 
+#include "BoundUnixSocket.h"
+
 #include "ForkingServer.h"
 #include "EngineProtobufWrapper.h"
-#include "TtyUtils.h"
 
 #include "CLI.h"
 #include "Version.h"
@@ -75,12 +72,6 @@ printUsage();
 void
 printVersion();
 
-string
-getSocketName();
-
-int
-prepareSocket(const string & address);
-
 int
 main(int argc, char ** argv)
 {
@@ -96,18 +87,21 @@ main(int argc, char ** argv)
 			printVersion();
 			DOMConfigurator::configure(s.logConfigPath);
 
-			string socketPath = getSocketName();
-			int socketFd;
-
-			if ((socketFd = prepareSocket(socketPath)) == -1) {
+			BoundUnixSocket * socket = NULL;
+			try {
+				socket = new BoundUnixSocket(SOCKET_FILE_TEMPLATE);
+			}
+			catch (string s) {
+				LOG4CXX_ERROR(serverLogger, s);
 				return EXIT_FAILURE;
 			}
-			LOG4CXX_DEBUG(serverLogger, "socket ready at `" << socketPath << "'");
 
-			runServer(s, socketFd, socketPath);
+			LOG4CXX_DEBUG(serverLogger, "socket ready at `" << socket->getPath() << "'");
 
-			LOG4CXX_DEBUG(serverLogger, "unlinking `" << socketPath << "'");
-			unlink(socketPath.c_str());
+			runServer(s, socket->getFd(), socket->getPath());
+
+			LOG4CXX_DEBUG(serverLogger, "unlinking `" << socket->getPath() << "'");
+			delete socket;
 
 			return EXIT_SUCCESS;
 		}
@@ -243,44 +237,4 @@ printVersion()
 {
 	cout << "Abducer server " << ABDUCER_VERSION << endl;
 	cout << "(c) 2009-2010 DFKI GmbH Talking Robots" << endl;
-}
-
-string
-getSocketName()
-{
-	char * buf = new char[SOCKET_FILE_TEMPLATE.length() + 1];
-	strcpy(buf, SOCKET_FILE_TEMPLATE.c_str());
-	buf = mktemp(buf);
-	string name(buf);
-	delete buf;
-	return name;
-}
-
-int
-prepareSocket(const string & socketPath)
-{
-	int socket_fd;
-
-	socket_fd = socket(PF_UNIX, SOCK_STREAM, 0);
-	if (socket_fd < 0) {
-		LOG4CXX_ERROR(serverLogger, "socket() failed: " << strerror(errno));
-		return -1;
-	} 
-
-	struct sockaddr_un address;
-	address.sun_family = AF_UNIX;
-	strcpy(address.sun_path, socketPath.c_str());
-	size_t address_length = sizeof(address.sun_family) + strlen(address.sun_path) + 1;
-
-	if (bind(socket_fd, (struct sockaddr *) &address, address_length) != 0) {
-		LOG4CXX_ERROR(serverLogger, "bind() to `" << socketPath << "' failed: " << strerror(errno));
-		return -1;
-	}
-
-	if (listen(socket_fd, 1) != 0) {
-		LOG4CXX_ERROR(serverLogger, "listen() failed: " << strerror(errno));
-		return -1;
-	}
-
-	return socket_fd;
 }
