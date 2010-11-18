@@ -41,7 +41,7 @@
 
 using namespace std;
 using namespace log4cxx;
-using namespace Abducer;
+using namespace ::de::dfki::lt::tr::infer::weigabd;
 
 #include <vector>
 

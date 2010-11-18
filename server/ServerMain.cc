@@ -44,6 +44,7 @@
 using namespace std;
 using namespace log4cxx;
 using namespace log4cxx::xml;
+using namespace ::de::dfki::lt::tr::infer::weigabd;
 
 LoggerPtr serverLogger(Logger::getLogger("abducer.main"));
 
@@ -157,7 +158,7 @@ runServer(const Settings & s, int socketFd, const string & socketPath)
 
 		ic->waitForShutdown();
 	}
-	catch (const Abducer::engine::EngineException & e) {
+	catch (const engine::EngineException & e) {
 		LOG4CXX_ERROR(serverLogger, "server exception: \"" << e.message << "\"");
 	}
 	catch (const Ice::Exception& e) {
@@ -206,7 +207,7 @@ printStatus(const Settings & s)
 	getcwd(cwd, cwd_length);
 
 	if (!interfaceVersionOk()) {
-		LOG4CXX_WARN(serverLogger, "server interface version " << Abducer::RELEASE << " may be incompatible");
+		LOG4CXX_WARN(serverLogger, "server interface version " << RELEASE << " may be incompatible");
 	}
 
 //	cerr << NOTIFY_MSG("abducer binary: [" << s.abducerPath << "]") << endl;
@@ -220,7 +221,7 @@ printStatus(const Settings & s)
 inline bool
 interfaceVersionOk()
 {
-	return ABDUCER_VERSION.compare(0, Abducer::RELEASE.length(), Abducer::RELEASE) == 0;
+	return ABDUCER_VERSION.compare(0, RELEASE.length(), RELEASE) == 0;
 }
 
 void

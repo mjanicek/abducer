@@ -24,11 +24,23 @@
 #include "weigabd.h"
 #include <string>
 
-namespace Abducer = ::de::dfki::lt::tr::infer::weigabd::slice;
+namespace de {
+namespace dfki {
+namespace lt {
+namespace tr {
+namespace infer {
+namespace weigabd {
 
-class ProtocolException : public Abducer::engine::EngineException {
+class ProtocolException : public engine::EngineException {
 public:
 	ProtocolException(const std::string & message);
 };
+
+}
+}
+}
+}
+}
+}
 
 #endif

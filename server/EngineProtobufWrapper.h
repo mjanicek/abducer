@@ -29,9 +29,14 @@
 
 #include <iostream>
 
-namespace Abducer = ::de::dfki::lt::tr::infer::weigabd::slice;
+namespace de {
+namespace dfki {
+namespace lt {
+namespace tr {
+namespace infer {
+namespace weigabd {
 
-class EngineProtobufWrapper : public Abducer::engine::AbductionEngine {
+class EngineProtobufWrapper : public engine::AbductionEngine {
 
 public:
 	EngineProtobufWrapper(const std::string & name, pid_t abducer_pid, int fd_out, int fd_in);
@@ -43,25 +48,25 @@ public:
 
 	virtual void clearRules(const Ice::Current&);
 	virtual void clearFacts(const Ice::Current&);
-	virtual void clearFactsByModality(Abducer::lang::Modality mod, const Ice::Current&);
+	virtual void clearFactsByModality(lang::Modality mod, const Ice::Current&);
 	virtual void clearAssumables(const Ice::Current&);
 	virtual void clearAssumabilityFunction(const std::string & function, const Ice::Current&);
 	virtual void clearDisjointDeclarations(const Ice::Current&);
 
-	virtual void addRule(const Abducer::lang::RulePtr & r, const Ice::Current&);
-	virtual void addFact(const Abducer::lang::ModalisedAtomPtr & a, const Ice::Current&);
-	virtual void addAssumable(const std::string& function, const Abducer::lang::ModalisedAtomPtr & a, float cost, const Ice::Current&);
-	virtual void addDisjointDeclaration(const Abducer::lang::DisjointDeclarationPtr & dd, const Ice::Current&);
+	virtual void addRule(const lang::RulePtr & r, const Ice::Current&);
+	virtual void addFact(const lang::ModalisedAtomPtr & a, const Ice::Current&);
+	virtual void addAssumable(const std::string& function, const lang::ModalisedAtomPtr & a, float cost, const Ice::Current&);
+	virtual void addDisjointDeclaration(const lang::DisjointDeclarationPtr & dd, const Ice::Current&);
 
-	virtual void startProvingWithMethod(const std::vector<Abducer::proof::MarkedQueryPtr> & g, const Abducer::engine::ProofSearchMethodPtr & method, const Ice::Current&);
-	virtual void startProving(const std::vector<Abducer::proof::MarkedQueryPtr> & g, const Ice::Current&);
+	virtual void startProvingWithMethod(const std::vector<proof::MarkedQueryPtr> & g, const engine::ProofSearchMethodPtr & method, const Ice::Current&);
+	virtual void startProving(const std::vector<proof::MarkedQueryPtr> & g, const Ice::Current&);
 
-	virtual std::vector<Abducer::proof::ProofWithCostPtr> getProofs(int timeout, const Ice::Current&);
+	virtual std::vector<proof::ProofWithCostPtr> getProofs(int timeout, const Ice::Current&);
 
 protected:
 	void checkOkReply();
 	void clearContext();
-	std::vector<Abducer::proof::ProofWithCostPtr> getProofs();
+	std::vector<proof::ProofWithCostPtr> getProofs();
 
 	std::string name;
 
@@ -72,5 +77,12 @@ protected:
 
 	log4cxx::LoggerPtr logger;
 };
+
+}
+}
+}
+}
+}
+}
 
 #endif

@@ -28,14 +28,19 @@
 
 #include <map>
 
-namespace Abducer = ::de::dfki::lt::tr::infer::weigabd::slice;
+namespace de {
+namespace dfki {
+namespace lt {
+namespace tr {
+namespace infer {
+namespace weigabd {
 
-class ForkingServer : public Abducer::engine::AbductionEngineServer {
+class ForkingServer : public engine::AbductionEngineServer {
 public:
 	ForkingServer(const std::vector<std::string> & engineArgV, int socket_fd);
 	virtual ~ForkingServer();
 
-	virtual Abducer::engine::AbductionEnginePrx getEngineProxy(const std::string & name, const Ice::Current&);
+	virtual engine::AbductionEnginePrx getEngineProxy(const std::string & name, const Ice::Current&);
 protected:
 	Ice::ObjectAdapterPtr startNewServer(const std::string & name);
 
@@ -48,5 +53,12 @@ protected:
 
 	int base_port;
 };
+
+}
+}
+}
+}
+}
+}
 
 #endif

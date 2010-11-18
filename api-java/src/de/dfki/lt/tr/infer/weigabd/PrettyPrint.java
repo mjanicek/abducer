@@ -20,17 +20,17 @@
 
 package de.dfki.lt.tr.infer.weigabd;
 
-import de.dfki.lt.tr.infer.weigabd.slice.lang.FunctionTerm;
-import de.dfki.lt.tr.infer.weigabd.slice.lang.ModalisedAtom;
-import de.dfki.lt.tr.infer.weigabd.slice.lang.Modality;
-import de.dfki.lt.tr.infer.weigabd.slice.lang.Atom;
-import de.dfki.lt.tr.infer.weigabd.slice.lang.Term;
-import de.dfki.lt.tr.infer.weigabd.slice.lang.VariableTerm;
-import de.dfki.lt.tr.infer.weigabd.slice.proof.AssertedQuery;
-import de.dfki.lt.tr.infer.weigabd.slice.proof.AssumedQuery;
-import de.dfki.lt.tr.infer.weigabd.slice.proof.MarkedQuery;
-import de.dfki.lt.tr.infer.weigabd.slice.proof.ProvedQuery;
-import de.dfki.lt.tr.infer.weigabd.slice.proof.UnsolvedQuery;
+import de.dfki.lt.tr.infer.weigabd.lang.FunctionTerm;
+import de.dfki.lt.tr.infer.weigabd.lang.ModalisedAtom;
+import de.dfki.lt.tr.infer.weigabd.lang.Modality;
+import de.dfki.lt.tr.infer.weigabd.lang.Atom;
+import de.dfki.lt.tr.infer.weigabd.lang.Term;
+import de.dfki.lt.tr.infer.weigabd.lang.VariableTerm;
+import de.dfki.lt.tr.infer.weigabd.proof.AssertedQuery;
+import de.dfki.lt.tr.infer.weigabd.proof.AssumedQuery;
+import de.dfki.lt.tr.infer.weigabd.proof.MarkedQuery;
+import de.dfki.lt.tr.infer.weigabd.proof.ProvedQuery;
+import de.dfki.lt.tr.infer.weigabd.proof.UnsolvedQuery;
 import java.util.Iterator;
 import java.util.List;
 

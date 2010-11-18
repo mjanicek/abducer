@@ -24,27 +24,39 @@
 #include "weigabd.h"
 #include "protocol.pb.h"
 
-namespace Abducer = ::de::dfki::lt::tr::infer::weigabd::slice;
+namespace de {
+namespace dfki {
+namespace lt {
+namespace tr {
+namespace infer {
+namespace weigabd {
 
-Abducer::proof::ProofWithCostPtr
+proof::ProofWithCostPtr
 proofWithCostFromProto(const protocol::Proof & p_p);
 
-Abducer::proof::MarkedQueryPtr
+proof::MarkedQueryPtr
 markedQueryFromProto(const protocol::MarkedQuery & p_q);
 
-Abducer::lang::AssumabilityFunctionPtr
+lang::AssumabilityFunctionPtr
 assumabilityFunctionFromProto(const protocol::AssumabilityFunction & p_af);
 
-Abducer::lang::ModalisedAtomPtr
+lang::ModalisedAtomPtr
 modalisedAtomFromProto(const protocol::ModalisedAtom & p_ma);
 
-Abducer::lang::Modality
+lang::Modality
 modalityFromProto(protocol::Modality p_m);
 
-Abducer::lang::AtomPtr
+lang::AtomPtr
 atomFromProto(const protocol::Atom & p_a);
 
-Abducer::lang::TermPtr
+lang::TermPtr
 termFromProto(const protocol::Term & p_t);
+
+}
+}
+}
+}
+}
+}
 
 #endif

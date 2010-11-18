@@ -22,7 +22,7 @@
 // =================================================================
 
 // ===================================================================
-// MODULE: de.dfki.lt.tr.infer.slice.wabd
+// MODULE: de.dfki.lt.tr.infer.weigabd
 // 
 // Defines the ICE interface and data structures used by the weighted
 // abductive inference engine ("the abducer").
@@ -37,7 +37,6 @@ module lt {
 module tr {
 module infer {
 module weigabd {
-module slice {
 
 	const string RELEASE = "2.1";
 
@@ -279,7 +278,6 @@ module engine {
 		AbductionEngine* getEngineProxy(string name);
 	};
 
-};
 };
 };
 };

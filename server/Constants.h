@@ -21,12 +21,28 @@
 // 02111-1307, USA.
 // ----------------------------------------------------------------------------
 
-#define TRUTH_STR          "i"
-#define BELIEF_STR         "bel"
-#define INTENTION_STR      "int"
-#define ATTENTION_STR      "att"
-#define EVENT_STR          "event"
-#define UNDERSTANDING_STR  "understand"
-#define GENERATION_STR     "generate"
+#include <string>
+
+namespace de {
+namespace dfki {
+namespace lt {
+namespace tr {
+namespace infer {
+namespace weigabd {
+
+const std::string TRUTH_STR = "i";
+const std::string BELIEF_STR = "bel";
+const std::string INTENTION_STR = "int";
+const std::string ATTENTION_STR = "att";
+const std::string EVENT_STR = "event";
+const std::string UNDERSTANDING_STR = "understand";
+const std::string GENERATION_STR = "generate";
+
+}
+}
+}
+}
+}
+}
 
 #endif

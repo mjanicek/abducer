@@ -23,7 +23,13 @@
 #include "Constants.h"
 
 using namespace std;
-using namespace Abducer::lang;
+
+namespace de {
+namespace dfki {
+namespace lt {
+namespace tr {
+namespace infer {
+namespace weigabd {
 
 string
 quoteGuard(string s)
@@ -32,15 +38,15 @@ quoteGuard(string s)
 }
 
 string
-termToString(const TermPtr & t)
+termToString(const lang::TermPtr & t)
 {
 	string s("");
 
-	if (FunctionTermPtr ft = FunctionTermPtr::dynamicCast(t)) {
+	if (lang::FunctionTermPtr ft = lang::FunctionTermPtr::dynamicCast(t)) {
 		s = quoteGuard(ft->functor);
 		if (!ft->args.empty()) {
 			s += "(";
-			vector<TermPtr>::iterator it = ft->args.begin();
+			vector<lang::TermPtr>::iterator it = ft->args.begin();
 			while (it != ft->args.end()) {
 				s += termToString(*it);
 				it++;
@@ -52,7 +58,7 @@ termToString(const TermPtr & t)
 		}
 		return s;
 	}
-	else if (VariableTermPtr vt = VariableTermPtr::dynamicCast(t)) {
+	else if (lang::VariableTermPtr vt = lang::VariableTermPtr::dynamicCast(t)) {
 		s = vt->name;
 		return s;
 	}
@@ -62,14 +68,14 @@ termToString(const TermPtr & t)
 }
 
 string
-atomToString(const AtomPtr & a)
+atomToString(const lang::AtomPtr & a)
 {
 	string s("");
 
 	s = quoteGuard(a->predSym);
 	if (!a->args.empty()) {
 		s += "(";
-		vector<TermPtr>::iterator it = a->args.begin();
+		vector<lang::TermPtr>::iterator it = a->args.begin();
 		while (it != a->args.end()) {
 			s += termToString(*it);
 			it++;
@@ -83,22 +89,22 @@ atomToString(const AtomPtr & a)
 }
 
 string
-modalityToString(const Modality m)
+modalityToString(const lang::Modality m)
 {
 	switch (m) {
-	case Understanding:
+	case lang::Understanding:
 		return UNDERSTANDING_STR;
-	case Generation:
+	case lang::Generation:
 		return GENERATION_STR;
-	case Truth:
+	case lang::Truth:
 		return TRUTH_STR;
-	case Event:
+	case lang::Event:
 		return EVENT_STR;
-	case Intention:
+	case lang::Intention:
 		return INTENTION_STR;
-	case Attention:
+	case lang::Attention:
 		return ATTENTION_STR;
-	case Belief:
+	case lang::Belief:
 		return BELIEF_STR;
 	default:
 		return "unknown";
@@ -106,15 +112,22 @@ modalityToString(const Modality m)
 }
 
 string
-modalisedAtomToString(const ModalisedAtomPtr & ma)
+modalisedAtomToString(const lang::ModalisedAtomPtr & ma)
 {
 	string s("");
 	if (!ma->m.empty()) {
-		vector<Modality>::iterator it = ma->m.begin();
+		vector<lang::Modality>::iterator it = ma->m.begin();
 		for ( ; it != ma->m.end() ; it++) {
 			s += modalityToString(*it) + ": ";
 		}
 	}
 	s += atomToString(ma->a);
 	return s;
+}
+
+}
+}
+}
+}
+}
 }

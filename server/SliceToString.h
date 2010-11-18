@@ -26,18 +26,30 @@
 #include <vector>
 #include <string>
 
-namespace Abducer = ::de::dfki::lt::tr::infer::weigabd::slice;
+namespace de {
+namespace dfki {
+namespace lt {
+namespace tr {
+namespace infer {
+namespace weigabd {
 
 std::string
-atomToString(const Abducer::lang::AtomPtr & a);
+atomToString(const lang::AtomPtr & a);
 
 std::string
-termToString(const Abducer::lang::TermPtr & t);
+termToString(const lang::TermPtr & t);
 
 std::string
-modalityToString(const Abducer::lang::Modality m);
+modalityToString(const lang::Modality m);
 
 std::string
-modalisedAtomToString(const Abducer::lang::ModalisedAtomPtr & ma);
+modalisedAtomToString(const lang::ModalisedAtomPtr & ma);
+
+}
+}
+}
+}
+}
+}
 
 #endif

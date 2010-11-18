@@ -23,10 +23,17 @@
 
 #include "ProtocolException.h"
 
-Abducer::proof::ProofWithCostPtr
+namespace de {
+namespace dfki {
+namespace lt {
+namespace tr {
+namespace infer {
+namespace weigabd {
+
+proof::ProofWithCostPtr
 proofWithCostFromProto(const protocol::Proof & p_p)
 {
-	Abducer::proof::ProofWithCostPtr a_p = new Abducer::proof::ProofWithCost();
+	proof::ProofWithCostPtr a_p = new proof::ProofWithCost();
 	a_p->cost = p_p.cost();
 	for (int j = 0; j < p_p.proof_size(); j++) {
 		a_p->proof.push_back(markedQueryFromProto(p_p.proof(j)));
@@ -34,20 +41,20 @@ proofWithCostFromProto(const protocol::Proof & p_p)
 	return a_p;
 }
 
-Abducer::proof::MarkedQueryPtr
+proof::MarkedQueryPtr
 markedQueryFromProto(const protocol::MarkedQuery & p_q)
 {
 	switch (p_q.marking()) {
 		case protocol::MarkedQuery::PROVED:
 			{
-				Abducer::proof::ProvedQueryPtr a_pq = new Abducer::proof::ProvedQuery();
+				proof::ProvedQueryPtr a_pq = new proof::ProvedQuery();
 				a_pq->atom = modalisedAtomFromProto(p_q.matom());
 				return a_pq;
 			}
 
 		case protocol::MarkedQuery::UNSOLVED:
 			{
-				Abducer::proof::UnsolvedQueryPtr a_uq = new Abducer::proof::UnsolvedQuery();
+				proof::UnsolvedQueryPtr a_uq = new proof::UnsolvedQuery();
 				a_uq->atom = modalisedAtomFromProto(p_q.matom());
 				if (p_q.has_function()) {
 					a_uq->f = assumabilityFunctionFromProto(p_q.function());
@@ -60,7 +67,7 @@ markedQueryFromProto(const protocol::MarkedQuery & p_q)
 
 		case protocol::MarkedQuery::ASSUMED:
 			{
-				Abducer::proof::AssumedQueryPtr a_sq = new Abducer::proof::AssumedQuery();
+				proof::AssumedQueryPtr a_sq = new proof::AssumedQuery();
 				a_sq->atom = modalisedAtomFromProto(p_q.matom());
 				if (p_q.has_function()) {
 					a_sq->f = assumabilityFunctionFromProto(p_q.function());
@@ -73,7 +80,7 @@ markedQueryFromProto(const protocol::MarkedQuery & p_q)
 
 		case protocol::MarkedQuery::ASSERTED:
 			{
-				Abducer::proof::AssertedQueryPtr a_rq = new Abducer::proof::AssertedQuery();
+				proof::AssertedQueryPtr a_rq = new proof::AssertedQuery();
 				a_rq->atom = modalisedAtomFromProto(p_q.matom());
 				return a_rq;
 			}
@@ -83,19 +90,19 @@ markedQueryFromProto(const protocol::MarkedQuery & p_q)
 	}
 }
 
-Abducer::lang::AssumabilityFunctionPtr
+lang::AssumabilityFunctionPtr
 assumabilityFunctionFromProto(const protocol::AssumabilityFunction & p_f)
 {
 	switch (p_f.function_type()) {
 		case protocol::AssumabilityFunction::NOTASSUMABLE:
 			{
-				Abducer::lang::NullAssumabilityFunctionPtr a_nf = new Abducer::lang::NullAssumabilityFunction();
+				lang::NullAssumabilityFunctionPtr a_nf = new lang::NullAssumabilityFunction();
 				return a_nf;
 			}
 
 		case protocol::AssumabilityFunction::CONST:
 			{
-				Abducer::lang::ConstAssumabilityFunctionPtr a_cf = new Abducer::lang::ConstAssumabilityFunction();
+				lang::ConstAssumabilityFunctionPtr a_cf = new lang::ConstAssumabilityFunction();
 				if (p_f.has_cost()) {
 					a_cf->cost = p_f.cost();
 					return a_cf;
@@ -107,7 +114,7 @@ assumabilityFunctionFromProto(const protocol::AssumabilityFunction & p_f)
 
 		case protocol::AssumabilityFunction::NAMED:
 			{
-				Abducer::lang::NamedAssumabilityFunctionPtr a_nf = new Abducer::lang::NamedAssumabilityFunction();
+				lang::NamedAssumabilityFunctionPtr a_nf = new lang::NamedAssumabilityFunction();
 				if (p_f.has_function_name()) {
 					a_nf->name = p_f.function_name();
 					return a_nf;
@@ -122,10 +129,10 @@ assumabilityFunctionFromProto(const protocol::AssumabilityFunction & p_f)
 	}
 }
 
-Abducer::lang::ModalisedAtomPtr
+lang::ModalisedAtomPtr
 modalisedAtomFromProto(const protocol::ModalisedAtom & p_ma)
 {
-	Abducer::lang::ModalisedAtomPtr result = new Abducer::lang::ModalisedAtom();
+	lang::ModalisedAtomPtr result = new lang::ModalisedAtom();
 	for (int i = 0; i < p_ma.mod_size(); i++) {
 		result->m.push_back(modalityFromProto(p_ma.mod(i)));
 	}
@@ -133,25 +140,25 @@ modalisedAtomFromProto(const protocol::ModalisedAtom & p_ma)
 	return result;
 }
 
-Abducer::lang::Modality
+lang::Modality
 modalityFromProto(protocol::Modality p_m)
 {
 	switch (p_m) {
-		case protocol::UNDERSTANDING: return Abducer::lang::Understanding;
-		case protocol::GENERATION:    return Abducer::lang::Generation;
-		case protocol::EVENT:         return Abducer::lang::Event;
-		case protocol::INTENTION:     return Abducer::lang::Intention;
-		case protocol::ATTENTION:     return Abducer::lang::Attention;
-		case protocol::BELIEF:        return Abducer::lang::Belief;
-		case protocol::TRUTH:         return Abducer::lang::Truth;
+		case protocol::UNDERSTANDING: return lang::Understanding;
+		case protocol::GENERATION:    return lang::Generation;
+		case protocol::EVENT:         return lang::Event;
+		case protocol::INTENTION:     return lang::Intention;
+		case protocol::ATTENTION:     return lang::Attention;
+		case protocol::BELIEF:        return lang::Belief;
+		case protocol::TRUTH:         return lang::Truth;
 		default: throw ProtocolException("unknown modality");
 	}
 }
 
-Abducer::lang::AtomPtr
+lang::AtomPtr
 atomFromProto(const protocol::Atom & p_a)
 {
-	Abducer::lang::AtomPtr result = new Abducer::lang::Atom();
+	lang::AtomPtr result = new lang::Atom();
 	result->predSym = p_a.pred_sym();
 	for (int i = 0; i < p_a.args_size(); i++) {
 		result->args.push_back(termFromProto(p_a.args(i)));
@@ -159,13 +166,13 @@ atomFromProto(const protocol::Atom & p_a)
 	return result;
 }
 
-Abducer::lang::TermPtr
+lang::TermPtr
 termFromProto(const protocol::Term & p_t)
 {
 	switch (p_t.type()) {
 		case protocol::Term::FUNCTION:
 			{
-				Abducer::lang::FunctionTermPtr ft = new Abducer::lang::FunctionTerm();
+				lang::FunctionTermPtr ft = new lang::FunctionTerm();
 				if (p_t.has_functor()) {
 					ft->functor = p_t.functor();
 					for (int i = 0; i < p_t.args_size(); i++) {
@@ -180,7 +187,7 @@ termFromProto(const protocol::Term & p_t)
 
 		case protocol::Term::VARIABLE:
 			{
-				Abducer::lang::VariableTermPtr vt = new Abducer::lang::VariableTerm();
+				lang::VariableTermPtr vt = new lang::VariableTerm();
 				if (p_t.has_var_name()) {
 					vt->name = p_t.var_name();
 					return vt;
@@ -193,4 +200,11 @@ termFromProto(const protocol::Term & p_t)
 		default:
 			throw ProtocolException("unknown term type");
 	}
+}
+
+}
+}
+}
+}
+}
 }

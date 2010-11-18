@@ -21,6 +21,7 @@
 #include "ProtocolException.h"
 
 using namespace std;
+using namespace ::de::dfki::lt::tr::infer::weigabd;
 
 ProtocolException::ProtocolException(const std::string & message_)
 : EngineException(message_)
