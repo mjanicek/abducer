@@ -18,7 +18,7 @@
 // 02111-1307, USA.
 // =================================================================
 
-package de.dfki.lt.tr.infer.weigabd;
+package de.dfki.lt.tr.infer.weigabd.util;
 
 import de.dfki.lt.tr.infer.weigabd.lang.Atom;
 import de.dfki.lt.tr.infer.weigabd.lang.FunctionTerm;
@@ -37,6 +37,7 @@ import java.util.List;
  * Utilities for manipulating proofs.
  *
  * @author Miroslav Janicek
+ * @version 2.1.0
  */
 public abstract class ProofUtils {
 
@@ -119,7 +120,7 @@ public abstract class ProofUtils {
 	}
 
 	/**
-	 * Create a new unsolved proof.
+	 * Create a new unsolved, non-assumable proof.
 	 *
 	 * @param goal the goal formula
 	 * @return the proof

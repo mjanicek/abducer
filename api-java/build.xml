@@ -1,4 +1,4 @@
-<project name="Abducer Java API" default="jar" basedir=".">
+<project name="Abducer Java Utility Library" default="jar" basedir=".">
 
 	<property name="build.sysclasspath" value="last" />
 	<property name="abducer.dir" value=".." />
@@ -70,13 +70,13 @@
 			<fileset dir="${generated.dir}" defaultexcludes="yes">
 			</fileset>
 
-			<doctitle><![CDATA[<h1>Abducer Java API</h1>]]></doctitle>
+			<doctitle><![CDATA[<h1>Abducer Java Utility Library</h1>]]></doctitle>
 			<bottom><![CDATA[<i>Copyright &#169; 2009-2010 DFKI GmbH. All Rights Reserved.</i>]]></bottom>
 		</javadoc>
 	</target>
 
 	<target name="jar" depends="compile">
-		<jar destfile="${jar.dir}/abducer-api.jar"
+		<jar destfile="${jar.dir}/abducer-util.jar"
 				basedir ="${output.dir}" />
 	</target>
 

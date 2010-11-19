@@ -18,7 +18,7 @@
 // 02111-1307, USA.
 // =================================================================
 
-package de.dfki.lt.tr.infer.weigabd;
+package de.dfki.lt.tr.infer.weigabd.util;
 
 import de.dfki.lt.tr.infer.weigabd.lang.FunctionTerm;
 import de.dfki.lt.tr.infer.weigabd.lang.ModalisedAtom;
@@ -35,9 +35,16 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Utilities for converting elements of the language to strings.
+ * Utilities for pretty-printing the language.
+ *
+ * Note that the output is not necessarily in a format compatible with
+ * the loading routines of the abducer engine. In other words, if you
+ * store the output in a file and try to load it using
+ * {@link de.dfki.lt.tr.infer.weigabd.engine.AbductionEnginePrx#loadFile(java.lang.String) AbductionEnginePrx.loadFile(...)},
+ * you are likely to get a syntax error.
  *
  * @author Miroslav Janicek
+ * @version 2.1.0
  */
 public abstract class PrettyPrint {
 

@@ -18,7 +18,7 @@
 // 02111-1307, USA.
 // =================================================================
 
-package de.dfki.lt.tr.infer.weigabd;
+package de.dfki.lt.tr.infer.weigabd.util;
 
 import de.dfki.lt.tr.infer.weigabd.engine.AbductionEnginePrx;
 import de.dfki.lt.tr.infer.weigabd.engine.AbductionEngineServerPrx;
@@ -28,6 +28,7 @@ import de.dfki.lt.tr.infer.weigabd.engine.AbductionEngineServerPrxHelper;
  * A wrapper for manipulating the abducer server.
  *
  * @author Miroslav Janicek
+ * @version 2.1.0
  */
 public class AbductionEngineConnection {
 
