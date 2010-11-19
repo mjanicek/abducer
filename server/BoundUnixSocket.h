@@ -25,15 +25,16 @@
 
 class BoundUnixSocket {
 public:
-	BoundUnixSocket(const std::string & prefix);
+	BoundUnixSocket(const std::string & dirprefix, const std::string & filename);
 	virtual ~BoundUnixSocket();
 
 	int getFd() { return fd; };
-	std::string getPath() { return path; };
+	std::string getPath() { return dir + "/" + file; };
 
 private:
 	int fd;
-	std::string path;
+	std::string dir;
+	std::string file;
 };
 
 #endif

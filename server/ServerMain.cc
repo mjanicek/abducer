@@ -48,7 +48,6 @@ LoggerPtr serverLogger(Logger::getLogger("abducer.main"));
 const string DEFAULT_SERVER_NAME = "AbducerServer";
 const string DEFAULT_SERVER_ENDPOINTS = "default -p 10000";
 const string DEFAULT_ABDUCER_PATH = "/usr/bin/false";
-const string SOCKET_FILE_TEMPLATE = "/tmp/abducer-socket.XXXXXX";
 const string DEFAULT_LOGCONFIG_PATH = "Log4jConfig.xml";
 
 // this probably shouldn't be static
@@ -89,7 +88,7 @@ main(int argc, char ** argv)
 
 			BoundUnixSocket * socket = NULL;
 			try {
-				socket = new BoundUnixSocket(SOCKET_FILE_TEMPLATE);
+				socket = new BoundUnixSocket("abducer", "engine-listen");
 			}
 			catch (string s) {
 				LOG4CXX_ERROR(serverLogger, s);

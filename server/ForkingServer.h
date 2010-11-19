@@ -41,6 +41,7 @@ public:
 	virtual ~ForkingServer();
 
 	virtual engine::AbductionEnginePrx getEngineProxy(const std::string & name, const Ice::Current&);
+
 protected:
 	Ice::ObjectAdapterPtr startNewServer(const std::string & name);
 

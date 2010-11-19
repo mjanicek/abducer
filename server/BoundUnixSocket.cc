@@ -20,6 +20,7 @@
 
 #include "BoundUnixSocket.h"
 
+#include <unistd.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <sys/socket.h>
@@ -27,31 +28,42 @@
 
 using namespace std;
 
-BoundUnixSocket::BoundUnixSocket(const string & templ)
-: fd(-1), path("")
+BoundUnixSocket::BoundUnixSocket(const string & dirprefix, const string & filename)
+: fd(-1), dir(""), file(filename)
 {
-	// get the name
-	char * buf = new char[templ.length() + 1];
-	strcpy(buf, templ.c_str());
-	buf = mktemp(buf);  // FIXME: use mkdtemp()
-	path = string(buf);
+	// TODO sanity checks:
+	//  - dirprefix nonempty
+	//  - filename nonempty, doesn't contain "/"
+
+	// create the directory
+	string mkdtemp_template("/tmp/" + dirprefix + "-XXXXXX");
+	char * buf = new char[mkdtemp_template.length() + 1];
+	strcpy(buf, mkdtemp_template.c_str());
+	buf = mkdtemp(buf);
+	dir = string(buf);
 	delete buf;
+
+	string fullpath(dir + "/" + file);
 
 	fd = socket(PF_UNIX, SOCK_STREAM, 0);
 	if (fd < 0) {
+		rmdir(dir.c_str());
 		throw string("socket() failed: ") + strerror(errno);
 	} 
 
 	struct sockaddr_un address;
 	address.sun_family = AF_UNIX;
-	strcpy(address.sun_path, path.c_str());
+	strcpy(address.sun_path, fullpath.c_str());
 	size_t address_length = sizeof(address.sun_family) + strlen(address.sun_path) + 1;
 
 	if (bind(fd, (struct sockaddr *) &address, address_length) != 0) {
-		throw string("bind() to `") + path + "' failed: " + strerror(errno);
+		rmdir(dir.c_str());
+		throw string("bind() to `") + fullpath + "' failed: " + strerror(errno);
 	}
 
 	if (listen(fd, 1) != 0) {
+		unlink(fullpath.c_str());
+		rmdir(dir.c_str());
 		throw string("listen() failed: ") + strerror(errno);
 	}
 
@@ -59,5 +71,6 @@ BoundUnixSocket::BoundUnixSocket(const string & templ)
 
 BoundUnixSocket::~BoundUnixSocket()
 {
-	unlink(path.c_str());
+	unlink(getPath().c_str());
+	rmdir(dir.c_str());  // TODO: make sure that this succeeded?
 }
