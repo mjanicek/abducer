@@ -34,8 +34,6 @@
 
 #include "protocol.pb.h"
 
-#include "TtyUtils.h"
-
 #include "ProtoUtil.h"
 #include "ProtocolException.h"
 
