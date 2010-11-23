@@ -113,6 +113,13 @@ main(int argc, char ** argv)
 		}
 		break;
 
+	case PrintVersion:
+		{
+			printVersion();
+			return EXIT_SUCCESS;
+		}
+		break;
+
 	case Error:
 	default:
 		{
@@ -220,7 +227,7 @@ interfaceVersionOk()
 void
 printUsage()
 {
-	cout << "abducer-server ARGS" << endl
+	cout << "Usage: abducer-server ARGS" << endl
 		<< endl
 		<< "ARGS may be the following (defaults in brackets):" << endl
 		<< "  -n NAME         Name of the ICE server [" << DEFAULT_SERVER_NAME << "]" << endl

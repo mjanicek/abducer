@@ -27,6 +27,7 @@
 enum CommandLineAction {
 	Error,
 	PrintHelp,
+	PrintVersion,
 	Start
 };
 

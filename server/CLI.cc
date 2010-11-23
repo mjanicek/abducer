@@ -28,11 +28,12 @@ extern "C" {
 CommandLineAction
 processCommandLineArgs(int argc, char ** argv, Settings & setup)
 {
-	bool help = false;
+	bool printHelp = false;
+	bool printVersion = false;
 
 	static struct option longOptions[] = {
 			{"help",       no_argument,       0, 'h'},
-//			{"verbose",    no_argument,       0, 'v'},
+			{"version",    no_argument,       0, 'v'},
 			{"name",       required_argument, 0, 'n'},
 			{"endpoints",  required_argument, 0, 'e'},
 			{"log-config", required_argument, 0, 'l'},
@@ -45,7 +46,7 @@ processCommandLineArgs(int argc, char ** argv, Settings & setup)
 		int c;
 		int idx = 0;
 
-		c = getopt_long(argc, argv, "hn:e:l:a:x:", longOptions, &idx);
+		c = getopt_long(argc, argv, "hvn:e:l:a:x:", longOptions, &idx);
 		if (c == -1) {
 			break;
 		}
@@ -56,12 +57,12 @@ processCommandLineArgs(int argc, char ** argv, Settings & setup)
 			break;
 
 		case 'h':
-			help = true;
+			printHelp = true;
 			break;
 
-//		case 'v':
-//			isVerbose = true;
-//			break;
+		case 'v':
+			printVersion = true;
+			break;
 
 		case 'n':
 			setup.serverName = optarg;
@@ -91,5 +92,5 @@ processCommandLineArgs(int argc, char ** argv, Settings & setup)
 		}
 	}
 
-	return (help ? PrintHelp : Start);
+	return (printHelp ? PrintHelp : (printVersion ? PrintVersion : Start));
 }
