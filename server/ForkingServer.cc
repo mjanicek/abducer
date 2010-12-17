@@ -36,7 +36,7 @@ using namespace std;
 using namespace log4cxx;
 using namespace ::de::dfki::lt::tr::infer::weigabd;
 
-LoggerPtr forkerLogger(Logger::getLogger("abducer.server"));
+LoggerPtr serverLogger(Logger::getLogger("abducer.server"));
 
 ForkingServer::ForkingServer(const vector<string> & engineArgV_, int socket_fd_)
 : engineArgV(engineArgV_), socket_fd(socket_fd_),
@@ -52,7 +52,7 @@ ForkingServer::ForkingServer(const vector<string> & engineArgV_, int socket_fd_)
 			s += ", ";
 		}
 	}
-	LOG4CXX_INFO(forkerLogger, "engines will be started as [" << s << "]");
+	LOG4CXX_INFO(serverLogger, "engines will be started as [" << s << "]");
 }
 
 ForkingServer::~ForkingServer()
@@ -61,10 +61,10 @@ ForkingServer::~ForkingServer()
 	map<string, Ice::CommunicatorPtr>::iterator it;
 
 	for (it = communicators.begin(); it != communicators.end(); ++it) {
-		LOG4CXX_DEBUG(forkerLogger, "shutting down " << it->first);
+		LOG4CXX_DEBUG(serverLogger, "shutting down " << it->first);
 		it->second->destroy();
 	}
-	LOG4CXX_DEBUG(forkerLogger, "server shut down");
+	LOG4CXX_DEBUG(serverLogger, "server shut down");
 }
 
 engine::AbductionEnginePrx
@@ -77,9 +77,9 @@ ForkingServer::getEngineProxy(const string & name, const Ice::Current&)
 		adapters[name] = startNewServer(name);
 	}
 	else {
-		LOG4CXX_DEBUG(forkerLogger, "engine " + name + " seems to be running, checking");
+		LOG4CXX_DEBUG(serverLogger, "engine " + name + " seems to be running, checking");
 		adapters[name]->createProxy(identities[name])->ice_ping();  // FIXME: doesn't test the *engine*
-		LOG4CXX_DEBUG(forkerLogger, "the engine seems to be up");
+		LOG4CXX_DEBUG(serverLogger, "the engine seems to be up");
 	}
 
 	Ice::ObjectPrx oprx = adapters[name]->createProxy(identities[name]);
@@ -88,7 +88,7 @@ ForkingServer::getEngineProxy(const string & name, const Ice::Current&)
 		return eprx;
 	}
 	else {
-		LOG4CXX_ERROR(forkerLogger, "cannot cast an ObjectPrx to AbductionEnginePrx");
+		LOG4CXX_ERROR(serverLogger, "cannot cast an ObjectPrx to AbductionEnginePrx");
 		return 0;
 	}
 }
@@ -111,15 +111,15 @@ ForkingServer::startNewServer(const string & engineName)
 		return 0;
 	}
 	else {
-		LOG4CXX_INFO(forkerLogger, "new abducer engine PID: " << pchild);
+		LOG4CXX_INFO(serverLogger, "new abducer engine PID: " << pchild);
 
 		int connection_fd;
 		struct sockaddr_un address;
 		socklen_t address_length = sizeof(address);
 
-		LOG4CXX_DEBUG(forkerLogger, "waiting for a connection on the socket");
+		LOG4CXX_DEBUG(serverLogger, "waiting for a connection on the socket");
 		if ((connection_fd = accept(socket_fd, (struct sockaddr *) &address, &address_length)) == -1) {
-			LOG4CXX_ERROR(forkerLogger, "accept() failed: " << strerror(errno));
+			LOG4CXX_ERROR(serverLogger, "accept() failed: " << strerror(errno));
 			return 0;
 		}
 
@@ -130,7 +130,7 @@ ForkingServer::startNewServer(const string & engineName)
 	
 		string engineEndpoints = "tcp -p " + base_port++;
 
-		LOG4CXX_INFO(forkerLogger, "starting up an engine wrapper at " << engineName << ":" << ss_endpoints.str());
+		LOG4CXX_INFO(serverLogger, "starting up an engine wrapper at " << engineName << ":" << ss_endpoints.str());
 
 		Ice::ObjectAdapterPtr adapter
 				= ic->createObjectAdapterWithEndpoints(engineName, ss_endpoints.str());

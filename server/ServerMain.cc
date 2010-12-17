@@ -43,7 +43,7 @@ using namespace log4cxx;
 using namespace log4cxx::xml;
 using namespace ::de::dfki::lt::tr::infer::weigabd;
 
-LoggerPtr serverLogger(Logger::getLogger("abducer.main"));
+LoggerPtr mainLogger(Logger::getLogger("abducer.main"));
 
 const string DEFAULT_SERVER_NAME = "AbducerServer";
 const string DEFAULT_SERVER_ENDPOINTS = "default -p 10000";
@@ -91,15 +91,15 @@ main(int argc, char ** argv)
 				socket = new BoundUnixSocket("abducer", "engine-listen");
 			}
 			catch (string s) {
-				LOG4CXX_ERROR(serverLogger, s);
+				LOG4CXX_ERROR(mainLogger, s);
 				return EXIT_FAILURE;
 			}
 
-			LOG4CXX_DEBUG(serverLogger, "socket ready at `" << socket->getPath() << "'");
+			LOG4CXX_DEBUG(mainLogger, "socket ready at `" << socket->getPath() << "'");
 
 			runServer(s, socket->getFd(), socket->getPath());
 
-			LOG4CXX_DEBUG(serverLogger, "unlinking `" << socket->getPath() << "'");
+			LOG4CXX_DEBUG(mainLogger, "unlinking `" << socket->getPath() << "'");
 			delete socket;
 
 			return EXIT_SUCCESS;
@@ -140,7 +140,7 @@ runServer(const Settings & s, int socketFd, const string & socketPath)
 	try {
 		ic = Ice::initialize();
 
-		LOG4CXX_INFO(serverLogger, "setting up ICE server at " << s.serverName << ":" << s.serverEndpoints);
+		LOG4CXX_INFO(mainLogger, "setting up ICE server at " << s.serverName << ":" << s.serverEndpoints);
 
 		Ice::ObjectAdapterPtr adapter
 				= ic->createObjectAdapterWithEndpoints("AbducerServerAdapter", s.serverEndpoints);
@@ -159,7 +159,7 @@ runServer(const Settings & s, int socketFd, const string & socketPath)
 		ic->waitForShutdown();
 	}
 	catch (const engine::EngineException & e) {
-		LOG4CXX_ERROR(serverLogger, "server exception: \"" << e.message << "\"");
+		LOG4CXX_ERROR(mainLogger, "server exception: \"" << e.message << "\"");
 	}
 	catch (const Ice::Exception& e) {
 		cerr << e << endl;
@@ -181,14 +181,14 @@ runServer(const Settings & s, int socketFd, const string & socketPath)
 	}
 	wait(0);
 
-	LOG4CXX_INFO(serverLogger, "all engines terminated");
+	LOG4CXX_INFO(mainLogger, "all engines terminated");
 	return status;
 }
 
 void
 shutdownServer(int signum)
 {
-	LOG4CXX_DEBUG(serverLogger, "received signal " << signum << ", shutting down the server");
+	LOG4CXX_DEBUG(mainLogger, "received signal " << signum << ", shutting down the server");
 	try {
 		ic->destroy();
 	}
@@ -207,12 +207,12 @@ printStatus(const Settings & s)
 	getcwd(cwd, cwd_length);
 
 	if (!interfaceVersionOk()) {
-		LOG4CXX_WARN(serverLogger, "server interface version " << RELEASE << " may be incompatible");
+		LOG4CXX_WARN(mainLogger, "server interface version " << RELEASE << " may be incompatible");
 	}
 
 //	cerr << NOTIFY_MSG("abducer binary: [" << s.abducerPath << "]") << endl;
 	if (s.abducerPath == DEFAULT_ABDUCER_PATH) {
-		LOG4CXX_WARN(serverLogger, "engine binary is set to default");
+		LOG4CXX_WARN(mainLogger, "engine binary is set to default");
 	}
 
 	delete cwd;
@@ -235,7 +235,8 @@ printUsage()
 		<< "  -a ABDUCER_BIN  Path to the engine binary [" << DEFAULT_ABDUCER_PATH << "]" << endl
 		<< "  -x ARG          Add ARG to the engine arguments" << endl
 		<< "  -l LOG_CONF     Path to the log4cxx config file [" << DEFAULT_LOGCONFIG_PATH << "]" << endl
-		<< "  -h              Print (this) help" << endl;
+		<< "  -h              Print (this) help and exit" << endl
+		<< "  -v              Print version and exit" << endl;
 }
 
 void
