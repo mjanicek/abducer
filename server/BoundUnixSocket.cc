@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-// Copyright (C) 2010 DFKI GmbH Talking Robots 
+// Copyright (C) 2010-2011 DFKI GmbH Talking Robots 
 // Miroslav Janicek (miroslav.janicek@dfki.de) 
 //
 // This library is free software; you can redistribute it and/or
@@ -22,6 +22,7 @@
 
 #include <unistd.h>
 #include <stdlib.h>
+#include <string.h>
 #include <errno.h>
 #include <sys/socket.h>
 #include <sys/un.h>
