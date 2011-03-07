@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-// Copyright (C) 2009-2010 DFKI GmbH Talking Robots 
+// Copyright (C) 2009-2011 DFKI GmbH Talking Robots 
 // Miroslav Janicek (miroslav.janicek@dfki.de) 
 //
 // This library is free software; you can redistribute it and/or
@@ -243,5 +243,5 @@ void
 printVersion()
 {
 	cout << "Abducer server " << ABDUCER_VERSION << endl;
-	cout << "(c) 2009-2010 DFKI GmbH Talking Robots" << endl;
+	cout << "(c) 2009-2011 DFKI GmbH Talking Robots" << endl;
 }

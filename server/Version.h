@@ -1,8 +1,5 @@
-#ifndef VERSION_H__
-#define VERSION_H__  1
-
 // ----------------------------------------------------------------------------
-// Copyright (C) 2010 DFKI GmbH Talking Robots 
+// Copyright (C) 2010-2011 DFKI GmbH Talking Robots 
 // Miroslav Janicek (miroslav.janicek@dfki.de) 
 //
 // This library is free software; you can redistribute it and/or
@@ -20,6 +17,9 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 // 02111-1307, USA.
 // ----------------------------------------------------------------------------
+
+#ifndef VERSION_H__
+#define VERSION_H__  1
 
 #include <string>
 

@@ -71,7 +71,7 @@
 			</fileset>
 
 			<doctitle><![CDATA[<h1>Abducer Java Utility Library</h1>]]></doctitle>
-			<bottom><![CDATA[<i>Copyright &#169; 2009-2010 DFKI GmbH. All Rights Reserved.</i>]]></bottom>
+			<bottom><![CDATA[<i>Copyright &#169; 2009-2011 DFKI GmbH. All Rights Reserved.</i>]]></bottom>
 		</javadoc>
 	</target>
 
