@@ -58,7 +58,16 @@ void set_signalled(int sig_num)
 :- impure pred register_handler is det.
 :- pragma foreign_proc("C", register_handler, [will_not_call_mercury], "
 /*	fprintf(stderr, \"[register]\"\n); */
+
+	struct sigaction new_action, old_action;
+	new_action.sa_handler = set_signalled;
+	new_action.sa_flags = SA_RESTART;
+	sigemptyset(&new_action.sa_mask);
+
+	sigaction(SIGUSR1, &new_action, &old_action);
+/*
 	signal(SIGUSR1, set_signalled);
+*/
 	anytime_sig = MR_NO;
 ").
 

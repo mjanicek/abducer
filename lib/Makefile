@@ -27,6 +27,7 @@ MCFLAGS+=--profiling --memory-profiling --time-profiling
 endif
 
 MCFLAGS+=--warn-unused-imports
+MCFLAGS+=--cflag -D_GNU_SOURCE
 
 # on BSD, without deactivating suffix rules, any "non-suffixed"
 # target would be matched by some sort of default rule (using
