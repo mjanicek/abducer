@@ -28,7 +28,7 @@ namespace dfki {
 namespace lt {
 namespace tr {
 namespace infer {
-namespace weigabd {
+namespace abducer {
 
 proof::ProofWithCostPtr
 proofWithCostFromProto(const protocol::Proof & p_p)

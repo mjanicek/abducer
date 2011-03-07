@@ -29,7 +29,7 @@ namespace dfki {
 namespace lt {
 namespace tr {
 namespace infer {
-namespace weigabd {
+namespace abducer {
 
 string
 quoteGuard(string s)

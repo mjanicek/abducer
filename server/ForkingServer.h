@@ -21,7 +21,7 @@
 // 02111-1307, USA.
 // ----------------------------------------------------------------------------
 
-#include "weigabd.h"
+#include "abducer.h"
 #include <string>
 
 #include <Ice/Ice.h>
@@ -33,7 +33,7 @@ namespace dfki {
 namespace lt {
 namespace tr {
 namespace infer {
-namespace weigabd {
+namespace abducer {
 
 class ForkingServer : public engine::AbductionEngineServer {
 public:

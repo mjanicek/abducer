@@ -28,7 +28,7 @@ namespace dfki {
 namespace lt {
 namespace tr {
 namespace infer {
-namespace weigabd {
+namespace abducer {
 
 const std::string TRUTH_STR = "i";
 const std::string BELIEF_STR = "bel";

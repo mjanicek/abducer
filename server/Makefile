@@ -18,7 +18,7 @@ CXX_HEADERS+=SliceToString.h EngineProtobufWrapper.h Version.h common.h
 CXX_HEADERS+=BoundUnixSocket.h
 CXX_HEADERS+=ForkingServer.h
 CXX_HEADERS+=Constants.h
-CXX_HEADERS+=weigabd.h
+CXX_HEADERS+=abducer.h
 CXX_SOURCES+=SliceToProto.h ProtoToSlice.h ProtoUtil.h ProtocolException.h
 CXX_HEADERS+=protocol.pb.h
 
@@ -26,7 +26,7 @@ CXX_SOURCES=ServerMain.cc CLI.cc
 CXX_SOURCES+=SliceToString.cc EngineProtobufWrapper.cc
 CXX_SOURCES+=BoundUnixSocket.cc
 CXX_SOURCES+=ForkingServer.cc
-CXX_SOURCES+=weigabd.cc
+CXX_SOURCES+=abducer.cc
 CXX_SOURCES+=SliceToProto.cc ProtoToSlice.cc ProtoUtil.h ProtocolException.cc
 CXX_SOURCES+=protocol.pb.cc
 
@@ -112,8 +112,8 @@ compile: $(BIN) $(MBIN)
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -#
 
-weigabd.h weigabd.cc: $(SLICE_PATH)/weigabd.ice
-	$(ICE_HOME)/bin/slice2cpp -I$(SLICE_PATH) --source-ext cc $(SLICE_PATH)/weigabd.ice
+abducer.h abducer.cc: $(SLICE_PATH)/abducer.ice
+	$(ICE_HOME)/bin/slice2cpp -I$(SLICE_PATH) --source-ext cc $(SLICE_PATH)/abducer.ice
 
 %.pb.cc %.pb.h: %.proto
 	protoc --cpp_out . $*.proto
@@ -144,7 +144,7 @@ $(MBIN): $(M_SOURCES) $(LIBABDUCER)
 
 .PHONY: clean
 clean:
-	rm -rf $(OBJS) weigabd.cc weigabd.h \
+	rm -rf $(OBJS) abducer.cc abducer.h \
 		protocol.pb.cc protocol.pb.h \
 		Mercury \
 		$(addsuffix .err, $(basename $(M_SOURCES))) \

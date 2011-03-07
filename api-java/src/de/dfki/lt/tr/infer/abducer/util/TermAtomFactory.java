@@ -18,14 +18,14 @@
 // 02111-1307, USA.
 // =================================================================
 
-package de.dfki.lt.tr.infer.weigabd.util;
+package de.dfki.lt.tr.infer.abducer.util;
 
-import de.dfki.lt.tr.infer.weigabd.lang.Atom;
-import de.dfki.lt.tr.infer.weigabd.lang.FunctionTerm;
-import de.dfki.lt.tr.infer.weigabd.lang.ModalisedAtom;
-import de.dfki.lt.tr.infer.weigabd.lang.Modality;
-import de.dfki.lt.tr.infer.weigabd.lang.Term;
-import de.dfki.lt.tr.infer.weigabd.lang.VariableTerm;
+import de.dfki.lt.tr.infer.abducer.lang.Atom;
+import de.dfki.lt.tr.infer.abducer.lang.FunctionTerm;
+import de.dfki.lt.tr.infer.abducer.lang.ModalisedAtom;
+import de.dfki.lt.tr.infer.abducer.lang.Modality;
+import de.dfki.lt.tr.infer.abducer.lang.Term;
+import de.dfki.lt.tr.infer.abducer.lang.VariableTerm;
 import java.util.Arrays;
 import java.util.List;
 

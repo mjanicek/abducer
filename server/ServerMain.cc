@@ -23,7 +23,7 @@
 
 #include <Ice/Ice.h>
 #include <IceUtil/CtrlCHandler.h>
-#include "weigabd.h"
+#include "abducer.h"
 
 #include <log4cxx/logger.h>
 #include <log4cxx/xml/domconfigurator.h>
@@ -41,7 +41,7 @@
 using namespace std;
 using namespace log4cxx;
 using namespace log4cxx::xml;
-using namespace ::de::dfki::lt::tr::infer::weigabd;
+using namespace ::de::dfki::lt::tr::infer::abducer;
 
 LoggerPtr mainLogger(Logger::getLogger("abducer.main"));
 

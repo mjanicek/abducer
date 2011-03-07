@@ -28,7 +28,7 @@
 
 	<target name="generate-slice" depends="prepare" description="generate sources from Slice">
 		<slice2java tie="true" outputdir="${generated.dir}">
-			<fileset dir="${slice.dir}" includes="weigabd.ice" />
+			<fileset dir="${slice.dir}" includes="abducer.ice" />
 			<includepath>
 				<pathelement path="${slice.dir}" />
 			</includepath>

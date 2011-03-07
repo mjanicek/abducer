@@ -1,8 +1,8 @@
-#ifndef WEIGABD_ICE
-#define WEIGABD_ICE
+#ifndef ABDUCER_ICE
+#define ABDUCER_ICE
 
 // =================================================================
-// Copyright (C) 2009-2010 DFKI GmbH Talking Robots 
+// Copyright (C) 2009-2011 DFKI GmbH Talking Robots 
 // Miroslav Janicek (miroslav.janicek@dfki.de) 
 //                                                                                                                          
 // This library is free software; you can redistribute it and/or
@@ -22,7 +22,7 @@
 // =================================================================
 
 // ===================================================================
-// MODULE: de.dfki.lt.tr.infer.weigabd
+// MODULE: de.dfki.lt.tr.infer.abducer
 // 
 // Defines the ICE interface and data structures used by the weighted
 // abductive inference engine ("the abducer").
@@ -36,7 +36,7 @@ module dfki {
 module lt {
 module tr {
 module infer {
-module weigabd {
+module abducer {
 
 	const string RELEASE = "2.1";
 

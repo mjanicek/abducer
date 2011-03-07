@@ -21,7 +21,7 @@
 #ifndef PROTOCOLEXCEPTION_H__
 #define PROTOCOLEXCEPTION_H__  1
 
-#include "weigabd.h"
+#include "abducer.h"
 #include <string>
 
 namespace de {
@@ -29,7 +29,7 @@ namespace dfki {
 namespace lt {
 namespace tr {
 namespace infer {
-namespace weigabd {
+namespace abducer {
 
 class ProtocolException : public engine::EngineException {
 public:

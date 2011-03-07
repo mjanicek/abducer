@@ -21,7 +21,7 @@
 // 02111-1307, USA.
 // ----------------------------------------------------------------------------
 
-#include "weigabd.h"
+#include "abducer.h"
 #include <vector>
 #include <unistd.h>
 
@@ -34,7 +34,7 @@ namespace dfki {
 namespace lt {
 namespace tr {
 namespace infer {
-namespace weigabd {
+namespace abducer {
 
 class EngineProtobufWrapper : public engine::AbductionEngine {
 

@@ -21,7 +21,7 @@
 // 02111-1307, USA.
 // ----------------------------------------------------------------------------
 
-#include "weigabd.h"
+#include "abducer.h"
 
 #include <vector>
 #include <string>
@@ -31,7 +31,7 @@ namespace dfki {
 namespace lt {
 namespace tr {
 namespace infer {
-namespace weigabd {
+namespace abducer {
 
 std::string
 atomToString(const lang::AtomPtr & a);

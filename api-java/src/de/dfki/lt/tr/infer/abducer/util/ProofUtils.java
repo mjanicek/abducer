@@ -18,18 +18,18 @@
 // 02111-1307, USA.
 // =================================================================
 
-package de.dfki.lt.tr.infer.weigabd.util;
+package de.dfki.lt.tr.infer.abducer.util;
 
-import de.dfki.lt.tr.infer.weigabd.lang.Atom;
-import de.dfki.lt.tr.infer.weigabd.lang.FunctionTerm;
-import de.dfki.lt.tr.infer.weigabd.lang.ModalisedAtom;
-import de.dfki.lt.tr.infer.weigabd.lang.Modality;
-import de.dfki.lt.tr.infer.weigabd.lang.NullAssumabilityFunction;
-import de.dfki.lt.tr.infer.weigabd.lang.Term;
-import de.dfki.lt.tr.infer.weigabd.proof.AssertedQuery;
-import de.dfki.lt.tr.infer.weigabd.proof.AssumedQuery;
-import de.dfki.lt.tr.infer.weigabd.proof.MarkedQuery;
-import de.dfki.lt.tr.infer.weigabd.proof.UnsolvedQuery;
+import de.dfki.lt.tr.infer.abducer.lang.Atom;
+import de.dfki.lt.tr.infer.abducer.lang.FunctionTerm;
+import de.dfki.lt.tr.infer.abducer.lang.ModalisedAtom;
+import de.dfki.lt.tr.infer.abducer.lang.Modality;
+import de.dfki.lt.tr.infer.abducer.lang.NullAssumabilityFunction;
+import de.dfki.lt.tr.infer.abducer.lang.Term;
+import de.dfki.lt.tr.infer.abducer.proof.AssertedQuery;
+import de.dfki.lt.tr.infer.abducer.proof.AssumedQuery;
+import de.dfki.lt.tr.infer.abducer.proof.MarkedQuery;
+import de.dfki.lt.tr.infer.abducer.proof.UnsolvedQuery;
 import java.util.ArrayList;
 import java.util.List;
 

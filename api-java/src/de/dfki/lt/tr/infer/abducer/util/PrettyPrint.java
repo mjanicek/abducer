@@ -18,19 +18,19 @@
 // 02111-1307, USA.
 // =================================================================
 
-package de.dfki.lt.tr.infer.weigabd.util;
+package de.dfki.lt.tr.infer.abducer.util;
 
-import de.dfki.lt.tr.infer.weigabd.lang.FunctionTerm;
-import de.dfki.lt.tr.infer.weigabd.lang.ModalisedAtom;
-import de.dfki.lt.tr.infer.weigabd.lang.Modality;
-import de.dfki.lt.tr.infer.weigabd.lang.Atom;
-import de.dfki.lt.tr.infer.weigabd.lang.Term;
-import de.dfki.lt.tr.infer.weigabd.lang.VariableTerm;
-import de.dfki.lt.tr.infer.weigabd.proof.AssertedQuery;
-import de.dfki.lt.tr.infer.weigabd.proof.AssumedQuery;
-import de.dfki.lt.tr.infer.weigabd.proof.MarkedQuery;
-import de.dfki.lt.tr.infer.weigabd.proof.ProvedQuery;
-import de.dfki.lt.tr.infer.weigabd.proof.UnsolvedQuery;
+import de.dfki.lt.tr.infer.abducer.lang.FunctionTerm;
+import de.dfki.lt.tr.infer.abducer.lang.ModalisedAtom;
+import de.dfki.lt.tr.infer.abducer.lang.Modality;
+import de.dfki.lt.tr.infer.abducer.lang.Atom;
+import de.dfki.lt.tr.infer.abducer.lang.Term;
+import de.dfki.lt.tr.infer.abducer.lang.VariableTerm;
+import de.dfki.lt.tr.infer.abducer.proof.AssertedQuery;
+import de.dfki.lt.tr.infer.abducer.proof.AssumedQuery;
+import de.dfki.lt.tr.infer.abducer.proof.MarkedQuery;
+import de.dfki.lt.tr.infer.abducer.proof.ProvedQuery;
+import de.dfki.lt.tr.infer.abducer.proof.UnsolvedQuery;
 import java.util.Iterator;
 import java.util.List;
 
@@ -40,7 +40,7 @@ import java.util.List;
  * Note that the output is not necessarily in a format compatible with
  * the loading routines of the abducer engine. In other words, if you
  * store the output in a file and try to load it using
- * {@link de.dfki.lt.tr.infer.weigabd.engine.AbductionEnginePrx#loadFile(java.lang.String) AbductionEnginePrx.loadFile(...)},
+ * {@link de.dfki.lt.tr.infer.abducer.engine.AbductionEnginePrx#loadFile(java.lang.String) AbductionEnginePrx.loadFile(...)},
  * you are likely to get a syntax error.
  *
  * @author Miroslav Janicek

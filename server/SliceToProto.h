@@ -21,7 +21,7 @@
 // 02111-1307, USA.
 // ----------------------------------------------------------------------------
 
-#include "weigabd.h"
+#include "abducer.h"
 #include "protocol.pb.h"
 
 namespace de {
@@ -29,7 +29,7 @@ namespace dfki {
 namespace lt {
 namespace tr {
 namespace infer {
-namespace weigabd {
+namespace abducer {
 
 protocol::Modality
 protoModality(lang::Modality m);

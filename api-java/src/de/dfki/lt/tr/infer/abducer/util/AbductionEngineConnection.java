@@ -18,11 +18,11 @@
 // 02111-1307, USA.
 // =================================================================
 
-package de.dfki.lt.tr.infer.weigabd.util;
+package de.dfki.lt.tr.infer.abducer.util;
 
-import de.dfki.lt.tr.infer.weigabd.engine.AbductionEnginePrx;
-import de.dfki.lt.tr.infer.weigabd.engine.AbductionEngineServerPrx;
-import de.dfki.lt.tr.infer.weigabd.engine.AbductionEngineServerPrxHelper;
+import de.dfki.lt.tr.infer.abducer.engine.AbductionEnginePrx;
+import de.dfki.lt.tr.infer.abducer.engine.AbductionEngineServerPrx;
+import de.dfki.lt.tr.infer.abducer.engine.AbductionEngineServerPrxHelper;
 
 /**
  * A wrapper for manipulating the abducer server.

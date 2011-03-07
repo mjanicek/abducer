@@ -34,7 +34,7 @@
 
 using namespace std;
 using namespace log4cxx;
-using namespace ::de::dfki::lt::tr::infer::weigabd;
+using namespace ::de::dfki::lt::tr::infer::abducer;
 
 LoggerPtr serverLogger(Logger::getLogger("abducer.server"));
 

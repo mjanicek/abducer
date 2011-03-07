@@ -30,7 +30,7 @@ namespace dfki {
 namespace lt {
 namespace tr {
 namespace infer {
-namespace weigabd {
+namespace abducer {
 
 protocol::Modality
 protoModality(lang::Modality m) {
