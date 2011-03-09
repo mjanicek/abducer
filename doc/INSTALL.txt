@@ -20,6 +20,7 @@ third-party software packages:
   * a recent Mercury compiler (preferably release 10.04.2)
   * Google Protocol Buffers (preferabably version 2.3.0)
   * log4cxx (preferably version 0.10.0).
+  * ZeroC Ice (tested with versions 3.3 and 3.4)
 
 For instructions on how to install the dependencies on your machine, see
 below.
@@ -106,6 +107,14 @@ On Ubuntu, use the command
 On MacOS X using MacPorts, execute the command
 
   $ sudo port install log4cxx
+
+
+D. Installing Ice
+-----------------
+
+Follow the installation instructions found at Ice website:
+
+  http://www.zeroc.com
 
 
 COMPILING AND RUNNING THE ABDUCER SERVER
