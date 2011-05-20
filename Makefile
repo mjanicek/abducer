@@ -24,6 +24,10 @@ cli: lib
 tests: lib util
 	make -C tests
 
+.PHONY: javaapi
+javaapi:
+	cd api-java && ant
+
 .PHONY: util
 util:
 	make -C util
