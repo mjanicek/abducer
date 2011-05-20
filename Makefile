@@ -4,7 +4,7 @@ ENGINE_BIN=abducer-engine-pb
 #------------------------------------------------------------------------------#
 
 .PHONY: all
-all: server cli tests
+all: server java tests java
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -#
 
@@ -24,8 +24,8 @@ cli: lib
 tests: lib util
 	make -C tests
 
-.PHONY: javaapi
-javaapi:
+.PHONY: java
+java:
 	cd api-java && ant
 
 .PHONY: util
@@ -42,6 +42,8 @@ clean:
 	make -C cli clean
 	make -C tests clean
 	make -C util clean
+	cd api-java && ant clean
 	rm -f bin/$(SERVER_BIN) bin/$(ENGINE_BIN)
 	rm -f bin/abducer-cli bin/check-abd
 	rm -f bin/timeout
+	rm -r doc/javadoc
