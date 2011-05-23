@@ -1,4 +1,4 @@
-<project name="Abducer Java Utility Library" default="jar" basedir=".">
+<project name="Abducer Java Utility Library" default="all" basedir=".">
 
 	<property name="build.sysclasspath" value="last" />
 	<property name="abducer.dir" value=".." />
@@ -80,10 +80,13 @@
 				basedir ="${output.dir}" />
 	</target>
 
+	<target name="all" depends="jar,doc" />
+
 	<target name="clean">
-		<delete dir="${generated.dir}"/>
-		<delete dir="${output.dir}"/>
-		<delete dir="${jar.dir}"/>
+		<delete dir="${generated.dir}" />
+		<delete dir="${output.dir}" />
+		<delete dir="${javadoc.dir}" />
+		<delete dir="${jar.dir}" />
 	</target>
 
 </project>
