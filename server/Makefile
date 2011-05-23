@@ -45,7 +45,14 @@ $(warning pkg-config does not know protobuf, assuming default CXXFLAGS)
 CXXFLAGS+=-pthread
 endif
 
-CXXFLAGS+=$(shell pkg-config --cflags liblog4cxx)
+LOG4CXX_CXXFLAGS=$(shell pkg-config --cflags liblog4cxx 2>/dev/null || true)
+
+ifneq "$(strip $(LOG4CXX_CXXFLAGS))" ""
+CXXFLAGS+=$(LOG4CXX_CXXFLAGS)
+else
+$(warning pkg-config does not know liblog4cxx, assuming default CXXFLAGS)
+CXXFLAGS+=
+endif
 
 #  -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   #
 
@@ -61,7 +68,14 @@ $(warning pkg-config does not know protobuf, assuming default LDFLAGS)
 LDFLAGS+=-lprotobuf
 endif
 
-LDFLAGS+=$(shell pkg-config --libs liblog4cxx)
+LOG4CXX_LDFLAGS=$(shell pkg-config --libs liblog4cxx 2>/dev/null || true)
+
+ifneq "$(strip $(LOG4CXX_LDFLAGS))" ""
+LDFLAGS+=$(LOG4CXX_LDFLAGS)
+else
+$(warning pkg-config does not know liblog4cxx, assuming default LDFLAGS)
+LDFLAGS+=-llog4cxx
+endif
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -#
 # Mercury
