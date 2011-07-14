@@ -46,4 +46,4 @@ clean:
 	rm -f bin/$(SERVER_BIN) bin/$(ENGINE_BIN)
 	rm -f bin/abducer-cli bin/check-abd
 	rm -f bin/timeout
-	rm -r doc/javadoc
+	rm -rf doc/javadoc

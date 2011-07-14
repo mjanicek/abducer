@@ -30,11 +30,31 @@ CXX_SOURCES+=abducer.cc
 CXX_SOURCES+=SliceToProto.cc ProtoToSlice.cc ProtoUtil.h ProtocolException.cc
 CXX_SOURCES+=protocol.pb.cc
 
-#  -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   #
+#------------------------------------------------------------------------------#
+# Compiler and linker flags
 
-CXXFLAGS=-Wall
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -#
+# ICE
+
+CXXFLAGS+=-Wall
 CXXFLAGS+=-I. -I$(ICE_HOME)/include
 CXXFLAGS+=-g
+
+ICE_LIB_DIR=$(ICE_HOME)/lib
+
+# MacPorts installs libIce as libZeroCIce because OS X's filesystem
+# is case-insensitive by default and it would conflict with Xorg's libice
+ifeq "$(shell test -e $(ICE_LIB_DIR)/libZeroCIce.dylib && echo MacPorts)" "MacPorts"
+	# we're in MacPorts environment
+	ICE_LIB_NAME=ZeroCIce
+else
+	ICE_LIB_NAME=Ice
+endif
+
+LDFLAGS+=-L$(ICE_LIB_DIR) -l$(ICE_LIB_NAME) -lIceUtil $(ARCHFLAG)
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -#
+# Google Protocol Buffers
 
 PROTOBUF_CXXFLAGS=$(shell pkg-config --cflags protobuf 2>/dev/null || true)
 
@@ -45,20 +65,6 @@ $(warning pkg-config does not know protobuf, assuming default CXXFLAGS)
 CXXFLAGS+=-pthread
 endif
 
-LOG4CXX_CXXFLAGS=$(shell pkg-config --cflags liblog4cxx 2>/dev/null || true)
-
-ifneq "$(strip $(LOG4CXX_CXXFLAGS))" ""
-CXXFLAGS+=$(LOG4CXX_CXXFLAGS)
-else
-$(warning pkg-config does not know liblog4cxx, assuming default CXXFLAGS)
-CXXFLAGS+=
-endif
-
-#  -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   #
-
-LDFLAGS=-L$(ICE_HOME)/lib -lIce -lIceUtil $(ARCHFLAG)
-LDFLAGS+=-lprotobuf
-
 PROTOBUF_LDFLAGS=$(shell pkg-config --libs protobuf 2>/dev/null || true)
 
 ifneq "$(strip $(PROTOBUF_LDFLAGS))" ""
@@ -66,6 +72,18 @@ LDFLAGS+=$(PROTOBUF_LDFLAGS)
 else
 $(warning pkg-config does not know protobuf, assuming default LDFLAGS)
 LDFLAGS+=-lprotobuf
+endif
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -#
+# log4cxx
+
+LOG4CXX_CXXFLAGS=$(shell pkg-config --cflags liblog4cxx 2>/dev/null || true)
+
+ifneq "$(strip $(LOG4CXX_CXXFLAGS))" ""
+CXXFLAGS+=$(LOG4CXX_CXXFLAGS)
+else
+$(warning pkg-config does not know liblog4cxx, assuming default CXXFLAGS)
+CXXFLAGS+=
 endif
 
 LOG4CXX_LDFLAGS=$(shell pkg-config --libs liblog4cxx 2>/dev/null || true)
@@ -77,8 +95,8 @@ $(warning pkg-config does not know liblog4cxx, assuming default LDFLAGS)
 LDFLAGS+=-llog4cxx
 endif
 
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -#
-# Mercury
+#------------------------------------------------------------------------------#
+# Mercury settings
 
 MBIN=$(OUTPUT_DIR)/abducer-engine-pb
 M_SOURCES=abducer-engine-pb.m protobuf_runtime.m protocol_loading.m
